@@ -2,17 +2,17 @@
 
 #ifndef CUSTOMER
 #define CUSTOMER
-#include "Store.h"
+#include "GeneralFunctions.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct Customer {
-	int CustomerID;
-	char* CustomerName;
+	int id;
+	char* name;
 	int contactNumber;
 } Customer;
 
 void initCustomer(Customer* customer, int CustomerID, const char* CustomerName, int contactNumber);
-
-void getPurchaseHistory(const Customer* customer, Store store);
 
 int getCustomerID(const Customer* customer);
 

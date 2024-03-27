@@ -2,25 +2,28 @@
 #ifndef DEPARTMENT
 #define DEPARTMENT
 #include "Product.h"
+#include "GeneralFunctions.h"
+#include "DepartmentType.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "GeneralFunctions.h"
 
 typedef struct Department {
-	departmentType* type;
-	char* DepartmentName;
+	DepartmentType* type;
 	Product* products;
 	int noOfProducts;
 } Department;
 
-void initDepartment(Department* department);
+void initDepartment(Department* department, DepartmentType* type);
 
-int setDepartmentType(Department* department);
-
-int setDepartmentName(Department* department);
+int setProductArray(Department* department, DepartmentType* type);
 
 void addProduct(Department* department);
 
 void removeProduct(Department* department, const char* productCode);
+
+void printDepartment(const Department* department);
+
+void printDepartmentFull(const Department* department);
 
 #endif // !DEPARTMENT

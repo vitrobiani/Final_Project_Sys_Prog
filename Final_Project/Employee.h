@@ -2,7 +2,10 @@
 
 #ifndef EMPLOYEE
 #define EMPLOYEE
+#include "GeneralFunctions.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef enum { eWorker, eManager, eNumOfPositions } ePosition;
 static const char* ePositionStr[eNumOfPositions] = { "Worker", "Manager" };
@@ -15,13 +18,15 @@ typedef struct Employee {
 	int salary;
 } Employee;
 
-void initEmployee(Employee* employee, int id, const char* name, ePosition position, int salary);
+void initEmployee(Employee* employee);
 
 void printEmployee(const Employee* employee);
 
-int getSalary(const Employee* employee);
+int getSalary();
 
-void printPositions(const Employee* employee);
+void printPositions();
 
-ePosition getPosition(const Employee* employee);
+int getEmployeeID();
+
+ePosition getPosition();
 #endif // !EMPLOYEE

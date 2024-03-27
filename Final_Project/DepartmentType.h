@@ -1,14 +1,24 @@
 #pragma once
 #ifndef DEPARTMENTTYPE
 #define DEPARTMENTTYPE
+#include "Product.h"
+#include "GeneralFunctions.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct departmentType {
+typedef struct DepartmentType {
+	int id;
 	char* name;
-	char** names;
-	char** productCodes;
-	int* productPrices;
+	Product* products;
 	int noOfProducts;
-} departmentType;
+} DepartmentType;
 
+void initDepartmentType(DepartmentType* departmentType, int id);
+
+void addProductToDepartmentType(DepartmentType* departmentType);
+
+void printDepartmentType(const DepartmentType* departmentType);
+
+void printDepartmentTypeFull(const DepartmentType* departmentType);
 
 #endif // !DEPARTMENTTYPE

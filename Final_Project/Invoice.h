@@ -18,15 +18,13 @@ typedef struct Invoice {
 	Date timeOfSale;
 } Invoice;
 
-int initInvoice(Invoice* invoice, int invoiceID, int storeID, Product* products, Customer customer, Employee** employee, int saleAmount, Date timeOfSale);
+int initInvoice(Invoice* invoice);
 
 int getInvoiceID(const Invoice* invoice);
 
 int getStoreID(const Invoice* invoice);
 
 const Customer* getCustomer(const Invoice* invoice);
-
-const Employee* getEmployee(const Invoice* invoice);
 
 int getSaleAmount(const Invoice* invoice);
 

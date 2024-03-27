@@ -1,14 +1,13 @@
 #include "Product.h"
 
-int initProduct(Product* product) {
-	getProductCode(product);
+void initProduct(Product* product) {
+	getProductCode(product->code);
 	getProductName(product);
-	product->price = getPrice(product);
+	getPrice(product);
 	product->quantity = 0;
-	return 1;
 }
 
-void getProductCode(Product* product) {
+void getProductCode(char* code) {
 	char temp[MAX_STR_LEN];
 	int ok = 1;
 	do {
@@ -33,33 +32,51 @@ void getProductCode(Product* product) {
 		}
 	} while (!ok);
 
-	strcpy(product->name, temp);
+	strcpy(code, temp);
 }
 
 void getProductName(Product* product) {
 	product->name = getStrExactName("Enter product name:");
 }
 
-int getPrice(Product* product) {
-	char temp[MAX_STR_LEN];
-	int price;
+void getPrice(Product* product) {
+	printf("\nEnter the buy price of product: ");
+	int buyPrice;
 	do {
-		printf("Enter price of product: ");
-		myGets(temp, MAX_STR_LEN);
-		price = atoi(temp);
-		if (price <= 0) {
+		scanf("%d", &buyPrice);
+		if (buyPrice <= 0) {
 			printf("Price must be a positive number\n");
 		}
-	} while (price <= 0);
-	return price;
+	} while (buyPrice <= 0);
+	product->buyPrice = buyPrice;
+	printf("\nEnter the sell price of product: ");
+	int sellPrice;
+	do {
+		scanf("%d", &sellPrice);
+		if (sellPrice <= 0) {
+			printf("Price must be a positive number\n");
+		}
+	} while (sellPrice <= 0);
+	product->sellPrice = sellPrice;
 }
 
 void printProduct(const Product* product) {
 	if (product == NULL) {
 		return;
 	}
-	printf("Product Code: %s\n", product->code);
-	printf("Product Name: %s\n", product->name);
-	printf("Price: %d\n", product->price);
-	printf("Quantity: %d\n", product->quantity);
+	printf("\t# Product Name: %s", product->name);
+	printf("\tProduct Code: %s\n", product->code);
+	printf("\t  Buy Price: %d", product->buyPrice);
+	printf("\tSell Price: %d\n", product->sellPrice);
+}
+
+void printProductFull(const Product* product) {
+	if (product == NULL) {
+		return;
+	}
+	printf("\t# Product Name: %s", product->name);
+	printf("\tProduct Code: %s\n", product->code);
+	printf("\t  Buy Price: %d", product->buyPrice);
+	printf("\tSell Price: %d\n", product->sellPrice);
+	printf("\t - Quantity: %d\n", product->quantity);
 }
