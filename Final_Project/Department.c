@@ -82,6 +82,6 @@ void printDepartmentFull(const Department* department) {
 	}
 	printf("\nDepartment Name: %s\n", department->type->name);
 	for (int i = 0; i < department->noOfProducts; i++) {
-		printProduct(&department->products[i]);
+		printProductFull(&department->products[i]);
 	}
 }
