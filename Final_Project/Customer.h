@@ -12,10 +12,8 @@ typedef struct Customer {
 	int contactNumber;
 } Customer;
 
-//hi
-void initCustomer(Customer* customer);
 
-void initCustomer(Customer* customer, int CustomerID, const char* CustomerName, int contactNumber);
+void initCustomer(Customer* customer);
 
 void setCustomerID(Customer* customer);
 
