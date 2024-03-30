@@ -7,7 +7,7 @@ void initDepartmentType(DepartmentType* departmentType, int id) {
 	departmentType->noOfProducts = 0;
 }
 
-int checkIfProductExist(const DepartmentType* departmentType, char* code) {
+int checkIfProductExist(const DepartmentType* departmentType, const char* code) {
 	if (departmentType == NULL) {
 		return 0;
 	}

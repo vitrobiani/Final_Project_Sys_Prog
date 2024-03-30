@@ -6,11 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef enum { eNone, eID, eProfit, eRent, eLocation, eNofSortOpt } eSortOption;
+static const char* sortOptStr[eNofSortOpt] = { "NotSorted", "ID", "Profit", "Rent", "Location" };
+
 typedef struct StoreManager {
 	Store** stores;
 	int noOfStores;
 	DepartmentType* departments;
 	int noOfDepartmentTypes;
+	eSortOption storeSortOpt;
 } StoreManager;
 
 void initStoreManager(StoreManager* storeManager);
@@ -40,6 +44,10 @@ Store* enterStore(StoreManager* storeManager);
 void calculateTotalProfit(const StoreManager* storeManager);
 
 void sortAllStoresBy(StoreManager* storeManager);
+
+eSortOption showSortMenu();
+
+void findStore(const StoreManager* storeManager);
 
 void printAllStores(const StoreManager* storeManager);
 

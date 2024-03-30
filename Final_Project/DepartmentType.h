@@ -15,7 +15,7 @@ typedef struct DepartmentType {
 
 void initDepartmentType(DepartmentType* departmentType, int id);
 
-int checkIfProductExists(const DepartmentType* departmentType, const Product* product);
+int checkIfProductExist(const DepartmentType* departmentType, const char* code);
 
 void createProductToDepartmentType(DepartmentType* departmentType);
 

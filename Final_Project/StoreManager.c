@@ -173,35 +173,85 @@ void calculateTotalProfit(const StoreManager* storeManager) {
 }
 
 void sortAllStoresBy(StoreManager* storeManager) {
-	printf("1. Sort by store ID\n");
-	printf("2. Sort by store profit\n");
-	printf("3. sort by store rent\n");
-	printf("4. sort by store location\n");
-	int choice;
-	printf("Enter your choice: ");
-	do{
-		scanf("%d", &choice);
-		if (choice < 1 || choice > 4) printf("Try again!");
-	} while (choice < 1 || choice > 4);
-	switch (choice)
+	storeManager->storeSortOpt = showSortMenu();
+	int(*compare)(const void* store1, const void* store2) = NULL;
+	switch (storeManager->storeSortOpt)
 	{
-	case 1: {
-		qsort(storeManager->stores, storeManager->noOfStores, sizeof(Store*), compareStoreByID);
+	case eID: {
+		compare = compareStoreByID;
 		break;
 	}
-	case 2: {
-		qsort(storeManager->stores, storeManager->noOfStores, sizeof(Store*), compareStoreByProfit);
+	case eProfit: {
+		compare = compareStoreByProfit;
 		break;
 	}
-	case 3: {
-		qsort(storeManager->stores, storeManager->noOfStores, sizeof(Store*), compareStoreByRent);
+	case eRent: {
+		compare = compareStoreByRent;
 		break;
 	}
-	case 4: {
-		qsort(storeManager->stores, storeManager->noOfStores, sizeof(Store*), compareStoreByLocation);
+	case eLocation: {
+		compare = compareStoreByLocation;
 		break;
 	}
 	}
+	if(compare != NULL)
+		qsort(storeManager->stores, storeManager->noOfStores, sizeof(Store*), compare);
+}
+
+eSortOption showSortMenu()
+{
+	int opt;
+	printf("Base on what field do you want to sort?\n");
+	do {
+		for (int i = 1; i < eNofSortOpt; i++)
+			printf("Enter %d for %s\n", i, sortOptStr[i]);
+		scanf("%d", &opt);
+	} while (opt < 0 || opt >= eNofSortOpt);
+
+	return (eSortOption)opt;
+}
+
+void findStore(const StoreManager* storeManager)
+{
+	int(*compare)(const void* store1, const void* store2) = NULL;
+	Store store = { 0 };
+	Store* pStore = &store;
+	switch (storeManager->storeSortOpt)
+	{
+	case eID: {
+		printf("Enter store's ID number:\n");
+		scanf("%d", &store.storeID);
+		compare = compareStoreByID;
+		break;
+	}
+	case eProfit: {
+		compare = compareStoreByProfit;
+		break;
+	}
+	case eRent: {
+		printf("Enter store's rent:\n");
+		scanf("%d", &store.rent);
+		compare = compareStoreByRent;
+		break;
+	}
+	case eLocation: {
+		pStore->location = getStrExactName("Enter the location of the store: ");
+		compare = compareStoreByLocation;
+		break;
+	}
+	}
+	if (compare != NULL)
+	{
+		Store** foundStore = bsearch(&pStore, storeManager->stores, storeManager->noOfStores, sizeof(Store*), compare);
+		if (foundStore == NULL)
+			printf("Store was not found\n");
+		else
+			printStore(*foundStore);
+		if (storeManager->storeSortOpt == eLocation)
+				free(pStore->location);
+	}
+	else
+		printf("The search cannot be performed, array not sorted\n");
 }
 
 void printAllStores(const StoreManager* storeManager) {

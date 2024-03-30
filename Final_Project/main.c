@@ -12,6 +12,7 @@ typedef enum {
 	eVIEW_STORES,
 	eVIEW_DEPARTMENTS,
 	eSORT_BY,
+	eFIND_STORE,
 	eCALCULATE_TOTAL_PROFIT,
 	eEXIT,
 	eNumOfOptions
@@ -27,6 +28,7 @@ const char* optionsStrings[] = {
 	"View all stores",
 	"View all department types",
 	"Sort by",
+	"Find a store",
 	"Calculate total profit",
 	"Exit"
 };
@@ -173,6 +175,10 @@ int main(int argc, char* argv[], char* env[]) {
 		}
 		case eSORT_BY: {
 			sortAllStoresBy(&storeManager);
+			break;
+		}
+		case eFIND_STORE: {
+			findStore(&storeManager);
 			break;
 		}
 		default:

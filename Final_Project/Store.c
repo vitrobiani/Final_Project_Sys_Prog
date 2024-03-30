@@ -243,8 +243,8 @@ int compareStoreByID(const void* store1, const void* store2) {
 	if (store1 == NULL || store2 == NULL) {
 		return 0;
 	}
-	Store* store1_ = *(Store**)store1;
-	Store* store2_ = *(Store**)store2;
+	const Store* store1_ = *(const Store**)store1;
+	const Store* store2_ = *(const Store**)store2;
 	return (store1_)->storeID - (store2_)->storeID;
 }
 
@@ -252,8 +252,8 @@ int compareStoreByProfit(const void* store1, const void* store2) {
 	if (store1 == NULL || store2 == NULL) {
 		return 0;
 	}
-	Store* store1_ = *(Store**)store1;
-	Store* store2_ = *(Store**)store2;
+	const Store* store1_ = *(const Store**)store1;
+	const Store* store2_ = *(const Store**)store2;
 	return calculateStoreProfit(store2_) - calculateStoreProfit(store1_);
 }
 
@@ -261,8 +261,8 @@ int compareStoreByRent(const void* store1, const void* store2) {
 	if (store1 == NULL || store2 == NULL) {
 		return 0;
 	}
-	Store* store1_ = *(Store**)store1;
-	Store* store2_ = *(Store**)store2;
+	const Store* store1_ = *(const Store**)store1;
+	const Store* store2_ = *(const Store**)store2;
 	return (store1_)->rent - (store2_)->rent;
 }
 
@@ -270,8 +270,8 @@ int compareStoreByLocation(const void* store1, const void* store2) {
 	if (store1 == NULL || store2 == NULL) {
 		return 0;
 	}
-	Store* store1_ = *(Store**)store1;
-	Store* store2_ = *(Store**)store2;
+	const Store* store1_ = *(const Store**)store1;
+	const Store* store2_ = *(const Store**)store2;
 	return strcmp(store1_->location,store2_->location);
 }
 
