@@ -29,4 +29,11 @@ void printPositions();
 int getEmployeeID();
 
 ePosition getPosition();
+
+void freeEmployee(Employee* employee);
+
+void saveEmployeeToTextFile(const Employee* employee, FILE* file);
+
+void loadEmployeeFromTextFile(Employee* employee, FILE* file);
+
 #endif // !EMPLOYEE

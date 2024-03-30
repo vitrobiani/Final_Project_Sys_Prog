@@ -11,6 +11,8 @@ typedef enum {
 	eENTER_STORE,
 	eVIEW_STORES,
 	eVIEW_DEPARTMENTS,
+	eSORT_BY,
+	eCALCULATE_TOTAL_PROFIT,
 	eEXIT,
 	eNumOfOptions
 } Options;
@@ -23,7 +25,9 @@ const char* optionsStrings[] = {
 	"Add a product to a department type",
 	"Enter a store",
 	"View all stores",
-	"View all departments",
+	"View all department types",
+	"Sort by",
+	"Calculate total profit",
 	"Exit"
 };
 
@@ -31,6 +35,10 @@ typedef enum {
 	eADD_EMPLOYEE,
 	eADD_DEPARTMENT,
 	ePRINT_DEPARTMENTS,
+	eADD_PRODUCT,
+	eMAKE_SALE,
+	eCALCULATE_PROFIT,
+	ePRINT_INVOICES,
 	eGO_BACK,
 	eNumOfStoreMenuOptions
 }storeMenu;
@@ -39,6 +47,10 @@ const char* storeMenuStrings[] = {
 	"Add an employee",
 	"Add a department",
 	"Print all departments and their products",
+	"Add a product",
+	"Make a sale",
+	"Calculate profit",
+	"Print all invoices",
 	"Go back to the main menu"
 };
 
@@ -71,10 +83,10 @@ int storeMenuOptions() {
 void storeLobby(Store* store, StoreManager* storeManager) {
 	if (store == NULL) return;
 
-	printf("\nWelcome to the store lobby! - loc: %s\n", store->location);
 	int choice = 0;
 	do
 	{
+	printf("\nWelcome to the store lobby! - location: %s\n", store->location);
 		choice = storeMenuOptions();
 		switch (choice)
 		{
@@ -90,16 +102,40 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 			printAllDepartments(store);
 			break;
 		}
+		case eADD_PRODUCT: {
+			addProductToDepartment(store);
+			break;
+		}
+		case eMAKE_SALE: {
+			makeSale(store);
+			break;
+		}
+		case ePRINT_INVOICES: {
+			printAllInvoices(store);
+			break;
+		}
+		case eCALCULATE_PROFIT: {
+			printf("\nThe store profit is: %d\n\n", calculateStoreProfit(store));
+			break;
+		}
 		default:
 			break;
 		}
 	} while (choice != eGO_BACK);
 }
 
+void ExitProgram(StoreManager* storeManager) {
+	//saveStoreManagerToTextFile(storeManager, "storeManager.txt");
+	freeStoreManager(storeManager);
+	printf("Goodbye!\n");
+}
+
 int main(int argc, char* argv[], char* env[]) {
 
 	StoreManager storeManager;
 	initStoreManager(&storeManager);
+
+	//loadStoreManagerFromTextFile(&storeManager, "storeManager.txt");
 
 	int choice = 0;
 	do
@@ -120,7 +156,7 @@ int main(int argc, char* argv[], char* env[]) {
 			break;
 		}
 		case eADD_PRODUCT_TO_DEPARTMENT: {
-			addProductToDepartment(&storeManager);
+			addProductToDepartmentType(&storeManager);
 			break;
 		}
 		case eENTER_STORE: {
@@ -131,11 +167,19 @@ int main(int argc, char* argv[], char* env[]) {
 			printAllDepartmentTypesFull(&storeManager);
 			break;
 		}
-
+		case eCALCULATE_TOTAL_PROFIT: {
+			calculateTotalProfit(&storeManager);
+			break;
+		}
+		case eSORT_BY: {
+			sortAllStoresBy(&storeManager);
+			break;
+		}
 		default:
 			break;
 		}
 	} while (choice != eEXIT);
 
+	ExitProgram(&storeManager);
 	return 0;
 }

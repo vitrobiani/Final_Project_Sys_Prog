@@ -1,7 +1,6 @@
 #include "Product.h"
 
 void initProduct(Product* product) {
-	getProductCode(product->code);
 	getProductName(product);
 	getPrice(product);
 	product->quantity = 0;
@@ -12,7 +11,7 @@ void getProductCode(char* code) {
 	int ok = 1;
 	do {
 		ok = 1;
-		printf("Enter airport code  - %d UPPER CASE letters\t", SIZE);
+		printf("Enter Product code  - %d UPPER CASE letters\t", SIZE);
 		myGets(temp, MAX_STR_LEN);
 		if (strlen(temp) != SIZE)
 		{
@@ -60,6 +59,28 @@ void getPrice(Product* product) {
 	product->sellPrice = sellPrice;
 }
 
+void updateQuantity(Product* product) {
+	printf("Enter the quantity of the product: ");
+	int quantity;
+	do {
+		scanf("%d", &quantity);
+		if (quantity < 0) {
+			printf("Quantity must be a positive number\n");
+		}
+	} while (quantity < 0);
+	product->quantity = quantity;
+}
+
+void printForInvoice(const Product* product) {
+	if (product == NULL) {
+		return;
+	}
+	printf("\t# Product Name: %s", product->name);
+	printf("\tProduct Code: %s\n", product->code);
+	printf("\tSell Price: %d", product->sellPrice);
+	printf("\t - Quantity: %d\n", product->quantity);
+}
+
 void printProduct(const Product* product) {
 	if (product == NULL) {
 		return;
@@ -80,3 +101,38 @@ void printProductFull(const Product* product) {
 	printf("\tSell Price: %d\n", product->sellPrice);
 	printf("\t - Quantity: %d\n", product->quantity);
 }
+
+void freeProduct(Product* product) {
+	free(product->name);
+}
+
+void saveProductToTextFile(const Product* product, FILE* file) {
+	printf("Saving product to file\n"); //debug
+	fprintf(file, "%s\n", product->code);
+	fprintf(file, "%zu\n", strlen(product->name));
+	fprintf(file, "%s\n", product->name);
+	fprintf(file, "%d\n", product->buyPrice);
+	fprintf(file, "%d\n", product->sellPrice);
+	fprintf(file, "%d\n", product->quantity);
+}
+
+void loadProductFromTextFile(Product* product, FILE* file) {
+	printf("Loading product from file\n"); //debug
+	fscanf(file, "%s", product->code);
+	printf("code: %s\n", product->code); //debug
+	int length;
+	fscanf(file, "%d", &length);
+	printf("length: %d\n", length); //debug
+	product->name = (char*)malloc(length + 1);
+	if (product->name == NULL) {
+		return;
+	}
+	fscanf(file, "%s", product->name);
+	printf("name: %s\n", product->name); //debug
+	fscanf(file, "%d", &product->buyPrice);
+	printf("buy price: %d\n", product->buyPrice); //debug
+	fscanf(file, "%d", &product->sellPrice);
+	printf("sell price: %d\n", product->sellPrice); //debug
+	fscanf(file, "%d", &product->quantity);
+	printf("quantity: %d\n", product->quantity); //debug
+};

@@ -25,8 +25,18 @@ void getProductName(Product* product);
 
 void getPrice(Product* product);
 
+void updateQuantity(Product* product);
+
+void printForInvoice(const Product* product);
+
 void printProduct(const Product* product);
 
 void printProductFull(const Product* product);
+
+void freeProduct(Product* product);
+
+void saveProductToTextFile(const Product* product, FILE* file);
+
+void loadProductFromTextFile(Product* product, FILE* file);
 
 #endif // !1

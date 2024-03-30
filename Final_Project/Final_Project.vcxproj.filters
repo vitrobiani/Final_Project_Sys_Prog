@@ -39,7 +39,7 @@
     <ClInclude Include="def.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DateTime.h">
+    <ClInclude Include="Date.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Invoice.h">
@@ -71,7 +71,7 @@
     <ClCompile Include="Product.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DateTime.c">
+    <ClCompile Include="Date.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Store.c">

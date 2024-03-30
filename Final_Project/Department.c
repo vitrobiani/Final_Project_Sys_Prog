@@ -32,23 +32,35 @@ int setProductArray(Department* department, DepartmentType* type) {
 	return 1;
 }
 
-void addProduct(Department* department) {
-	Product* product = (Product*)malloc(sizeof(Product));
-	if (department == NULL || product == NULL) {
-		return;
+Product* getProduct(const Department* department, char* productCode) {
+	if (department == NULL) {
+		return NULL;
 	}
+	for (int i = 0; i < department->noOfProducts; i++) {
+		if (strcmp(department->products[i].code, productCode) == 0) {
+			return &department->products[i];
+		}
+	}
+	return NULL;
+}
 
-	initProduct(product);
-	Product* tmp = (Product*)realloc(department->products, (department->noOfProducts + 1) * sizeof(Product));
-	if (!tmp)
+void addProduct(Department* department) {
+	if(department->noOfProducts == 0)
 	{
-		free(product);
+		printf("No products in this department\n");
 		return;
 	}
-	department->products = tmp;
-	department->products[department->noOfProducts] = *product;
-	
-	department->noOfProducts++;
+	printAllProducts(department);
+	printf("Enter the product code: ");
+	char code[MAX_STR_LEN];
+	Product* product = NULL;
+	do{
+		myGets(code, MAX_STR_LEN);
+		product = getProduct(department, code);
+		if(!product)
+			printf("no such product\n");
+	}while(product == NULL);
+	updateQuantity(product);
 }
 
 void removeProduct(Department* department, const char* productCode) {
@@ -66,11 +78,20 @@ void removeProduct(Department* department, const char* productCode) {
 	}
 }
 
+void printAllProducts(const Department* department) {
+	if (department == NULL) {
+		return;
+	}
+	for (int i = 0; i < department->noOfProducts; i++) {
+		printProductFull(&department->products[i]);
+	}
+}
+
 void printDepartment(const Department* department) {
 	if (department == NULL) {
 		return;
 	}
-	printf("Department Name: %s\n", department->type->name);
+	printf("\nDepartment Name: %s \t Department ID: %d\n", department->type->name, department->type->id);
 	for (int i = 0; i < department->noOfProducts; i++) {
 		printProduct(&department->products[i]);
 	}
@@ -80,8 +101,47 @@ void printDepartmentFull(const Department* department) {
 	if (department == NULL) {
 		return;
 	}
-	printf("\nDepartment Name: %s\n", department->type->name);
-	for (int i = 0; i < department->noOfProducts; i++) {
-		printProductFull(&department->products[i]);
+	printf("\nDepartment Name: %s \t Department ID: %d\n", department->type->name, department->type->id);
+	printAllProducts(department);
+}
+
+void freeDepartment(Department* department) {
+	if (department == NULL || department->products == NULL) {
+		return;
 	}
+	for (int i = 0; i < department->noOfProducts; i++) {
+		freeProduct(&department->products[i]);
+	}
+	free(department->products);
+}
+
+void saveDepartmentToTextFile(const Department* department, FILE* file) {
+	printf("saving Department"); //debug
+	fprintf(file, "%d\n", department->type->id);
+	fprintf(file, "%d\n", department->noOfProducts);
+	for (int i = 0; i < department->noOfProducts; i++) {
+		saveProductToTextFile(&department->products[i], file);
+	}
+}
+
+void loadDepartmentFromTextFile(Department* department, FILE* file) {
+	int departmentTypeID;
+	fscanf(file, "%d", &departmentTypeID);
+	DepartmentType* type = (DepartmentType*)malloc(sizeof(DepartmentType));
+	if (!type) {
+		return;
+	}
+	//TODO: check if the department type exists
+	type->id = departmentTypeID;
+	department->type = type;
+	fscanf(file, "%d", &department->noOfProducts);
+	Product* products = (Product*)malloc(sizeof(Product) * department->noOfProducts);
+	if(!products) {
+		free(type);
+		return;
+	}
+	for (int i = 0; i < department->noOfProducts; i++) {
+		loadProductFromTextFile(&products[i], file);
+	}
+	department->products = products;
 }

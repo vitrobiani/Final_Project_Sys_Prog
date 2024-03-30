@@ -1,33 +1,39 @@
 #pragma once
 #ifndef INVOICE
 #define INVOICE
-#include <stdio.h>
-#include <stdlib.h>
 #include "Product.h"
 #include "Customer.h"
 #include "Employee.h"
-#include "DateTime.h"
+#include "Date.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+
+#define SUM(x, y) ((x) = (x) + (y))
 
 typedef struct Invoice {
 	int invoiceID;
 	int storeID;
 	Customer customer;
 	Employee* employee;
-	Product** products;
+	Product* products;
+	int numOfProducts;
 	int saleAmount;
 	Date timeOfSale;
 } Invoice;
 
-int initInvoice(Invoice* invoice);
+void initInvoice(Invoice* invoice, int storeID, Employee* employee, Product* product, int numOfProducts, int id);
 
-int getInvoiceID(const Invoice* invoice);
+int calculateSaleAmount(const Invoice* invoice);
 
-int getStoreID(const Invoice* invoice);
-
-const Customer* getCustomer(const Invoice* invoice);
-
-int getSaleAmount(const Invoice* invoice);
+int calculateProfit(const Invoice* invoice);
 
 void printInvoice(const Invoice* invoice);
+
+void freeInvoice(Invoice* invoice);
+
+void saveInvoiceToTextFile(const Invoice* invoice, FILE* file);
+
+void loadInvoiceFromTextFile(Invoice* invoice, FILE* file);
 
 #endif // !1

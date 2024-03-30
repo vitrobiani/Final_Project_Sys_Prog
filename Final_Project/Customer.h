@@ -12,13 +12,13 @@ typedef struct Customer {
 	int contactNumber;
 } Customer;
 
-void initCustomer(Customer* customer, int CustomerID, const char* CustomerName, int contactNumber);
+void initCustomer(Customer* customer);
 
-int getCustomerID(const Customer* customer);
+void setCustomerID(Customer* customer);
 
-const char* getCustomerName(const Customer* customer);
+void setCustomerName(Customer* customer);
 
-int getContactNumber(const Customer* customer);
+void setContactNumber(Customer* customer);
 
 void printCustomer(const Customer* customer);
 

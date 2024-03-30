@@ -20,7 +20,7 @@ int getEmployeeID() {
 }
 
 void printEmployee(const Employee* employee) {
-	printf("Employee ID: %d\nEmployee Name: %s\n", employee->id, employee->name);
+	printf("Employee ID: %d\t Employee Name: %s\t Position: %s\n", employee->id, employee->name, ePositionStr[employee->position]);
 }
 
 int getSalary() {
@@ -46,4 +46,33 @@ ePosition getPosition() {
 		scanf("%d", &position);
 	} while (position < 1 || position > eNumOfPositions);
 	return position - 1;
+}
+
+void freeEmployee(Employee* employee) {
+	free(employee->name);
+}
+
+void saveEmployeeToTextFile(const Employee* employee, FILE* file) {
+	printf("Saving employee to file...\n");//debug
+	fprintf(file, "%d\n", employee->id);
+	fprintf(file, "%zu\n", strlen(employee->name));
+	fprintf(file, "%s\n", employee->name);
+	fprintf(file, "%d\n", employee->position);
+	fprintf(file, "%d\n", employee->salary);
+}
+
+void loadEmployeeFromTextFile(Employee* employee, FILE* file) {
+	fscanf(file, "%d\n", &employee->id);
+	printf("Employee ID: %d\n", employee->id); //debug
+	int nameLength;
+	fscanf(file, "%d", &nameLength);
+	employee->name = (char*)malloc(nameLength * sizeof(char));
+	if (!employee->name) {
+		return;
+	}
+	fscanf(file, "%s", employee->name);
+	printf("Employee name: %s\n", employee->name); //debug
+	fscanf(file, "%d", &employee->position);
+	fscanf(file, "%d", &employee->salary);
+	//printf("Emplyee name: %s position: %s salary: %d\n", employee->name, ePositionStr[employee->position], employee->salary); //debug
 }
