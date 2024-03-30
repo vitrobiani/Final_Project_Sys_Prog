@@ -13,6 +13,7 @@ typedef struct Customer {
 } Customer;
 
 void initCustomer(Customer* customer, int CustomerID, const char* CustomerName, int contactNumber);
+//hi
 
 int getCustomerID(const Customer* customer);
 
