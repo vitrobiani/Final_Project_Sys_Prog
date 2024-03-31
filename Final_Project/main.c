@@ -132,12 +132,12 @@ void ExitProgram(StoreManager* storeManager) {
 	printf("Goodbye!\n");
 }
 
-int main(int argc, char* argv[], char* env[]) {
+int main() {
 
 	StoreManager storeManager;
-	//initStoreManager(&storeManager);
+	initStoreManager(&storeManager);
 
-	loadStoreManagerFromTextFile(&storeManager, "storeManager.txt");
+	//loadStoreManagerFromTextFile(&storeManager, "storeManager.txt");
 
 	int choice = 0;
 	do
