@@ -25,7 +25,6 @@ void printEmployee(const Employee* employee) {
 
 int getSalary() {
 	printf("Enter the salary: ");
-	//TODO: validate input
 	int salary;
 	scanf("%d", &salary);
 	return salary;
@@ -62,17 +61,22 @@ void saveEmployeeToTextFile(const Employee* employee, FILE* file) {
 }
 
 void loadEmployeeFromTextFile(Employee* employee, FILE* file) {
-	fscanf(file, "%d\n", &employee->id);
+	fscanf(file, "%d", &employee->id);
+	fgetc(file);
 	printf("Employee ID: %d\n", employee->id); //debug
 	int nameLength;
 	fscanf(file, "%d", &nameLength);
+	fgetc(file);
 	employee->name = (char*)malloc(nameLength * sizeof(char));
 	if (!employee->name) {
 		return;
 	}
-	fscanf(file, "%s", employee->name);
+	fscanf(file, "%[^\n]", employee->name);
+	fgetc(file);
 	printf("Employee name: %s\n", employee->name); //debug
 	fscanf(file, "%d", &employee->position);
+	fgetc(file);
 	fscanf(file, "%d", &employee->salary);
+	fgetc(file);
 	//printf("Emplyee name: %s position: %s salary: %d\n", employee->name, ePositionStr[employee->position], employee->salary); //debug
 }

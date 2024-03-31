@@ -4,9 +4,9 @@
 #include "Product.h"
 #include "GeneralFunctions.h"
 #include "DepartmentType.h"
+#include "GeneralFunctions.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "GeneralFunctions.h"
 
 typedef struct Department {
 	DepartmentType* type;

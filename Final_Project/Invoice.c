@@ -76,6 +76,7 @@ void saveInvoiceToTextFile(const Invoice* invoice, FILE* file) {
 
 	fprintf(file, "%d\n", invoice->customer.id);
 	fprintf(file, "%zu\n", strlen(invoice->customer.name));
+	fprintf(file, "%s\n", invoice->customer.name);
 	fprintf(file, "%d\n", invoice->customer.contactNumber);
 
 	fprintf(file, "%d\n", invoice->timeOfSale.day);
@@ -84,19 +85,22 @@ void saveInvoiceToTextFile(const Invoice* invoice, FILE* file) {
 }
 
 void loadInvoiceFromTextFile(Invoice* invoice, FILE* file) {
-	if (!invoice) {
-		return;
-	}
-
+	printf("Loading invoice from text file\n"); //debug
 	fscanf(file, "%d", &invoice->invoiceID);
+	fgetc(file);
 	fscanf(file, "%d", &invoice->storeID);
+	fgetc(file);
+	printf("invoice id: %d, store id: %d\n", invoice->invoiceID, invoice->storeID); //debug
 	//TODO: load employee
 	Employee* emp = (Employee*)malloc(sizeof(Employee));
 	if (!emp) {
+		printf("Memory allocation failed\n");
 		return;
 	}
 	fscanf(file, "%d", &emp->id);
+	fgetc(file);
 	fscanf(file, "%d", &invoice->numOfProducts);
+	fgetc(file);
 	Product* products = (Product*)malloc(sizeof(Product) * invoice->numOfProducts);
 	if (!products) {
 		free(emp);
@@ -106,22 +110,32 @@ void loadInvoiceFromTextFile(Invoice* invoice, FILE* file) {
 	{
 		loadProductFromTextFile(&products[i], file);
 	}
+	invoice->products = products;
 	fscanf(file, "%d", &invoice->saleAmount);
-
+	fgetc(file);
 	fscanf(file, "%d", &invoice->customer.id);
+	fgetc(file);
 	int nameLength;
 	fscanf(file, "%d", &nameLength);
+	fgetc(file);
 	invoice->customer.name = (char*)malloc(nameLength + 1);
 	if (!invoice->customer.name) {
 		free(emp);
 		free(products);
 		return;
 	}
-	fscanf(file, "%s", invoice->customer.name);
+	fscanf(file, "%[^\n]", invoice->customer.name);
+	fgetc(file);
 	fscanf(file, "%d", &invoice->customer.contactNumber);
+	fgetc(file);
+	invoice->employee = emp;
+	printf("id: %d, name: %s, contact number: %d\n", invoice->customer.id, invoice->customer.name, invoice->customer.contactNumber); //debug
 
 	fscanf(file, "%d", &invoice->timeOfSale.day);
+	fgetc(file);
 	fscanf(file, "%d", &invoice->timeOfSale.month);
+	fgetc(file);
 	fscanf(file, "%d", &invoice->timeOfSale.year);
-
+	fgetc(file);
+	printf("day: %d, month: %d, year: %d\n", invoice->timeOfSale.day, invoice->timeOfSale.month, invoice->timeOfSale.year); //debug
 }

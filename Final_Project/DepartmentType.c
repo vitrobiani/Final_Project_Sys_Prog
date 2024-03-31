@@ -85,15 +85,19 @@ void saveDepartmentTypeToTextFile(const DepartmentType* departmentType, FILE* fi
 void loadDepartmentTypeFromTextFile(DepartmentType* departmentType, FILE* file) {
 	printf("Loading department type from file\n"); //debug
 	fscanf(file, "%d", &departmentType->id);
+	fgetc(file);
 	int length;
 	fscanf(file, "%d", &length);
+	fgetc(file);
 	departmentType->name = (char*)malloc(length * sizeof(char));
 	if (departmentType->name == NULL) {
 		return;
 	}
-	fscanf(file, "%s", departmentType->name);
+	fscanf(file, "%[^\n]", departmentType->name);
+	fgetc(file);
 	printf("name: %s\n", departmentType->name); //debug
 	fscanf(file, "%d", &departmentType->noOfProducts);
+	fgetc(file);
 	departmentType->products = (Product*)malloc(departmentType->noOfProducts * sizeof(Product));
 	if (departmentType->products == NULL) {
 		return;

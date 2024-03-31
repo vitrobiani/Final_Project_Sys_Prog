@@ -27,6 +27,7 @@ int initStore(Store* store, int id) {
 	store->noOfEmployees = 0;
 	store->departments = NULL;
 	store->noOfDepartments = 0;
+	store->noOfInvoices = 0;
 
 	if(L_init(&store->invoiceList)) {
 		return 0;
@@ -312,6 +313,7 @@ void printStore(const Store* store) {
 	printf("departments in the store: \n");
 	for (int i = 0; i < store->noOfDepartments; i++) {
 		printf("\t%s\n", store->departments[i].type->name);
+
 	}
 }
 
@@ -345,18 +347,16 @@ void saveStoreToTextFile(const Store* store, FILE* file) {
 		saveInvoiceToTextFile((Invoice*)tmp->key, file);
 		tmp = tmp->next;
 	}
-	
-	fclose(file);
 }
 
 void loadStoreFromTextFile(Store* store, FILE* file) {
-	if (store == NULL) {
-		return;
-	}
 	fscanf(file, "%d", &store->storeID);
+	fgetc(file);
 	fscanf(file, "%d", &store->rent);
+	fgetc(file);
 	fscanf(file, "%d", &store->noOfEmployees);
-	printf("store id: %d,  rent: %d, no of employees: %d\n", store->storeID, store->rent, store->noOfEmployees); //debug")
+	fgetc(file);
+	printf("store id: %d,  rent: %d, no of employees: %d\n", store->storeID, store->rent, store->noOfEmployees); //debug
 	store->employees = (Employee*)malloc(store->noOfEmployees * sizeof(Employee));
 	if (!store->employees) {
 		printf("error in allocating memory for Employees\n");
@@ -368,14 +368,17 @@ void loadStoreFromTextFile(Store* store, FILE* file) {
 
 	int length;
 	fscanf(file, "%d", &length);
+	fgetc(file);
 	store->location = (char*)malloc(length * sizeof(char));
 	if (!store->location) {
 		return;
 	}
 	fscanf(file, "%s", store->location);
+	fgetc(file);
 	printf("location: %s\n", store->location); //debug
 
 	fscanf(file, "%d", &store->noOfDepartments);
+	fgetc(file);
 	store->departments = (Department*)malloc(store->noOfDepartments * sizeof(Department));
 	if (!store->departments) {
 		return;
@@ -385,7 +388,9 @@ void loadStoreFromTextFile(Store* store, FILE* file) {
 	}
 	int noOfInvoices;
 	fscanf(file, "%d", &noOfInvoices);
-
+	fgetc(file);
+	store->noOfInvoices = noOfInvoices;
+	printf("no of invoices: %d\n", noOfInvoices); //debug
 	for (int i = 0; i < noOfInvoices; i++) {
 		Invoice* invoice = (Invoice*)malloc(sizeof(Invoice));
 		if (!invoice) {

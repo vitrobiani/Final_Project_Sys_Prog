@@ -61,4 +61,6 @@ void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fi
 
 void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName);
 
+void fixLoadedStoreManager(StoreManager* storeManager);
+
 #endif // !1

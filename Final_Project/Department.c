@@ -127,6 +127,7 @@ void saveDepartmentToTextFile(const Department* department, FILE* file) {
 void loadDepartmentFromTextFile(Department* department, FILE* file) {
 	int departmentTypeID;
 	fscanf(file, "%d", &departmentTypeID);
+	fgetc(file);
 	DepartmentType* type = (DepartmentType*)malloc(sizeof(DepartmentType));
 	if (!type) {
 		return;
@@ -135,6 +136,7 @@ void loadDepartmentFromTextFile(Department* department, FILE* file) {
 	type->id = departmentTypeID;
 	department->type = type;
 	fscanf(file, "%d", &department->noOfProducts);
+	fgetc(file);
 	Product* products = (Product*)malloc(sizeof(Product) * department->noOfProducts);
 	if(!products) {
 		free(type);

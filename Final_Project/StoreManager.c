@@ -326,6 +326,7 @@ void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileNa
 	}
 	int noOfDepartmentTypes;
 	fscanf(file, "%d", &noOfDepartmentTypes);
+	fgetc(file);
 	storeManager->noOfDepartmentTypes = noOfDepartmentTypes;
 	DepartmentType* types = (DepartmentType*)malloc(noOfDepartmentTypes * sizeof(DepartmentType));
 	if (!types) {
@@ -335,8 +336,10 @@ void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileNa
 	for (int i = 0; i < noOfDepartmentTypes; i++) {
 		loadDepartmentTypeFromTextFile(&types[i], file);
 	}
+	storeManager->departments = types;
 	int noOfStores;
 	fscanf(file, "%d", &noOfStores);
+	fgetc(file);
 	storeManager->noOfStores = noOfStores;
 	printf("no of stores: %d\n", noOfStores); //debug
 	Store** stores = (Store**)malloc(noOfStores * sizeof(Store*));
@@ -346,6 +349,7 @@ void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileNa
 	}
 	for (int i = 0; i < noOfStores; i++) {
 		Store* store = (Store*)malloc(sizeof(Store));
+		initStore(store, 0);
 		if (!store) {
 			printf("error in allocating memory\n");
 			return;
@@ -353,5 +357,35 @@ void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileNa
 		loadStoreFromTextFile(store, file);
 		stores[i] = store;
 	}
+	storeManager->stores = stores;
 	fclose(file);
+	fixLoadedStoreManager(storeManager);
+}
+
+void fixLoadedStoreManager(StoreManager* storeManager) {
+	for (int i = 0; i < storeManager->noOfStores; i++) {
+		for (int j = 0; j < storeManager->stores[i]->noOfDepartments; j++) {
+			DepartmentType* type = getDepartmentType(storeManager, storeManager->stores[i]->departments[j].type->id);
+			printDepartmentType(type); //debug
+			if (!type) {
+				printf("Department type not found!\n");
+				return;
+			}
+			free(storeManager->stores[i]->departments[j].type);
+			storeManager->stores[i]->departments[j].type = type;
+		}
+		NODE* invoice = &storeManager->stores[i]->invoiceList.head;
+		for (int j = 0; j < storeManager->stores[i]->noOfInvoices; j++)
+		{
+			invoice = invoice->next;
+			Invoice* inv = (Invoice*)invoice;
+			Employee* emp = getEmployee(storeManager->stores[i], inv->employee->id);
+			if (!emp) {
+				printf("Employee not found!\n");
+				return;
+			}
+			free(inv->employee);
+			inv->employee = emp;
+		}
+	}
 }

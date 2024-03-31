@@ -135,9 +135,9 @@ void ExitProgram(StoreManager* storeManager) {
 int main(int argc, char* argv[], char* env[]) {
 
 	StoreManager storeManager;
-	initStoreManager(&storeManager);
+	//initStoreManager(&storeManager);
 
-	//loadStoreManagerFromTextFile(&storeManager, "storeManager.txt");
+	loadStoreManagerFromTextFile(&storeManager, "storeManager.txt");
 
 	int choice = 0;
 	do
