@@ -310,6 +310,7 @@ void freeStoreManager(StoreManager* storeManager) {
 	}
 	if (storeManager->stores != NULL) {
 		for (int i = 0; i < storeManager->noOfStores; i++) {
+			printf("freeing store %d\n", i); //debug
 			freeStore(storeManager->stores[i]);
 		}
 		free(storeManager->stores);

@@ -47,6 +47,27 @@ char* myGets(char* buffer, int size)
 	return NULL;
 }
 
+char* myGetsFile(char* buffer, int size, FILE* source)
+{
+	char* ok;
+	if (buffer != NULL && size > 0)
+	{
+		do {
+			ok = fgets(buffer, size, source);
+		} while (ok && ((strlen(buffer) <= 1) && (isspace(buffer[0]))));
+		if (ok)
+		{
+			char* back = buffer + strlen(buffer);
+			//trim end spaces
+			while ((buffer < back) && (isspace(*--back)));
+			*(back + 1) = '\0';
+			return buffer;
+		}
+		buffer[0] = '\0';
+	}
+	return NULL;
+}
+
 char** splitCharsToWords(char* str, int* pCount, int* pTotalLength)
 {
 	char temp[255];

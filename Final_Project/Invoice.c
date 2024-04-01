@@ -72,6 +72,7 @@ void saveInvoiceToTextFile(const Invoice* invoice, FILE* file) {
 	fprintf(file, "%d\n", invoice->numOfProducts);
 	for (int i = 0; i < invoice->numOfProducts; i++)
 	{
+		printf("Saving product %d to text file\n", i); //debug
 		saveProductToTextFile(&invoice->products[i], file);
 	}
 	fprintf(file, "%d\n", invoice->saleAmount);
