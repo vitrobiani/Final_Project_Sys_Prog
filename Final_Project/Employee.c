@@ -54,7 +54,6 @@ void freeEmployee(Employee* employee) {
 void saveEmployeeToTextFile(const Employee* employee, FILE* file) {
 	printf("Saving employee to file...\n");//debug
 	fprintf(file, "%d\n", employee->id);
-	fprintf(file, "%zu\n", strlen(employee->name));
 	fprintf(file, "%s\n", employee->name);
 	fprintf(file, "%d\n", employee->position);
 	fprintf(file, "%d\n", employee->salary);
@@ -64,15 +63,11 @@ void loadEmployeeFromTextFile(Employee* employee, FILE* file) {
 	fscanf(file, "%d", &employee->id);
 	fgetc(file);
 	printf("Employee ID: %d\n", employee->id); //debug
-	int nameLength;
-	fscanf(file, "%d", &nameLength);
-	fgetc(file);
-	employee->name = (char*)malloc(nameLength * sizeof(char));
-	if (!employee->name) {
-		return;
-	}
-	fscanf(file, "%[^\n]", employee->name);
-	fgetc(file);
+		
+	char tmp[MAX_STR_LEN];
+	myGetsFile(tmp, MAX_STR_LEN, file);
+	employee->name = getDynStr(tmp);
+	
 	printf("Employee name: %s\n", employee->name); //debug
 	fscanf(file, "%d", &employee->position);
 	fgetc(file);

@@ -416,14 +416,11 @@ void loadStoreFromTextFile(Store* store, FILE* file) {
 	int length;
 	fscanf(file, "%d", &length);
 	fgetc(file);
-	//store->location = (char*)malloc(length * sizeof(char));
-	//if (!store->location) {
-	//	return;
-	//}
+
 	char tmp[MAX_STR_LEN];
 	myGetsFile(tmp, MAX_STR_LEN, file);
 	store->location = getDynStr(tmp);
-	fgetc(file);
+
 	printf("location: %s\n", store->location); //debug
 	fscanf(file, "%d", &store->rent);
 	fgetc(file);
