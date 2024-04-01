@@ -133,6 +133,7 @@
     <ClInclude Include="def.h" />
     <ClInclude Include="Department.h" />
     <ClInclude Include="Employee.h" />
+    <ClInclude Include="FileHelper.h" />
     <ClInclude Include="GeneralFunctions.h" />
     <ClInclude Include="Invoice.h" />
     <ClInclude Include="list.h" />
@@ -145,6 +146,7 @@
     <ClCompile Include="Date.c" />
     <ClCompile Include="Department.c" />
     <ClCompile Include="Employee.c" />
+    <ClCompile Include="FileHelper.c" />
     <ClCompile Include="GeneralFunctions.c" />
     <ClCompile Include="Invoice.c" />
     <ClCompile Include="list.c" />

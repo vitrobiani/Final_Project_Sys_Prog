@@ -56,4 +56,6 @@ void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fi
 
 void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName);
 
+int saveStoreManagerToBinaryFile(const StoreManager* storeManager, const char* fileName);
+
 #endif // !1
