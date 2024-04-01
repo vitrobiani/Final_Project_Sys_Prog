@@ -141,4 +141,19 @@ void loadProductFromTextFile(Product* product, FILE* file) {
 	fscanf(file, "%d", &product->quantity);
 	fgetc(file);
 	printf("quantity: %d\n", product->quantity); //debug
-};
+}
+int saveProductToBinaryFile(const Product* product, FILE* file)
+{
+	if(!writeCharsToFile(product->code, SIZE, file, "Error writing product code to file\n"))
+		return 0;
+	if(!writeStringToFile(product->name, file, "Error writing product name to file\n"))
+		return 0;
+	if (!writeIntToFile(product->sellPrice, file, "Error writing product buy price to file\n"))
+		return 0;
+	if (!writeIntToFile(product->buyPrice, file, "Error writing product sell price to file\n"))
+		return 0;
+	if (!writeIntToFile(product->quantity, file, "Error writing product quantity to file\n"))
+		return 0;
+	return 1;
+}
+;

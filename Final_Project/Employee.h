@@ -3,6 +3,7 @@
 #ifndef EMPLOYEE
 #define EMPLOYEE
 #include "GeneralFunctions.h"
+#include "FileHelper.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,5 +36,7 @@ void freeEmployee(Employee* employee);
 void saveEmployeeToTextFile(const Employee* employee, FILE* file);
 
 void loadEmployeeFromTextFile(Employee* employee, FILE* file);
+
+int saveEmployeeToBinaryFile(const Employee* employee, FILE* file);
 
 #endif // !EMPLOYEE

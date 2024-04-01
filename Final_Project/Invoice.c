@@ -143,3 +143,26 @@ void loadInvoiceFromTextFile(Invoice* invoice, FILE* file) {
 	fgetc(file);
 	printf("day: %d, month: %d, year: %d\n", invoice->timeOfSale.day, invoice->timeOfSale.month, invoice->timeOfSale.year); //debug
 }
+
+int saveInvoiceToBinaryFile(const Invoice* invoice, FILE* file)
+{
+	if (!writeIntToFile(invoice->invoiceID, file, "Error writing invoice ID to file\n"))
+		return 0;
+	if (!writeIntToFile(invoice->storeID, file, "Error writing store ID to file\n"))
+		return 0;
+	if(!saveCustomerToBinaryFile(&invoice->customer, file))
+		return 0;
+	if (!writeIntToFile(invoice->employee->id, file, "Error writing employee ID to file\n"))
+		return 0;
+	if (!writeIntToFile(invoice->numOfProducts, file, "Error writing number of products to file\n"))
+		return 0;
+	for (int i = 0; i < invoice->numOfProducts; i++)
+	{
+		if (!saveProductToBinaryFile(&invoice->products[i], file))
+			return 0;
+	}
+	if (!writeIntToFile(invoice->saleAmount, file, "Error writing sale amount to file\n"))
+		return 0;
+
+	return 0;
+}

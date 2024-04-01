@@ -3,6 +3,7 @@
 #ifndef CUSTOMER
 #define CUSTOMER
 #include "GeneralFunctions.h"
+#include "FileHelper.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -22,6 +23,8 @@ void setCustomerName(Customer* customer);
 void setContactNumber(Customer* customer);
 
 void printCustomer(const Customer* customer);
+
+int saveCustomerToBinaryFile(const Customer* customer, FILE* file);
 
 
 #endif // !1

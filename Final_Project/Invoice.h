@@ -5,6 +5,7 @@
 #include "Customer.h"
 #include "Employee.h"
 #include "Date.h"
+#include "FileHelper.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -35,5 +36,7 @@ void freeInvoice(Invoice* invoice);
 void saveInvoiceToTextFile(const Invoice* invoice, FILE* file);
 
 void loadInvoiceFromTextFile(Invoice* invoice, FILE* file);
+
+int saveInvoiceToBinaryFile(const Invoice* invoice, FILE* file);
 
 #endif // !1

@@ -3,6 +3,7 @@
 #ifndef PRODUCT
 #define PRODUCT
 #include "GeneralFunctions.h"
+#include "FileHelper.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,5 +39,7 @@ void freeProduct(Product* product);
 void saveProductToTextFile(const Product* product, FILE* file);
 
 void loadProductFromTextFile(Product* product, FILE* file);
+
+int saveProductToBinaryFile(const Product* product, FILE* file);
 
 #endif // !1

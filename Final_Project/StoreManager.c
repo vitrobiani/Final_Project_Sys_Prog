@@ -78,8 +78,8 @@ void addStore(StoreManager* storeManager) {
 	updateAllStoreDepartments(storeManager);
 }
 
-void addProductToMainStore(StoreManager storeManager, int departmentID ,Product* product) {
-	Department* department = &storeManager.stores[0]->departments[departmentID];
+void addProductToMainStore(StoreManager* storeManager, int departmentID ,Product* product) {
+	Department* department = &storeManager->stores[0]->departments[departmentID];
 	Product* tmp = (Product*)realloc(department->products, sizeof(Product) * (department->noOfProducts + 1));
 	if (!tmp) {
 		printf("error in reallocating memory\n");
@@ -114,7 +114,7 @@ void addProductToDepartmentType(StoreManager* storeManager) {
 	}while(checkIfProductCodeExists(storeManager, product->code));
 	initProduct(product);
 	printProduct(product);
-	addProductToMainStore(*storeManager, departmentTypeID, product);
+	addProductToMainStore(storeManager, departmentTypeID, product);
 	updateAllStoreDepartments(storeManager);
 }
 
@@ -264,6 +264,8 @@ void findStore(const StoreManager* storeManager)
 		break;
 	}
 	case eProfit: {
+		printf("Enter store's profit:\n");
+		scanf("%d", &store.profit);
 		compare = compareStoreByProfit;
 		break;
 	}
@@ -362,5 +364,24 @@ void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileNa
 	}
 	storeManager->stores = stores;
 	fclose(file);
+}
+
+int saveStoreManagerToBinaryFile(const StoreManager* storeManager, const char* fileName) {
+	FILE* file = fopen(fileName, "wb");
+	if (!file) {
+		printf("error in opening file\n");
+		return 0;
+	}
+	if (fwrite(&storeManager->noOfStores, sizeof(int), 1, file) != 1) {
+		printf("error in writing to file\n");
+		return 0;
+	}
+	for (int i = 0; i < storeManager->noOfStores; i++) {
+		if (!saveStoreToBinaryFile(storeManager->stores[i], file)) {
+			return 0;
+		}
+	}
+	fclose(file);
+	return 1;
 }
 

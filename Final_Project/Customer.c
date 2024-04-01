@@ -46,3 +46,14 @@ void setContactNumber(Customer* customer) {
 void printCustomer(const Customer* customer) {
 	printf("Customer ID: %d\nCustomer Name: %s\nContact Number: %d\n", customer->id, customer->name, customer->contactNumber);
 }
+
+int saveCustomerToBinaryFile(const Customer* customer, FILE* file)
+{
+	if (!writeIntToFile(customer->id, file, "Error writing customer ID to file\n"))
+		return 0;
+	if (!writeStringToFile(customer->name, file, "Error writing customer name to file\n"))
+		return 0;
+	if (!writeIntToFile(customer->contactNumber, file, "Error writing customer contact number to file\n"))
+		return 0;
+	return 1;
+}
