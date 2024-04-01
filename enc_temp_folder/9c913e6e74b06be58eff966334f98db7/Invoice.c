@@ -1,10 +1,11 @@
 #include "Invoice.h"
 
-void initInvoice(Invoice* invoice, int storeID, Employee* employee, Product* product, int numOfProducts, int id) {
+Invoice* initInvoice(Invoice* invoice, int storeID, Employee* employee, Product* product, int numOfProducts, int id) {
 	if (invoice == NULL) {
 		return;
 	}
-
+	invoice = malloc(sizeof(Invoice));
+	if (!invoice) return;
 	invoice->invoiceID = id;
 	invoice->storeID = storeID;
 	invoice->employee = employee;
@@ -12,6 +13,7 @@ void initInvoice(Invoice* invoice, int storeID, Employee* employee, Product* pro
 	invoice->numOfProducts = numOfProducts;
 	invoice->saleAmount = calculateSaleAmount(invoice);
 	getCorrectDate(&invoice->timeOfSale);
+	return invoice;
 }
 
 int calculateSaleAmount(const Invoice* invoice) {

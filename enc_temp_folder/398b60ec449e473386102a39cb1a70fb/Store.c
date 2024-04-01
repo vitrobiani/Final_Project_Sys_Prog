@@ -219,7 +219,9 @@ void makeSale(Store* store) {
 	}
 	Employee* employee = getEmployeeTUI(store);
 
-	Invoice* invoice = (Invoice*)malloc(sizeof(Invoice));
+	//Invoice* invoice = (Invoice*)malloc(sizeof(Invoice));
+	Invoice* invoice = NULL;
+	invoice = initInvoice(invoice, store->storeID, employee, products, numOfProducts, generateInvoiceID(store));
 	if(!invoice) {
 		free(products);
 		return;

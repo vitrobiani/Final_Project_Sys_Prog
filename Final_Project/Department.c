@@ -106,7 +106,6 @@ void freeDepartment(Department* department) {
 }
 
 void saveDepartmentToTextFile(const Department* department, FILE* file) {
-	printf("saving Department"); //debug
 	fprintf(file, "%d\n", department->type);
 	fprintf(file, "%d\n", department->noOfProducts);
 	for (int i = 0; i < department->noOfProducts; i++) {

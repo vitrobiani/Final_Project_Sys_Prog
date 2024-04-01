@@ -108,9 +108,7 @@ void freeProduct(Product* product) {
 }
 
 void saveProductToTextFile(const Product* product, FILE* file) {
-	printf("Saving product to file\n"); //debug
 	fprintf(file, "%s\n", product->code);
-	fprintf(file, "%zu\n", strlen(product->name));
 	fprintf(file, "%s\n", product->name);
 	fprintf(file, "%d\n", product->buyPrice);
 	fprintf(file, "%d\n", product->sellPrice);
@@ -118,31 +116,21 @@ void saveProductToTextFile(const Product* product, FILE* file) {
 }
 
 void loadProductFromTextFile(Product* product, FILE* file) {
-	printf("Loading product from file\n"); //debug
 	fscanf(file, "%s", product->code);
 	fgetc(file);
-	printf("code: %s\n", product->code); //debug
-	int length;
-	fscanf(file, "%d", &length);
-	fgetc(file);
-	printf("length: %d\n", length); //debug
-	product->name = (char*)malloc(length + 1);
-	if (product->name == NULL) {
-		return;
-	}
-	fscanf(file, "%[^\n]", product->name);
-	fgetc(file);
-	printf("name: %s\n", product->name); //debug
+	
+	char tmp[MAX_STR_LEN];
+	myGetsFile(tmp, MAX_STR_LEN, file);
+	product->name = getDynStr(tmp);
+	
 	fscanf(file, "%d", &product->buyPrice);
 	fgetc(file);
-	printf("buy price: %d\n", product->buyPrice); //debug
 	fscanf(file, "%d", &product->sellPrice);
 	fgetc(file);
-	printf("sell price: %d\n", product->sellPrice); //debug
 	fscanf(file, "%d", &product->quantity);
 	fgetc(file);
-	printf("quantity: %d\n", product->quantity); //debug
 }
+
 int saveProductToBinaryFile(const Product* product, FILE* file)
 {
 	if(!writeCharsToFile(product->code, SIZE, file, "Error writing product code to file\n"))

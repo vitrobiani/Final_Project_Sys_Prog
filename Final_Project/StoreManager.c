@@ -312,7 +312,6 @@ void freeStoreManager(StoreManager* storeManager) {
 	}
 	if (storeManager->stores != NULL) {
 		for (int i = 0; i < storeManager->noOfStores; i++) {
-			printf("freeing store %d\n", i); //debug
 			freeStore(storeManager->stores[i]);
 			free(storeManager->stores[i]);
 		}
@@ -329,7 +328,6 @@ void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fi
 		printf("error in opening file\n");
 		return;
 	}
-	printf("file opened"); //debug
 	fprintf(file, "%d\n", storeManager->noOfStores);
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		saveStoreToTextFile(storeManager->stores[i], file);
@@ -347,7 +345,6 @@ void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileNa
 	fscanf(file, "%d", &noOfStores);
 	fgetc(file);
 	storeManager->noOfStores = noOfStores;
-	printf("no of stores: %d\n", noOfStores); //debug
 	Store** stores = (Store**)malloc(noOfStores * sizeof(Store*));
 	if (!stores) {
 		printf("error in allocating memory\n");
