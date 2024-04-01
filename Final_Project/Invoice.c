@@ -58,6 +58,14 @@ void printInvoice(const Invoice* invoice) {
 }
 
 void freeInvoice(Invoice* invoice) {
+	if (invoice == NULL) {
+		return;
+	}
+	for (int i = 0; i < invoice->numOfProducts; i++)
+	{
+		freeProduct(&invoice->products[i]);
+	}
+	free(invoice->customer.name);
 	free(invoice->products);
 	free(invoice);
 }

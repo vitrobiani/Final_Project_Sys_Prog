@@ -38,7 +38,7 @@ void printDepartment(const Department* department);
 
 void printDepartmentFull(const Department* department);
 
-//void freeDepartment(Department* department);
+void freeDepartment(Department* department);
 
 void saveDepartmentToTextFile(const Department* department, FILE* file);
 

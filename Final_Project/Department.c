@@ -95,15 +95,15 @@ void printDepartmentFull(const Department* department) {
 	printAllProducts(department);
 }
 
-//void freeDepartment(Department* department) {
-//	if (department == NULL || department->products == NULL) {
-//		return;
-//	}
-//	for (int i = 0; i < department->noOfProducts; i++) {
-//		freeProduct(&department->products[i]);
-//	}
-//	free(department->products);
-//}
+void freeDepartment(Department* department) {
+	if (department == NULL || department->products == NULL) {
+		return;
+	}
+	for (int i = 0; i < department->noOfProducts; i++) {
+		freeProduct(&department->products[i]);
+	}
+	free(department->products);
+}
 
 void saveDepartmentToTextFile(const Department* department, FILE* file) {
 	printf("saving Department"); //debug

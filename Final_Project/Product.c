@@ -104,6 +104,7 @@ void printProductFull(const Product* product) {
 
 void freeProduct(Product* product) {
 	free(product->name);
+	product->name = NULL;
 }
 
 void saveProductToTextFile(const Product* product, FILE* file) {

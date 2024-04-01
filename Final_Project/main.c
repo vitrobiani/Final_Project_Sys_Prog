@@ -125,6 +125,9 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 void ExitProgram(StoreManager* storeManager) {
 	saveStoreManagerToTextFile(storeManager, "storeManager.txt");
 	freeStoreManager(storeManager);
+	printf("before dump\n");
+	int check =_CrtDumpMemoryLeaks();
+	printf("%s\n", (check) ? "there are memory leaks" : "no memory leaks");
 	printf("Goodbye!\n");
 }
 
@@ -177,8 +180,5 @@ int main() {
 	} while (choice != eEXIT);
 
 	ExitProgram(&storeManager);
-	printf("before dump\n");
-	int check =_CrtDumpMemoryLeaks();
-	printf("%d\n", check);
 	return 0;
 }

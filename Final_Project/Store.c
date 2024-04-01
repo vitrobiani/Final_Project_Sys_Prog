@@ -381,6 +381,8 @@ void printStore(const Store* store) {
 
 void freeStore(Store* store) {
 	generalArrayFunction(store->employees, store->noOfEmployees, sizeof(Employee), freeEmployee);
+	free(store->employees);
+	generalArrayFunction(store->departments, store->noOfDepartments, sizeof(Department), freeDepartment);
 	L_free(&store->invoiceList, freeInvoice);
 	free(store->location);
 }
