@@ -177,5 +177,8 @@ int main() {
 	} while (choice != eEXIT);
 
 	ExitProgram(&storeManager);
+	printf("before dump\n");
+	int check =_CrtDumpMemoryLeaks();
+	printf("%d\n", check);
 	return 0;
 }
