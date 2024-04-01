@@ -130,3 +130,33 @@ void loadDepartmentFromTextFile(Department* department, FILE* file) {
 	}
 	department->products = products;
 }
+
+int createProductArr(Department* department)
+{
+	department->products = (Product*)malloc(sizeof(Product) * department->noOfProducts);
+	if (!department->products)
+	{
+		puts("Error allocating memory for products");
+		return 0;
+	}
+
+	return 1;
+}
+
+int saveDepartmentToBinaryFile(const Department* department, FILE* file)
+{
+	if(fwrite(&department->type, sizeof(eDepartmentType), 1, file) != 1)
+	{
+		puts("Error writing department type");
+		return 0;
+	}
+	if (!writeIntToFile(department->noOfProducts, file, "Error writing number of products to file\n"))
+		return 0;
+	for (int i = 0; i < department->noOfProducts; i++)
+	{
+		if (!saveProductToBinaryFile(&department->products[i], file))
+			return 0;
+	}
+
+	return 0;
+}

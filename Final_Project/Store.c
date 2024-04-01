@@ -17,6 +17,7 @@ int createStore(Store* store, int id) {
 		}
 	} while (rent <= 0);
 	store->rent = rent;
+	calculateStoreProfit(store);
 
 	return 1;
 }
@@ -48,7 +49,7 @@ void addEmployee(Store* store) {
 	if (store == NULL) {
 		return;
 	}
-	Employee* emp = malloc(sizeof(Employee));
+	Employee* emp = (Employee*)malloc(sizeof(Employee));
 	if (emp == NULL) {
 		return;
 	}
@@ -61,6 +62,7 @@ void addEmployee(Store* store) {
 	store->employees = tmp;
 	store->employees[store->noOfEmployees] = *emp;
 	store->noOfEmployees++;
+	calculateStoreProfit(store);
 }
 
 Department* getDepartment(Store* store, int departmentID) {
@@ -299,7 +301,7 @@ int compareStoreByProfit(const void* store1, const void* store2) {
 	}
 	const Store* store1_ = *(const Store**)store1;
 	const Store* store2_ = *(const Store**)store2;
-	return calculateStoreProfit(store2_) - calculateStoreProfit(store1_);
+	return store2_->profit - store1_->profit;
 }
 
 int compareStoreByRent(const void* store1, const void* store2) {
@@ -324,14 +326,14 @@ void printStoreProfit(const Store* store) {
 	if (store == NULL) {
 		return;
 	}
-	printf("Store profit for the year %d: %d\n", YEAR, calculateStoreProfit(store));
+	printf("Store profit for the year %d: %d\n", YEAR, store->profit);
 }
 
 void printStoreSpendings(const Store* store) {
 	if (store == NULL) {
 		return;
 	}
-	printf("Store spendings for the year %d: %d\n", YEAR, calculateStoreSpendings(store));
+	printf("Store spendings for the year %d: %d\n", YEAR, store->profit);
 }
 
 void printAllEmployees(const Store* store) {
@@ -375,7 +377,7 @@ void printStore(const Store* store) {
 	}
 	printf("\n# Store ID: %d\t", store->storeID);
 	printf("Location: %s\n", store->location);
-	printf("\tRent: %d\t Profit: %d\n", store->rent, calculateStoreProfit(store));
+	printf("\tRent: %d\t Profit: %d\n", store->rent, store->profit);
 	printf("\tNumber of employees: %d\n", store->noOfEmployees);
 }
 
@@ -462,4 +464,37 @@ void loadStoreFromTextFile(Store* store, FILE* file) {
 		invoice->employee = employee;
 		L_insert(&store->invoiceList.head, invoice);
 	}
+}
+
+int saveStoreToBinaryFile(const Store* store, FILE* file) {
+	if (!writeIntToFile(store->storeID, file, "Error writing store ID to file\n"))
+		return 0;
+	if (!writeStringToFile(store->location, file, "Error writing store location to file\n"))
+		return 0;
+	if (!writeIntToFile(store->rent, file, "Error writing store rent to file\n"))
+		return 0;
+	if(!writeIntToFile(store->profit, file, "Error writing store profit to file\n"))
+		return 0;
+	if (!writeIntToFile(store->noOfEmployees, file, "Error writing number of employees to file\n"))
+		return 0;
+	for (int i = 0; i < store->noOfEmployees; i++) {
+		if (!saveEmployeeToBinaryFile(&store->employees[i], file))
+			return 0;
+	}
+	if (!writeIntToFile(store->noOfDepartments, file, "Error writing number of departments to file\n"))
+		return 0;
+	for (int i = 0; i < store->noOfDepartments; i++) {
+		if (!saveDepartmentToBinaryFile(&store->departments[i], file))
+			return 0;
+	}
+	if (!writeIntToFile(store->noOfInvoices, file, "Error writing number of invoices to file\n"))
+		return 0;
+	NODE* tmp = store->invoiceList.head.next;
+	while (tmp)
+	{
+		if (!saveInvoiceToBinaryFile((Invoice*)tmp->key, file))
+			return 0;
+		tmp = tmp->next;
+	}
+	return 1;
 }

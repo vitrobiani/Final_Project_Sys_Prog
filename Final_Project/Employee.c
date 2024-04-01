@@ -75,3 +75,19 @@ void loadEmployeeFromTextFile(Employee* employee, FILE* file) {
 	fgetc(file);
 	//printf("Emplyee name: %s position: %s salary: %d\n", employee->name, ePositionStr[employee->position], employee->salary); //debug
 }
+
+int saveEmployeeToBinaryFile(const Employee* employee, FILE* file)
+{
+	if (!writeIntToFile(employee->id, file, "Error writing employee ID to file\n"))
+		return 0;
+	if(!writeStringToFile(employee->name, file, "Error writing employee name to file\n"))
+		return 0;
+	if (fwrite(&employee->position, sizeof(ePosition), 1, file) != 1)
+		{
+			puts("Error writing employee position to file");
+			return 0;
+		}
+	if (!writeIntToFile(employee->salary, file, "Error writing employee salary to file\n"))
+		return 0;
+	return 1;
+}

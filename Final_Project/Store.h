@@ -80,4 +80,6 @@ void saveStoreToTextFile(const Store* store, FILE* file);
 
 void loadStoreFromTextFile(Store* store, FILE* file);
 
+int saveStoreToBinaryFile(const Store* store, FILE* file);
+
 #endif // !1
