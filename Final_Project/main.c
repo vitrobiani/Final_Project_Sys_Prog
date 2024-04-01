@@ -3,14 +3,11 @@
 #include <stdlib.h>
 
 typedef enum {
-	eLOAD_FROM_FILE,
+	eLOAD_SYSTEM,
 	eADD_STORE,
-	eREMOVE_STORE,
-	eADD_DEPARTMENT_TYPE,
 	eADD_PRODUCT_TO_DEPARTMENT,
 	eENTER_STORE,
 	eVIEW_STORES,
-	eVIEW_DEPARTMENTS,
 	eSORT_BY,
 	eFIND_STORE,
 	eCALCULATE_TOTAL_PROFIT,
@@ -19,14 +16,11 @@ typedef enum {
 } Options;
 
 const char* optionsStrings[] = {
-	"Load from file",
+	"Load system",
 	"Add a store",
-	"Remove a store",
-	"Add a department type",
 	"Add a product to a department type",
 	"Enter a store",
 	"View all stores",
-	"View all department types",
 	"Sort by",
 	"Find a store",
 	"Calculate total profit",
@@ -35,11 +29,12 @@ const char* optionsStrings[] = {
 
 typedef enum {
 	eADD_EMPLOYEE,
-	eADD_DEPARTMENT,
-	ePRINT_DEPARTMENTS,
 	eADD_PRODUCT,
 	eMAKE_SALE,
 	eCALCULATE_PROFIT,
+	eCALCULATE_SPENDINGS,
+	ePRINT_EMPLOYEES,
+	ePRINT_DEPARTMENTS,
 	ePRINT_INVOICES,
 	eGO_BACK,
 	eNumOfStoreMenuOptions
@@ -47,11 +42,12 @@ typedef enum {
 
 const char* storeMenuStrings[] = {
 	"Add an employee",
-	"Add a department",
-	"Print all departments and their products",
 	"Add a product",
 	"Make a sale",
 	"Calculate profit",
+	"Calculate spendings",
+	"Print all employees",
+	"Print all departments and their products",
 	"Print all invoices",
 	"Go back to the main menu"
 };
@@ -96,10 +92,6 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 			addEmployee(store);
 			break;
 		}
-		case eADD_DEPARTMENT: {
-			addDepartment(store, getDepartmentTypeByID(storeManager));
-			break;
-		}
 		case ePRINT_DEPARTMENTS: {
 			printAllDepartments(store);
 			break;
@@ -117,7 +109,11 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 			break;
 		}
 		case eCALCULATE_PROFIT: {
-			printf("\nThe store profit is: %d\n\n", calculateStoreProfit(store));
+			printStoreProfit(store);
+			break;
+		}
+		case eCALCULATE_SPENDINGS: {
+			printStoreSpendings(store);
 			break;
 		}
 		default:
@@ -127,7 +123,7 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 }
 
 void ExitProgram(StoreManager* storeManager) {
-	//saveStoreManagerToTextFile(storeManager, "storeManager.txt");
+	saveStoreManagerToTextFile(storeManager, "storeManager.txt");
 	freeStoreManager(storeManager);
 	printf("Goodbye!\n");
 }
@@ -137,14 +133,16 @@ int main() {
 	StoreManager storeManager;
 	initStoreManager(&storeManager);
 
-	//loadStoreManagerFromTextFile(&storeManager, "storeManager.txt");
-
 	int choice = 0;
 	do
 	{
 		choice = managerOptions();
 		switch (choice)
 		{
+		case eLOAD_SYSTEM: {
+			loadSystem(&storeManager);
+			break;
+		}
 		case eADD_STORE: {
 			addStore(&storeManager);
 			break;
@@ -153,20 +151,12 @@ int main() {
 			printAllStores(&storeManager);
 			break;
 		}
-		case eADD_DEPARTMENT_TYPE: {
-			addDepartmentType(&storeManager);
-			break;
-		}
 		case eADD_PRODUCT_TO_DEPARTMENT: {
 			addProductToDepartmentType(&storeManager);
 			break;
 		}
 		case eENTER_STORE: {
 			storeLobby(enterStore(&storeManager), &storeManager);
-			break;
-		}
-		case eVIEW_DEPARTMENTS: {
-			printAllDepartmentTypesFull(&storeManager);
 			break;
 		}
 		case eCALCULATE_TOTAL_PROFIT: {

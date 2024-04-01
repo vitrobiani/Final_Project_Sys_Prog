@@ -1,35 +1,44 @@
 #include "Department.h"
 
-void initDepartment(Department* department, DepartmentType* type) {
+void initDepartment(Department* department, eDepartmentType type) {
 	department->type = type;
-	setProductArray(department, type);
-	department->noOfProducts = type->noOfProducts;
+	department->noOfProducts = 0;
+	department->products = NULL;
 }
 
-int setProductArray(Department* department, DepartmentType* type) {
-	if(!department || !department->type->products)
-	{
-		return 0;
-	}
-	Product* products = (Product*)malloc(sizeof(Product) * department->type->noOfProducts);
-	if (!products) {
-		return 0;
-	}
-	for(int i = 0; i < department->type->noOfProducts; i++) {
-		products[i].buyPrice = type->products[i].buyPrice;
-		products[i].sellPrice = type->products[i].sellPrice;
-		products[i].quantity = type->products[i].quantity;
-		strcpy(products[i].code, type->products[i].code);
-		products[i].name = (char*)malloc(strlen(type->products[i].name) + 1);
-		if(!products[i].name)
-		{
-			free(products);
-			return 0;
+eDepartmentType getDepartmentType() {
+	int type;
+	do {
+		printf("Enter the department type\n");
+		printDepartmentTypes();
+		scanf("%d", &type);
+		if (type < 1 || type >= noOfDepartmentTypes) {
+			printf("Invalid department type\n");
 		}
-		strcpy(products[i].name, type->products[i].name);
+	} while (type < 1 || type >= noOfDepartmentTypes);
+	return type;
+}
+
+void addToProduct(Department* dep) {
+	printAllProducts(dep);
+	printf("Enter the product code: ");
+	char code[MAX_STR_LEN];
+	Product* product = NULL;
+	do {
+		myGets(code, MAX_STR_LEN);
+		product = getProduct(dep, code);
+		if (!product)
+			printf("no such product\n");
+	} while (product == NULL);
+	updateQuantity(product);
+}
+
+int checkDepartmentStock(Department* dep) {
+	for (int i = 0; i < dep->noOfProducts; i++) {
+		if (dep->products[i].quantity > 0)
+			return 1;
 	}
-	department->products = products;
-	return 1;
+	return 0;
 }
 
 Product* getProduct(const Department* department, char* productCode) {
@@ -44,38 +53,12 @@ Product* getProduct(const Department* department, char* productCode) {
 	return NULL;
 }
 
-void addProduct(Department* department) {
-	if(department->noOfProducts == 0)
-	{
-		printf("No products in this department\n");
-		return;
+int calculateDepartmentSpendings(Department* dep) {
+	int sum = 0;
+	for (int i = 0; i < dep->noOfProducts; i++) {
+		sum += dep->products[i].quantity * dep->products[i].buyPrice;
 	}
-	printAllProducts(department);
-	printf("Enter the product code: ");
-	char code[MAX_STR_LEN];
-	Product* product = NULL;
-	do{
-		myGets(code, MAX_STR_LEN);
-		product = getProduct(department, code);
-		if(!product)
-			printf("no such product\n");
-	}while(product == NULL);
-	updateQuantity(product);
-}
-
-void removeProduct(Department* department, const char* productCode) {
-	int i;
-	for (i = 0; i < department->noOfProducts; i++) {
-		if (strcmp(department->products[i].code, productCode) == 0) {
-			break;
-		}
-	}
-	if (i < department->noOfProducts) {
-		for (int j = i; j < department->noOfProducts - 1; j++) {
-			department->products[j] = department->products[j + 1];
-		}
-		department->noOfProducts--;
-	}
+	return sum;
 }
 
 void printAllProducts(const Department* department) {
@@ -87,11 +70,18 @@ void printAllProducts(const Department* department) {
 	}
 }
 
+void printDepartmentTypes() {
+	for (int i = 0; i < noOfDepartmentTypes; i++)
+	{
+		printf("%d. %s\n", i, departmentTypeStr[i]);
+	}
+}
+
 void printDepartment(const Department* department) {
 	if (department == NULL) {
 		return;
 	}
-	printf("\nDepartment Name: %s \t Department ID: %d\n", department->type->name, department->type->id);
+	printf("\nDepartment Name: %s \t Department ID: %d\n", departmentTypeStr[department->type], department->type);
 	for (int i = 0; i < department->noOfProducts; i++) {
 		printProduct(&department->products[i]);
 	}
@@ -101,23 +91,23 @@ void printDepartmentFull(const Department* department) {
 	if (department == NULL) {
 		return;
 	}
-	printf("\nDepartment Name: %s \t Department ID: %d\n", department->type->name, department->type->id);
+	printf("\nDepartment Name: %s \t Department ID: %d\n", departmentTypeStr[department->type], department->type);
 	printAllProducts(department);
 }
 
-void freeDepartment(Department* department) {
-	if (department == NULL || department->products == NULL) {
-		return;
-	}
-	for (int i = 0; i < department->noOfProducts; i++) {
-		freeProduct(&department->products[i]);
-	}
-	free(department->products);
-}
+//void freeDepartment(Department* department) {
+//	if (department == NULL || department->products == NULL) {
+//		return;
+//	}
+//	for (int i = 0; i < department->noOfProducts; i++) {
+//		freeProduct(&department->products[i]);
+//	}
+//	free(department->products);
+//}
 
 void saveDepartmentToTextFile(const Department* department, FILE* file) {
 	printf("saving Department"); //debug
-	fprintf(file, "%d\n", department->type->id);
+	fprintf(file, "%d\n", department->type);
 	fprintf(file, "%d\n", department->noOfProducts);
 	for (int i = 0; i < department->noOfProducts; i++) {
 		saveProductToTextFile(&department->products[i], file);
@@ -125,21 +115,14 @@ void saveDepartmentToTextFile(const Department* department, FILE* file) {
 }
 
 void loadDepartmentFromTextFile(Department* department, FILE* file) {
-	int departmentTypeID;
-	fscanf(file, "%d", &departmentTypeID);
-	fgetc(file);
-	DepartmentType* type = (DepartmentType*)malloc(sizeof(DepartmentType));
-	if (!type) {
-		return;
-	}
-	//TODO: check if the department type exists
-	type->id = departmentTypeID;
+	int type = 0;
+	fscanf(file, "%d", &type);
 	department->type = type;
+	fgetc(file);
 	fscanf(file, "%d", &department->noOfProducts);
 	fgetc(file);
 	Product* products = (Product*)malloc(sizeof(Product) * department->noOfProducts);
 	if(!products) {
-		free(type);
 		return;
 	}
 	for (int i = 0; i < department->noOfProducts; i++) {

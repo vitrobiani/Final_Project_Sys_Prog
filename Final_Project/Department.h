@@ -3,26 +3,34 @@
 #define DEPARTMENT
 #include "Product.h"
 #include "GeneralFunctions.h"
-#include "DepartmentType.h"
-#include "GeneralFunctions.h"
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef enum {
+	eELECTRONICS, eHOME_DESIGN, eTOYS, noOfDepartmentTypes
+}eDepartmentType;
+
+static char* departmentTypeStr[noOfDepartmentTypes] = { "Electronics", "Home Design", "Toys" };
+
 typedef struct Department {
-	DepartmentType* type;
+	eDepartmentType type;
 	Product* products;
 	int noOfProducts;
 } Department;
 
-void initDepartment(Department* department, DepartmentType* type);
+void initDepartment(Department* department, eDepartmentType type);
 
-int setProductArray(Department* department, DepartmentType* type);
+eDepartmentType getDepartmentType();
+
+void addToProduct(Department* dep);
 
 Product* getProduct(const Department* department, char* productCode);
 
-void addProduct(Department* department);
+int checkDepartmentStock(Department* dep);
 
-void removeProduct(Department* department, const char* productCode);
+int calculateDepartmentSpendings(Department* dep);
+
+void printDepartmentTypes();
 
 void printAllProducts(const Department* department);
 
@@ -30,7 +38,7 @@ void printDepartment(const Department* department);
 
 void printDepartmentFull(const Department* department);
 
-void freeDepartment(Department* department);
+//void freeDepartment(Department* department);
 
 void saveDepartmentToTextFile(const Department* department, FILE* file);
 

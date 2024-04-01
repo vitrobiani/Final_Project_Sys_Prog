@@ -3,11 +3,47 @@
 void initStoreManager(StoreManager* storeManager) {
 	storeManager->stores = NULL;
 	storeManager->noOfStores = 0;
-	storeManager->departments = NULL;
-	storeManager->noOfDepartmentTypes = 0;
+}
+
+void loadSystem(StoreManager* storeManager) {
+	printf("Load options:\n");
+	for (int i = 0; i < eNoOfLoadOptions; i++){
+		printf("%d. %s\n", i + 1, loadOptionsStr[i]);
+	}
+	int opt;
+	do {
+		scanf("%d", &opt);
+		if (opt < 1 || opt > eNoOfLoadOptions)
+			printf("Invalid option, please try again\n");
+	} while (opt < 1 || opt > eNoOfLoadOptions);
+	opt--;
+	switch (opt)
+	{
+	case eLoadFromTextFile: {
+		loadStoreManagerFromTextFile(storeManager, "storeManager.txt");
+		break;
+	}
+	case eLoadFromBinaryFile: {
+		//loadStoreManagerFromBinaryFile(storeManager, "storeManager.bin");
+		break;
+	}
+	case eLoadNewSystem: {
+		generateHQ(storeManager);
+		break;
+	}
+	}
+}
+
+void generateHQ(StoreManager* storeManager) {
+	printf("We will now generate the HQ store\n");
+	storeManager->stores = (Store**)malloc(sizeof(Store*));
+	addStore(storeManager);
 }
 
 int generateStoreID(const StoreManager* storeManager) {
+	if (storeManager->noOfStores == 0) {
+		return 0;
+	}
 	int id = 0;
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		if (storeManager->stores[i]->storeID > id) {
@@ -18,113 +54,107 @@ int generateStoreID(const StoreManager* storeManager) {
 }
 
 void addStore(StoreManager* storeManager) {
+	if(storeManager->stores == NULL) {
+		printf("system not initialized\n");
+		return;
+	}
+	int id = generateStoreID(storeManager);
 	Store* store = (Store*)malloc(sizeof(Store));
 	if (storeManager == NULL || store == NULL) {
 		return;
 	}
-	createStore(store, generateStoreID(storeManager));
+	if(!createStore(store, id)){
+		free(store);
+		return;
+	}
 	Store** tmp = (Store**)realloc(storeManager->stores, (storeManager->noOfStores + 1) * sizeof(Store*));
 	if (!tmp) {
 		free(store);
 		return;
 	}
 	storeManager->stores = tmp;
-	storeManager->stores[storeManager->noOfStores++] = store;
+	storeManager->stores[storeManager->noOfStores] = store;
+	storeManager->noOfStores++;
+	updateAllStoreDepartments(storeManager);
 }
 
-void removeStore(StoreManager* storeManager, int storeID) {
-}
-
-void addDepartmentType(StoreManager* storeManager) {
-	if (storeManager == NULL) {
-		return;
-	}
-	DepartmentType* departmentType = (DepartmentType*)malloc(sizeof(DepartmentType));
-	if (!departmentType) {
-		printf("error in allocating memory\n");
-		return;
-	}
-	initDepartmentType(departmentType, generateDepartmentTypeID(storeManager));
-	DepartmentType* tmp = (DepartmentType*)realloc(storeManager->departments, (storeManager->noOfDepartmentTypes + 1) * sizeof(DepartmentType));
+void addProductToMainStore(StoreManager storeManager, int departmentID ,Product* product) {
+	Department* department = &storeManager.stores[0]->departments[departmentID];
+	Product* tmp = (Product*)realloc(department->products, sizeof(Product) * (department->noOfProducts + 1));
 	if (!tmp) {
-		printf("error in allocating memory\n");
-		free(departmentType);
+		printf("error in reallocating memory\n");
 		return;
 	}
-	storeManager->departments = tmp;
-	storeManager->departments[storeManager->noOfDepartmentTypes] = *departmentType;
-	storeManager->noOfDepartmentTypes++;
-}
-
-int generateDepartmentTypeID(const StoreManager* storeManager) {
-	int id = 0;
-	for (int i = 0; i < storeManager->noOfDepartmentTypes; i++) {
-		if (storeManager->departments[i].id > id) {
-			id = storeManager->departments[i].id;
-		}
-	}
-	return id + 1;
-}
-
-DepartmentType* getDepartmentTypeByID(StoreManager* storeManager) {
-	if (storeManager == NULL) {
-		return NULL;
-	}
-	printAllDepartmentTypes(storeManager);
-	int departmentTypeID;
-	printf("Enter the department type ID: ");
-	DepartmentType* tmp = NULL;
-	do
-	{
-		scanf("%d", &departmentTypeID);
-		tmp = getDepartmentType(storeManager, departmentTypeID);
-	} while (!tmp);
-	return tmp;
-}
-
-DepartmentType* getDepartmentType(StoreManager* storeManager, int departmentTypeID) {
-	if (storeManager == NULL) {
-		return NULL;
-	}
-	for (int i = 0; i < storeManager->noOfDepartmentTypes; i++) {
-		if (storeManager->departments[i].id == departmentTypeID) {
-			return &storeManager->departments[i];
-		}
-	}
-	return NULL;
+	department->products = tmp;
+	department->products[department->noOfProducts++] = *product;
 }
 
 void addProductToDepartmentType(StoreManager* storeManager) {
-	if (storeManager == NULL) {
+	if (storeManager->stores == NULL) {
+		printf("system not initialized\n");
 		return;
 	}
-	printAllDepartmentTypes(storeManager);
+	printDepartmentTypes();
 	int departmentTypeID;
 	printf("Enter the department type ID: ");
-	scanf("%d", &departmentTypeID);
-	DepartmentType* departmentType = getDepartmentType(storeManager, departmentTypeID);
-	if (!departmentType) {
-		printf("Department type not found!\n");
+	do {
+		scanf("%d", &departmentTypeID);
+		if(departmentTypeID < 0 || departmentTypeID >= noOfDepartmentTypes)
+			printf("Invalid ID, please try again\n");
+	} while (departmentTypeID < 0 || departmentTypeID >= noOfDepartmentTypes);
+
+	Product* product = (Product*) malloc(sizeof(Product));
+	if (product == NULL) {
 		return;
 	}
-	createProductToDepartmentType(departmentType);
-	updateAllStoreDepartments(storeManager, departmentType);
+	do {
+		getProductCode(product->code);
+		if(checkIfProductCodeExists(storeManager, product->code))
+			printf("Product code already exists, please try again: ");
+	}while(checkIfProductCodeExists(storeManager, product->code));
+	initProduct(product);
+	printProduct(product);
+	addProductToMainStore(*storeManager, departmentTypeID, product);
+	updateAllStoreDepartments(storeManager);
 }
 
-void updateAllStoreDepartments(StoreManager* storeManager, DepartmentType* type) {
+int checkIfProductCodeExists(const StoreManager* storeManager, const char* productCode) {
 	if (storeManager == NULL) {
-		return;
+		return 0;
 	}
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		for (int j = 0; j < storeManager->stores[i]->noOfDepartments; j++) {
-			if (storeManager->stores[i]->departments[j].type->id == type->id) {
-				Product* tmp = (Product*)realloc(storeManager->stores[i]->departments[j].products, sizeof(Product) * type->noOfProducts);
+			for (int k = 0; k < storeManager->stores[i]->departments[j].noOfProducts; k++) {
+				if (strcmp(storeManager->stores[i]->departments[j].products[k].code, productCode) == 0) {
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+void updateAllStoreDepartments(StoreManager* storeManager) {
+	if (storeManager->noOfStores <= 1) {
+		return;
+	}
+	for (int i = 1; i < storeManager->noOfStores; i++) {
+		for (int j = 0; j < storeManager->stores[i]->noOfDepartments; j++) {
+			Department* department = &storeManager->stores[i]->departments[j];
+			Department* MainDepartment = &storeManager->stores[0]->departments[j];
+			if (department->noOfProducts != MainDepartment->noOfProducts) {
+				
+				Product* tmp = (Product*)realloc(department->products, sizeof(Product) * (MainDepartment->noOfProducts));
 				if (!tmp) {
+					printf("error in reallocating memory\n");
 					return;
 				}
-				storeManager->stores[i]->departments[j].products = tmp;
-				storeManager->stores[i]->departments[j].products[type->noOfProducts - 1] = type->products[type->noOfProducts - 1];
-				storeManager->stores[i]->departments[j].noOfProducts = type->noOfProducts;
+				department->products = tmp;
+				for (int k = 0; k < MainDepartment->noOfProducts; k++) {
+					if(strcmp(department->products[k].code, MainDepartment->products[k].code) != 0)
+						department->products[k] = MainDepartment->products[k];
+				}
+				department->noOfProducts = MainDepartment->noOfProducts;
 			}
 		
 		}
@@ -145,6 +175,7 @@ Store* getStore(StoreManager* storeManager, int storeID) {
 
 Store* enterStore(StoreManager* storeManager) {
 	if (storeManager == NULL || storeManager->noOfStores == 0) {
+		printf("No stores!\n");
 		return NULL;
 	}
 	for (int i = 0; i < storeManager->noOfStores; i++)
@@ -165,14 +196,18 @@ void calculateTotalProfit(const StoreManager* storeManager) {
 	if (storeManager == NULL) {
 		return;
 	}
-	double totalProfit = 0;
+	int totalProfit = 0;
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		totalProfit += calculateStoreProfit(storeManager->stores[i]);
 	}
-	printf("Total profit: %.2lf\n", totalProfit);
+	printf("Total profit for the year %d: %d\n", YEAR, totalProfit);
 }
 
 void sortAllStoresBy(StoreManager* storeManager) {
+	if(storeManager->stores == NULL) {
+		printf("system not initialized\n");
+		return;
+	}
 	storeManager->storeSortOpt = showSortMenu();
 	int(*compare)(const void* store1, const void* store2) = NULL;
 	switch (storeManager->storeSortOpt)
@@ -213,6 +248,10 @@ eSortOption showSortMenu()
 
 void findStore(const StoreManager* storeManager)
 {
+	if (storeManager->stores == NULL) {
+		printf("system not initialized\n");
+		return;
+	}
 	int(*compare)(const void* store1, const void* store2) = NULL;
 	Store store = { 0 };
 	Store* pStore = &store;
@@ -265,22 +304,6 @@ void printAllStores(const StoreManager* storeManager) {
 	}
 }
 
-void printAllDepartmentTypes(const StoreManager* storeManager) {
-	if (storeManager->departments == NULL) {
-		printf("no department types!\n");
-		return;
-	}
-	generalArrayFunction(storeManager->departments, storeManager->noOfDepartmentTypes, sizeof(DepartmentType), printDepartmentType);
-}
-
-void printAllDepartmentTypesFull(const StoreManager* storeManager) {
-	if (storeManager->departments == NULL) {
-		printf("no department types!\n");
-		return;
-	}
-	generalArrayFunction(storeManager->departments, storeManager->noOfDepartmentTypes, sizeof(DepartmentType), printDepartmentTypeFull);
-}
-
 void freeStoreManager(StoreManager* storeManager) {
 	if (storeManager == NULL) {
 		return;
@@ -290,10 +313,6 @@ void freeStoreManager(StoreManager* storeManager) {
 			freeStore(storeManager->stores[i]);
 		}
 		free(storeManager->stores);
-	}
-	if (storeManager->departments != NULL) {
-		generalArrayFunction(storeManager->departments, storeManager->noOfDepartmentTypes, sizeof(DepartmentType), freeDepartementType);
-		free(storeManager->departments);
 	}
 }
 
@@ -307,10 +326,6 @@ void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fi
 		return;
 	}
 	printf("file opened"); //debug
-	fprintf(file, "%d\n", storeManager->noOfDepartmentTypes);
-	for (int i = 0; i < storeManager->noOfDepartmentTypes; i++) {
-		saveDepartmentTypeToTextFile(&storeManager->departments[i], file);
-	}
 	fprintf(file, "%d\n", storeManager->noOfStores);
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		saveStoreToTextFile(storeManager->stores[i], file);
@@ -324,19 +339,6 @@ void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileNa
 		printf("error in opening file\n");
 		return;
 	}
-	int noOfDepartmentTypes;
-	fscanf(file, "%d", &noOfDepartmentTypes);
-	fgetc(file);
-	storeManager->noOfDepartmentTypes = noOfDepartmentTypes;
-	DepartmentType* types = (DepartmentType*)malloc(noOfDepartmentTypes * sizeof(DepartmentType));
-	if (!types) {
-		printf("error in allocating memory\n");
-		return;
-	}
-	for (int i = 0; i < noOfDepartmentTypes; i++) {
-		loadDepartmentTypeFromTextFile(&types[i], file);
-	}
-	storeManager->departments = types;
 	int noOfStores;
 	fscanf(file, "%d", &noOfStores);
 	fgetc(file);
@@ -359,33 +361,5 @@ void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileNa
 	}
 	storeManager->stores = stores;
 	fclose(file);
-	fixLoadedStoreManager(storeManager);
 }
 
-void fixLoadedStoreManager(StoreManager* storeManager) {
-	for (int i = 0; i < storeManager->noOfStores; i++) {
-		for (int j = 0; j < storeManager->stores[i]->noOfDepartments; j++) {
-			DepartmentType* type = getDepartmentType(storeManager, storeManager->stores[i]->departments[j].type->id);
-			printDepartmentType(type); //debug
-			if (!type) {
-				printf("Department type not found!\n");
-				return;
-			}
-			free(storeManager->stores[i]->departments[j].type);
-			storeManager->stores[i]->departments[j].type = type;
-		}
-		NODE* invoice = &storeManager->stores[i]->invoiceList.head;
-		for (int j = 0; j < storeManager->stores[i]->noOfInvoices; j++)
-		{
-			invoice = invoice->next;
-			Invoice* inv = (Invoice*)invoice;
-			Employee* emp = getEmployee(storeManager->stores[i], inv->employee->id);
-			if (!emp) {
-				printf("Employee not found!\n");
-				return;
-			}
-			free(inv->employee);
-			inv->employee = emp;
-		}
-	}
-}

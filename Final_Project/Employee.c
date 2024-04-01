@@ -24,7 +24,7 @@ void printEmployee(const Employee* employee) {
 }
 
 int getSalary() {
-	printf("Enter the salary: ");
+	printf("Enter the yearly salary: ");
 	int salary;
 	scanf("%d", &salary);
 	return salary;

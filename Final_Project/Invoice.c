@@ -66,7 +66,9 @@ void saveInvoiceToTextFile(const Invoice* invoice, FILE* file) {
 	printf("Saving invoice to text file\n"); //debug
 	fprintf(file, "%d\n", invoice->invoiceID);
 	fprintf(file, "%d\n", invoice->storeID);
+
 	fprintf(file,"%d\n", invoice->employee->id);
+	
 	fprintf(file, "%d\n", invoice->numOfProducts);
 	for (int i = 0; i < invoice->numOfProducts; i++)
 	{
@@ -91,7 +93,7 @@ void loadInvoiceFromTextFile(Invoice* invoice, FILE* file) {
 	fscanf(file, "%d", &invoice->storeID);
 	fgetc(file);
 	printf("invoice id: %d, store id: %d\n", invoice->invoiceID, invoice->storeID); //debug
-	//TODO: load employee
+
 	Employee* emp = (Employee*)malloc(sizeof(Employee));
 	if (!emp) {
 		printf("Memory allocation failed\n");
@@ -99,6 +101,7 @@ void loadInvoiceFromTextFile(Invoice* invoice, FILE* file) {
 	}
 	fscanf(file, "%d", &emp->id);
 	fgetc(file);
+
 	fscanf(file, "%d", &invoice->numOfProducts);
 	fgetc(file);
 	Product* products = (Product*)malloc(sizeof(Product) * invoice->numOfProducts);

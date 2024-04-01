@@ -5,8 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-#define MIN_YEAR 2023
+#define YEAR 2024
 
 typedef struct
 {

@@ -9,8 +9,8 @@ void getCorrectDate(Date* pDate)
 	int ok = 1;
 
 	do {
-		printf("Enter Flight Date dd%c%cmm%c%cyyyy  minimum year %d\t",
-			SPECIAL_TAV, SPECIAL_TAV, SPECIAL_TAV, SPECIAL_TAV, MIN_YEAR);
+		printf("Enter Purchase Date dd%c%cmm%c%cyyyy  (Only year: %d)\t",
+			SPECIAL_TAV, SPECIAL_TAV, SPECIAL_TAV, SPECIAL_TAV, YEAR);
 		myGets(date, MAX_STR_LEN);
 		ok = checkDate(date, pDate);
 		if (!ok)
@@ -28,7 +28,7 @@ int	 checkDate(char* date, Date* pDate)
 		|| (date[6] != SPECIAL_TAV) || (date[7] != SPECIAL_TAV))
 		return 0;
 	sscanf(date, "%d%*c%*c%d%*c%*c%d", &day, &month, &year);
-	if (day < 1 || month < 1 || month > 12 || year < MIN_YEAR)
+	if (day < 1 || month < 1 || month > 12 || year != YEAR)
 		return 0;
 
 	if (day > DAY_MONTHS[month - 1])
