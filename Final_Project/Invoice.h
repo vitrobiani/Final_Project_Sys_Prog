@@ -39,4 +39,8 @@ void loadInvoiceFromTextFile(Invoice* invoice, FILE* file);
 
 int saveInvoiceToBinaryFile(const Invoice* invoice, FILE* file);
 
+int createProductArr(Invoice* invoice);
+
+int loadInvoiceFromBinaryFile(Invoice* invoice, FILE* file);
+
 #endif // !1

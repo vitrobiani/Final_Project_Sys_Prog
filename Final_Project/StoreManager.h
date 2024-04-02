@@ -58,4 +58,8 @@ void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileNa
 
 int saveStoreManagerToBinaryFile(const StoreManager* storeManager, const char* fileName);
 
+int createStoreArr(StoreManager* storeManager);
+
+int loadStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileName);
+
 #endif // !1

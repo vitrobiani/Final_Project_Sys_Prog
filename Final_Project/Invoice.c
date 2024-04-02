@@ -159,6 +159,54 @@ int saveInvoiceToBinaryFile(const Invoice* invoice, FILE* file)
 	}
 	if (!writeIntToFile(invoice->saleAmount, file, "Error writing sale amount to file\n"))
 		return 0;
-
-	return 0;
+	if (!saveDateToBinaryFileCompressed(&invoice->timeOfSale, file))
+		return 0;
+	return 1;
 }
+
+int createProductArr(Invoice* invoice)
+{
+	invoice->products = (Product*)malloc(sizeof(Product) * invoice->numOfProducts);
+	if (!invoice->products)
+	{
+		puts("Error allocating memory for products");
+		return 0;
+	}
+	return 1;
+}
+
+int loadInvoiceFromBinaryFile(Invoice* invoice, FILE* file)
+{
+	if (!readIntFromFile(&invoice->invoiceID, file, "Error reading invoice ID from file\n"))
+		return 0;
+	if (!readIntFromFile(&invoice->storeID, file, "Error reading store ID from file\n"))
+		return 0;
+	if (!loadCustomerFromBinaryFile(&invoice->customer, file))
+		return 0;
+	Employee* emp = (Employee*)malloc(sizeof(Employee));
+	if (!emp) {
+		puts("Error allocating memory for employee");
+		return 0;
+	}
+	if (!readIntFromFile(&emp->id, file, "Error reading employee ID from file\n")) {
+		free(emp);
+		return 0;
+	}
+	invoice->employee = emp;
+	if (!readIntFromFile(&invoice->numOfProducts, file, "Error reading number of products from file\n"))
+		return 0;
+	if (!createProductArr(invoice))
+		return 0;
+	for (int i = 0; i < invoice->numOfProducts; i++)
+	{
+		if (!loadProductFromBinaryFile(&invoice->products[i], file))
+			return 0;
+	}
+	if (!readIntFromFile(&invoice->saleAmount, file, "Error reading sale amount from file\n"))
+		return 0;
+	if (!loadDateFromBinaryFileCompressed(&invoice->timeOfSale, file))
+		return 0;
+	return 1;
+}
+
+

@@ -42,4 +42,6 @@ void loadProductFromTextFile(Product* product, FILE* file);
 
 int saveProductToBinaryFile(const Product* product, FILE* file);
 
+int loadProductFromBinaryFile(Product* product, FILE* file);
+
 #endif // !1

@@ -57,3 +57,15 @@ int saveCustomerToBinaryFile(const Customer* customer, FILE* file)
 		return 0;
 	return 1;
 }
+
+int loadCustomerFromBinaryFile(Customer* customer, FILE* file)
+{
+	if (!readIntFromFile(&customer->id, file, "Error reading customer ID from file\n"))
+		return 0;
+	customer->name = readStringFromFile(file, "Error reading customer name from file\n");
+	if(!customer->name)
+		return 0;
+	if (!readIntFromFile(&customer->contactNumber, file, "Error reading customer contact number from file\n"))
+		return 0;
+	return 1;
+}

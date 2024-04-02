@@ -124,6 +124,7 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 
 void ExitProgram(StoreManager* storeManager) {
 	saveStoreManagerToTextFile(storeManager, "storeManager.txt");
+	saveStoreManagerToBinaryFile(storeManager, "storeManager.bin");
 	freeStoreManager(storeManager);
 	printf("before dump\n");
 	int check =_CrtDumpMemoryLeaks();

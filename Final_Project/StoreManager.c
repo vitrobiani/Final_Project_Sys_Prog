@@ -24,7 +24,8 @@ void loadSystem(StoreManager* storeManager) {
 		break;
 	}
 	case eLoadFromBinaryFile: {
-		//loadStoreManagerFromBinaryFile(storeManager, "storeManager.bin");
+		int check = loadStoreManagerFromBinaryFile(storeManager, "storeManager.bin");
+		printf("check: %d\n", check);
 		break;
 	}
 	case eLoadNewSystem: {
@@ -370,12 +371,64 @@ int saveStoreManagerToBinaryFile(const StoreManager* storeManager, const char* f
 		printf("error in opening file\n");
 		return 0;
 	}
-	if (fwrite(&storeManager->noOfStores, sizeof(int), 1, file) != 1) {
-		printf("error in writing to file\n");
+	if (!writeIntToFile(storeManager->noOfStores, file, "error in writing number of stores to file\n")) {
+		fclose(file);
 		return 0;
 	}
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		if (!saveStoreToBinaryFile(storeManager->stores[i], file)) {
+			fclose(file);
+			return 0;
+		}
+	}
+	fclose(file);
+	return 1;
+}
+
+int createStoreArr(StoreManager* storeManager) {
+	if (storeManager->noOfStores > 0) {
+		storeManager->stores = (Store**)malloc(storeManager->noOfStores*sizeof(Store*));
+		if (!storeManager->stores) {
+			printf("error in allocating memory\n");
+			return 0;
+		}
+	}
+	else
+		storeManager->stores = NULL;
+
+	for (int i = 0; i < storeManager->noOfStores; i++)
+	{
+		storeManager->stores[i] = (Store*)calloc(1, sizeof(Store));
+		if (!storeManager->stores[i]) {
+			printf("error in allocating memory\n");
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int loadStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileName) {
+	FILE* file = fopen(fileName, "rb");
+	if (!file) {
+		printf("error in opening file\n");
+		return 0;
+	}
+	if (!readIntFromFile(&storeManager->noOfStores, file, "error in reading number of stores from file\n")) {
+		fclose(file);
+		return 0;
+	}
+	if (!createStoreArr(storeManager)) {
+		fclose(file);
+		return 0;
+	}
+	for (int i = 0; i < storeManager->noOfStores; i++) {
+		if (!loadStoreFromBinaryFile(storeManager->stores[i], file)) {
+			for (int j = 0; j < i; j++) {
+				freeStore(storeManager->stores[j]);
+				free(storeManager->stores[j]);
+			}
+			free(storeManager->stores);
+			fclose(file);
 			return 0;
 		}
 	}

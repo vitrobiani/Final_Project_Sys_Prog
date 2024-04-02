@@ -82,4 +82,8 @@ void loadStoreFromTextFile(Store* store, FILE* file);
 
 int saveStoreToBinaryFile(const Store* store, FILE* file);
 
+int createEmployeeArr(Store* store);
+
+int loadStoreFromBinaryFile(Store* store, FILE* file);
+
 #endif // !1

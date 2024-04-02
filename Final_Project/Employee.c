@@ -87,3 +87,20 @@ int saveEmployeeToBinaryFile(const Employee* employee, FILE* file)
 		return 0;
 	return 1;
 }
+
+int loadEmployeeFromBinaryFile(Employee* employee, FILE* file)
+{
+	if (!readIntFromFile(&employee->id, file, "Error reading employee ID from file\n"))
+		return 0;
+	employee->name = readStringFromFile(file, "Error reading employee name from file\n");
+	if (!employee->name)
+		return 0;
+	if (fread(&employee->position, sizeof(ePosition), 1, file) != 1)
+	{
+		puts("Error reading employee position from file");
+		return 0;
+	}
+	if (!readIntFromFile(&employee->salary, file, "Error reading employee salary from file\n"))
+		return 0;
+	return 1;
+}

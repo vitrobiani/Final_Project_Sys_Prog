@@ -45,8 +45,10 @@ void saveDepartmentToTextFile(const Department* department, FILE* file);
 
 void loadDepartmentFromTextFile(Department* department, FILE* file);
 
-int createProductArr(Department* department);
+int createProductArray(Department* department);
 
 int saveDepartmentToBinaryFile(const Department* department, FILE* file);
+
+int loadDepartmentFromBinaryFile(Department* department, FILE* file);
 
 #endif // !DEPARTMENT

@@ -26,5 +26,7 @@ void printCustomer(const Customer* customer);
 
 int saveCustomerToBinaryFile(const Customer* customer, FILE* file);
 
+int loadCustomerFromBinaryFile(Customer* customer, FILE* file);
+
 
 #endif // !1

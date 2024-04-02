@@ -46,24 +46,32 @@ void printDate(const Date* pDate)
 	printf("Date: %d/%d/%d", pDate->day, pDate->month, pDate->year);
 }
 
-int writeDateToBFile(FILE* fp, Date const* pDate)
+int saveDateToBinaryFileCompressed(const Date* pDate, FILE* file)
 {
-	if (fwrite(pDate, sizeof(Date), 1, fp) != 1)
-	{
-		printf("Error! the date wasn't written to the file\n");
+	BYTE data[3];
+	data[0] = pDate->year  >> 7;
+	data[1] = (pDate->year << 1) | (pDate->month >> 3);
+	data[2] = (pDate->month << 5) | pDate->day;
+	if (fwrite(data, sizeof(BYTE), 3, file) != 3) {
+		puts("Error writing date to file");
 		return 0;
 	}
 	return 1;
 }
 
-int readDateFromBFile(FILE* fp, Date* pDate)
+int loadDateFromBinaryFileCompressed(Date* pDate, FILE* file)
 {
-	if (fread(pDate, sizeof(Date), 1, fp) != 1)
-	{
-		printf("Error! the date wasn't read from the file\n");
+	BYTE data[3];
+	if (fread(data, sizeof(BYTE), 3, file) != 3) {
+		puts("Error reading date from file");
 		return 0;
 	}
+	pDate->year = ((data[0] & 0x7F) << 7) | (data[1] >> 1);
+	pDate->month = ((data[1] & 0x1) << 3) | (data[2] >> 5);
+	pDate->day = data[2] & 0x1F;
 	return 1;
 }
+
+
 
 

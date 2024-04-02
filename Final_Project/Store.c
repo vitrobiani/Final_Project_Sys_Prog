@@ -494,3 +494,56 @@ int saveStoreToBinaryFile(const Store* store, FILE* file) {
 	}
 	return 1;
 }
+
+int createEmployeeArr(Store* store) {
+	store->employees = (Employee*)malloc(sizeof(Employee) * store->noOfEmployees);
+	if (!store->employees) {
+		puts("Error allocating memory for employees");
+		return 0;
+	}
+	return 1;
+}
+
+int loadStoreFromBinaryFile(Store* store, FILE* file) {
+	if (!readIntFromFile(&store->storeID, file, "Error reading store ID from file\n"))
+		return 0;
+	store->location = readStringFromFile(file, "Error reading store location from file\n");
+	if (!store->location)
+		return 0;
+	if (!readIntFromFile(&store->rent, file, "Error reading store rent from file\n"))
+		return 0;
+	if (!readIntFromFile(&store->profit, file, "Error reading store profit from file\n"))
+		return 0;
+	if (!readIntFromFile(&store->noOfEmployees, file, "Error reading number of employees from file\n"))
+		return 0;
+	if (!createEmployeeArr(store))
+		return 0;
+	for (int i = 0; i < store->noOfEmployees; i++) {
+		if (!loadEmployeeFromBinaryFile(&store->employees[i], file))
+			return 0;
+	}
+	if (!readIntFromFile(&store->noOfDepartments, file, "Error reading number of departments from file\n"))
+		return 0;
+	for (int i = 0; i < store->noOfDepartments; i++) {
+		if (!loadDepartmentFromBinaryFile(&store->departments[i], file))
+			return 0;
+	}
+	if (!readIntFromFile(&store->noOfInvoices, file, "Error reading number of invoices from file\n"))
+		return 0;
+	for (int i = 0; i < store->noOfInvoices; i++) {
+		Invoice* invoice = (Invoice*)malloc(sizeof(Invoice));
+		if (!invoice) {
+			puts("Error allocating memory for invoice");
+			return 0;
+		}
+		if (!loadInvoiceFromBinaryFile(invoice, file)) {
+			free(invoice);
+			return 0;
+		}
+		Employee* employee = getEmployee(store, invoice->employee->id);
+		free(invoice->employee);
+		invoice->employee = employee;
+		L_insert(&store->invoiceList.head, invoice);
+	}
+	return 1;
+}

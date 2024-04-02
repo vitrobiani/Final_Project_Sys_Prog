@@ -145,4 +145,19 @@ int saveProductToBinaryFile(const Product* product, FILE* file)
 		return 0;
 	return 1;
 }
-;
+
+int loadProductFromBinaryFile(Product* product, FILE* file)
+{
+	if (!readCharsFromFile(product->code, SIZE, file, "Error reading product code from file\n"))
+		return 0;
+	product->name = readStringFromFile(file, "Error reading product name from file\n");
+	if (!product->name)
+		return 0;
+	if (!readIntFromFile(&product->sellPrice, file, "Error reading product sell price from file\n"))
+		return 0;
+	if (!readIntFromFile(&product->buyPrice, file, "Error reading product buy price from file\n"))
+		return 0;
+	if (!readIntFromFile(&product->quantity, file, "Error reading product quantity from file\n"))
+		return 0;
+	return 1;
+}

@@ -39,4 +39,6 @@ void loadEmployeeFromTextFile(Employee* employee, FILE* file);
 
 int saveEmployeeToBinaryFile(const Employee* employee, FILE* file);
 
+int loadEmployeeFromBinaryFile(Employee* employee, FILE* file);
+
 #endif // !EMPLOYEE
