@@ -19,16 +19,7 @@ void setCustomerID(Customer* customer) {
 }
 
 void setCustomerName(Customer* customer) {
-	printf("Enter the name of the customer: ");
-	char name[MAX_STR_LEN];
-	myGets(name, MAX_STR_LEN);
-	customer->name = malloc(strlen(name)*sizeof(char));
-	if(!customer->name)
-	{
-		printf("error in allocating memory\n");
-		return;
-	}
-	strcpy(customer->name, name);
+	customer->name = getStrExactName("Enter the name of the customer: ");
 }
 
 void setContactNumber(Customer* customer) {

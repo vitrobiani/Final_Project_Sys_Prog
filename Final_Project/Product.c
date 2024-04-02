@@ -133,7 +133,7 @@ void loadProductFromTextFile(Product* product, FILE* file) {
 
 int saveProductToBinaryFile(const Product* product, FILE* file)
 {
-	if(!writeCharsToFile(product->code, 4, file, "Error writing product code to file\n"))
+	if(!writeCharsToFile(product->code, SIZE, file, "Error writing product code to file\n"))
 		return 0;
 	if(!writeStringToFile(product->name, file, "Error writing product name to file\n"))
 		return 0;
@@ -148,7 +148,7 @@ int saveProductToBinaryFile(const Product* product, FILE* file)
 
 int loadProductFromBinaryFile(Product* product, FILE* file)
 {
-	if (!readCharsFromFile(product->code, 4, file, "Error reading product code from file\n"))
+	if (!readCharsFromFile(product->code, SIZE, file, "Error reading product code from file\n"))
 		return 0;
 	product->name = readStringFromFile(file, "Error reading product name from file\n");
 	if (!product->name)

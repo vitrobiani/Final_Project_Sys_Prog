@@ -80,6 +80,10 @@ void addStore(StoreManager* storeManager) {
 }
 
 void addProductToMainStore(StoreManager* storeManager, int departmentID ,Product* product) {
+	if (storeManager->stores == NULL) {
+		printf("system not initialized\n");
+		return;
+	}
 	Department* department = &storeManager->stores[0]->departments[departmentID];
 	Product* tmp = (Product*)realloc(department->products, sizeof(Product) * (department->noOfProducts + 1));
 	if (!tmp) {
@@ -87,7 +91,17 @@ void addProductToMainStore(StoreManager* storeManager, int departmentID ,Product
 		return;
 	}
 	department->products = tmp;
-	department->products[department->noOfProducts++] = *product;
+	department->products[department->noOfProducts].buyPrice = product->buyPrice;
+	department->products[department->noOfProducts].sellPrice = product->sellPrice;
+	department->products[department->noOfProducts].name = (char*)malloc(strlen(product->name) + 1);
+	if (!department->products[department->noOfProducts].name) {
+		printf("error in allocating memory\n");
+		return;
+	}
+	strcpy(department->products[department->noOfProducts].name, product->name);
+	strcpy(department->products[department->noOfProducts].code, product->code);
+	department->products[department->noOfProducts].quantity = 0;
+	department->noOfProducts++;
 }
 
 void addProductToDepartmentType(StoreManager* storeManager) {
@@ -117,6 +131,8 @@ void addProductToDepartmentType(StoreManager* storeManager) {
 	printProduct(product);
 	addProductToMainStore(storeManager, departmentTypeID, product);
 	updateAllStoreDepartments(storeManager);
+	free(product->name);
+	free(product);
 }
 
 int checkIfProductCodeExists(const StoreManager* storeManager, const char* productCode) {
@@ -152,8 +168,18 @@ void updateAllStoreDepartments(StoreManager* storeManager) {
 				}
 				department->products = tmp;
 				for (int k = 0; k < MainDepartment->noOfProducts; k++) {
-					if(strcmp(department->products[k].code, MainDepartment->products[k].code) != 0)
-						department->products[k] = MainDepartment->products[k];
+					if (strcmp(department->products[k].code, MainDepartment->products[k].code) != 0){
+						department->products[k].buyPrice = MainDepartment->products[k].buyPrice;
+						department->products[k].sellPrice = MainDepartment->products[k].sellPrice;
+						department->products[k].name = (char*)malloc(strlen(MainDepartment->products[k].name) + 1);
+						if (!department->products[k].name) {
+							printf("error in allocating memory\n");
+							return;
+						}
+						strcpy(department->products[k].name, MainDepartment->products[k].name);
+						strcpy(department->products[k].code, MainDepartment->products[k].code);
+						department->products[k].quantity = 0;
+					}
 				}
 				department->noOfProducts = MainDepartment->noOfProducts;
 			}
