@@ -391,9 +391,9 @@ void freeStore(Store* store) {
 
 void saveStoreToTextFile(const Store* store, FILE* file) {
 	fprintf(file, "%d\n", store->storeID);
-	fprintf(file,"%zu\n", strlen(store->location));
 	fprintf(file, "%s\n", store->location);
 	fprintf(file, "%d\n", store->rent);
+	fprintf(file, "%d\n", store->profit);
 
 	fprintf(file, "%d\n", store->noOfEmployees);
 	for (int i = 0; i < store->noOfEmployees; i++) {
@@ -416,15 +416,14 @@ void saveStoreToTextFile(const Store* store, FILE* file) {
 void loadStoreFromTextFile(Store* store, FILE* file) {
 	fscanf(file, "%d", &store->storeID);
 	fgetc(file);
-	int length;
-	fscanf(file, "%d", &length);
-	fgetc(file);
 
 	char tmp[MAX_STR_LEN];
 	myGetsFile(tmp, MAX_STR_LEN, file);
 	store->location = getDynStr(tmp);
 
 	fscanf(file, "%d", &store->rent);
+	fgetc(file);
+	fscanf(file, "%d", &store->profit);
 	fgetc(file);
 	fscanf(file, "%d", &store->noOfEmployees);
 	fgetc(file);
