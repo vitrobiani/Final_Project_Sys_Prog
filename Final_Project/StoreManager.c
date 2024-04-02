@@ -371,18 +371,13 @@ int saveStoreManagerToBinaryFile(const StoreManager* storeManager, const char* f
 		printf("error in opening file\n");
 		return 0;
 	}
-	if (!writeIntToFile(storeManager->noOfStores, file, "error in writing number of stores to file\n")) {
-		fclose(file);
-		return 0;
-	}
+	if (!writeIntToFile(storeManager->noOfStores, file, "error in writing number of stores to file\n"))
+		CLOSE_RETURN(file, 0);
 	for (int i = 0; i < storeManager->noOfStores; i++) {
-		if (!saveStoreToBinaryFile(storeManager->stores[i], file)) {
-			fclose(file);
-			return 0;
-		}
+		if (!saveStoreToBinaryFile(storeManager->stores[i], file))
+			CLOSE_RETURN(file, 0);
 	}
-	fclose(file);
-	return 1;
+	CLOSE_RETURN(file, 1);
 }
 
 int createStoreArr(StoreManager* storeManager) {
@@ -413,14 +408,10 @@ int loadStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileN
 		printf("error in opening file\n");
 		return 0;
 	}
-	if (!readIntFromFile(&storeManager->noOfStores, file, "error in reading number of stores from file\n")) {
-		fclose(file);
-		return 0;
-	}
-	if (!createStoreArr(storeManager)) {
-		fclose(file);
-		return 0;
-	}
+	if (!readIntFromFile(&storeManager->noOfStores, file, "error in reading number of stores from file\n"))
+		CLOSE_RETURN(file, 0);
+	if (!createStoreArr(storeManager))
+		CLOSE_RETURN(file, 0);
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		if (!loadStoreFromBinaryFile(storeManager->stores[i], file)) {
 			for (int j = 0; j < i; j++) {
@@ -428,11 +419,9 @@ int loadStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileN
 				free(storeManager->stores[j]);
 			}
 			free(storeManager->stores);
-			fclose(file);
-			return 0;
+			CLOSE_RETURN(file, 0);
 		}
 	}
-	fclose(file);
-	return 1;
+	CLOSE_RETURN(file, 1);
 }
 
