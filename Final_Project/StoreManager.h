@@ -5,8 +5,7 @@
 #include "Store.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-#define CLOSE_RETURN(file, x) { fclose(file); return x; }
+#include "Macros.h"
 
 typedef enum { eNone, eID, eProfit, eRent, eLocation, eNofSortOpt } eSortOption;
 static const char* sortOptStr[eNofSortOpt] = { "NotSorted", "ID", "Profit", "Rent", "Location" };

@@ -67,6 +67,7 @@ void printAllProducts(const Department* department) {
 	}
 	for (int i = 0; i < department->noOfProducts; i++) {
 		printProductFull(&department->products[i]);
+		printf("\n");
 	}
 }
 

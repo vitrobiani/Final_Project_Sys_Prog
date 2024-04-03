@@ -162,10 +162,7 @@ void updateAllStoreDepartments(StoreManager* storeManager) {
 			if (department->noOfProducts != MainDepartment->noOfProducts) {
 				
 				Product* tmp = (Product*)realloc(department->products, sizeof(Product) * (MainDepartment->noOfProducts));
-				if (!tmp) {
-					printf("error in reallocating memory\n");
-					return;
-				}
+				PRINT_RETURN(tmp, "error in reallocating memory");
 				department->products = tmp;
 				for (int k = 0; k < MainDepartment->noOfProducts; k++) {
 					if (strcmp(department->products[k].code, MainDepartment->products[k].code) != 0){
@@ -220,9 +217,7 @@ Store* enterStore(StoreManager* storeManager) {
 }
 
 void calculateTotalProfit(const StoreManager* storeManager) {
-	if (storeManager == NULL) {
-		return;
-	}
+	PRINT_RETURN(storeManager->stores, "system not initialized");
 	int totalProfit = 0;
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		totalProfit += calculateStoreProfit(storeManager->stores[i]);
@@ -231,10 +226,7 @@ void calculateTotalProfit(const StoreManager* storeManager) {
 }
 
 void sortAllStoresBy(StoreManager* storeManager) {
-	if(storeManager->stores == NULL) {
-		printf("system not initialized\n");
-		return;
-	}
+	PRINT_RETURN(storeManager->stores, "system not initialized");
 	storeManager->storeSortOpt = showSortMenu();
 	int(*compare)(const void* store1, const void* store2) = NULL;
 	switch (storeManager->storeSortOpt)
@@ -275,10 +267,7 @@ eSortOption showSortMenu()
 
 void findStore(const StoreManager* storeManager)
 {
-	if (storeManager->stores == NULL) {
-		printf("system not initialized\n");
-		return;
-	}
+	PRINT_RETURN(storeManager->stores, "system not initialized");
 	int(*compare)(const void* store1, const void* store2) = NULL;
 	Store store = { 0 };
 	Store* pStore = &store;
@@ -323,10 +312,8 @@ void findStore(const StoreManager* storeManager)
 }
 
 void printAllStores(const StoreManager* storeManager) {
-	if (storeManager->stores == NULL) {
-		printf("no stores!\n");
-		return;
-	}
+	PRINT_RETURN(storeManager->stores, "no stores!");
+
 	for (int i = 0; i < storeManager->noOfStores; i++)
 	{
 		printStore(storeManager->stores[i]);
@@ -351,10 +338,8 @@ void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fi
 		return;
 	}
 	FILE* file = fopen(fileName, "w");
-	if (!file) {
-		printf("error in opening file\n");
-		return;
-	}
+	PRINT_RETURN(file, "error in opening file");
+
 	fprintf(file, "%d\n", storeManager->noOfStores);
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		saveStoreToTextFile(storeManager->stores[i], file);
@@ -364,26 +349,19 @@ void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fi
 
 void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName) {
 	FILE* file = fopen(fileName, "r");
-	if (!file) {
-		printf("error in opening file\n");
-		return;
-	}
+	PRINT_RETURN(file, "error in opening file");
+
 	int noOfStores;
 	fscanf(file, "%d", &noOfStores);
 	fgetc(file);
 	storeManager->noOfStores = noOfStores;
 	Store** stores = (Store**)malloc(noOfStores * sizeof(Store*));
-	if (!stores) {
-		printf("error in allocating memory\n");
-		return;
-	}
+	PRINT_RETURN(stores, "error in allocating memory");
+
 	for (int i = 0; i < noOfStores; i++) {
 		Store* store = (Store*)malloc(sizeof(Store));
 		initStore(store, 0);
-		if (!store) {
-			printf("error in allocating memory\n");
-			return;
-		}
+		PRINT_RETURN(store, "error in allocating memory");
 		loadStoreFromTextFile(store, file);
 		stores[i] = store;
 	}

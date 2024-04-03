@@ -8,6 +8,7 @@
 #include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "Macros.h"
 
 typedef struct Store {
 	int storeID;
@@ -35,6 +36,8 @@ Employee* getEmployee(Store* store, int employeeID);
 Employee* getEmployeeTUI(Store* store);
 
 int checkIfThereAreProductsInStore(Store* store);
+
+int countAvailableProductsInStore(Store* store);
 
 void makeSale(Store* store);
 

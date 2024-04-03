@@ -11,10 +11,10 @@ void setCustomerID(Customer* customer) {
 	int id;
 	do {
 		scanf("%d", &id);
-		if (id < 0) {
-			printf("Invalid ID\n");
+		if (id <= 0) {
+			printf("Invalid ID, try again.\n");
 		}
-	} while (id < 0);
+	} while (id <= 0);
 	customer->id = id;
 }
 
@@ -27,10 +27,10 @@ void setContactNumber(Customer* customer) {
 	int contactNumber;
 	do {
 		scanf("%d", &contactNumber);
-		if (contactNumber < 0) {
-			printf("Invalid contact number\n");
+		if (contactNumber <= 0) {
+			printf("Invalid contact number, try again.\n");
 		}
-	} while (contactNumber < 0);
+	} while (contactNumber <= 0);
 	customer->contactNumber = contactNumber;
 }
 

@@ -137,6 +137,7 @@
     <ClInclude Include="GeneralFunctions.h" />
     <ClInclude Include="Invoice.h" />
     <ClInclude Include="list.h" />
+    <ClInclude Include="Macros.h" />
     <ClInclude Include="Product.h" />
     <ClInclude Include="Store.h" />
     <ClInclude Include="StoreManager.h" />

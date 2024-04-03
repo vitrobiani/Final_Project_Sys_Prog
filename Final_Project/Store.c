@@ -97,12 +97,10 @@ Department* getDepartmentTUI(Store* store) {
 	Department* department;
 	do {
 		scanf("%d", &departmentID);
-		department = getDepartment(store, departmentID);
-		if (!department) {
-			printf("no such department\n");
-			return NULL;
-		}
-	} while (!department);
+		if (departmentID < 0 || departmentID >= noOfDepartmentTypes)
+			printf("no such department, try again.\n");
+	} while (departmentID < 0 || departmentID >= noOfDepartmentTypes);
+	department = getDepartment(store, departmentID);
 	return department;
 }
 
@@ -119,10 +117,6 @@ void addProductToDepartment(Store* store) {
 }
 
 Employee* getEmployee(Store* store, int employeeID) {
-	if (store == NULL) {
-		printf("store is null\n");
-		return NULL;
-	}
 	for (int i = 0; i < store->noOfEmployees; i++) {
 		if (store->employees[i].id == employeeID) {
 			return &store->employees[i];
@@ -132,9 +126,6 @@ Employee* getEmployee(Store* store, int employeeID) {
 }
 
 Employee* getEmployeeTUI(Store* store) {
-	if (store == NULL) {
-		return NULL;
-	}
 	printAllEmployees(store);
 	int employeeID;
 	printf("Enter the employee ID: ");
@@ -142,10 +133,8 @@ Employee* getEmployeeTUI(Store* store) {
 	do {
 		scanf("%d", &employeeID);
 		employee = getEmployee(store, employeeID);
-		if (!employee) {
-			printf("no such employee\n");
-			return NULL;
-		}
+		if (!employee)
+			printf("no such employee, try again.\n");
 	} while (!employee);
 	return employee;
 }
@@ -162,26 +151,32 @@ int checkIfThereAreProductsInStore(Store* store) {
 	return 0;
 }
 
-void makeSale(Store* store) {
-	if(store->noOfEmployees == 0) {
-		printf("no employees in the store\n");
-		return;
-	}else if (checkIfThereAreProductsInStore(store) == 0) {
-		printf("no products in the store\n");
-		return;
+int countAvailableProductsInStore(Store* store)
+{
+	int sum = 0;
+	for (int i = 0; i < store->noOfDepartments; i++) {
+		for (int j = 0; j < store->departments[i].noOfProducts; j++) {
+			if(store->departments[i].products[j].quantity > 0)
+				sum++;
+		}
 	}
-	printf("how many products do you want to buy? ");
+	return sum;
+}
+
+void makeSale(Store* store) {
+	PRINT_RETURN(store->noOfEmployees, "no employees in the store");
+	PRINT_RETURN(checkIfThereAreProductsInStore(store), "no products in the store");
+	int availableProducts = countAvailableProductsInStore(store);
+	printf("There are %d available products in the store how many do you want to buy? ", availableProducts);
 	int numOfProducts;
 	do {
 		scanf("%d", &numOfProducts);
-		if (numOfProducts <= 0) {
-			printf("number of products must be a positive number\n");
+		if (numOfProducts <= 0 || numOfProducts > availableProducts) {
+			printf("number of products must be between 0 - %d, try again.\n", availableProducts);
 		}
-	} while (numOfProducts <= 0);
+	} while (numOfProducts <= 0 || numOfProducts > availableProducts);
 	Product* products = (Product*)malloc(numOfProducts * sizeof(Product));
-	if (!products || store->noOfDepartments == 0 || store->noOfEmployees == 0) {
-		return;
-	}
+	PRINT_RETURN(products, "error in allocating memory for products");
 	for (int i = 0; i < numOfProducts; i++) {
 		Department* department;
 		do{
@@ -197,24 +192,16 @@ void makeSale(Store* store) {
 		do {
 			myGets(code, MAX_STR_LEN);
 			product = getProduct(department, code);
-			if (!product || product->quantity == 0) {
-				printf("no such product or quantity is 0\n");
-				return;
-			}
-		} while (!product);
+			if (!product || product->quantity == 0)
+				printf("no such product or quantity is 0, try again.\n");
+		} while (!product || product->quantity == 0);
 		int quantity;
 		printf("Enter the quantity: ");
 		do {
 			scanf("%d", &quantity);
-			if (quantity <= 0) {
-				printf("quantity must be a positive number\n");
-			}
-		} while (quantity <= 0);
-		if (product->quantity < quantity) {
-			printf("not enough quantity\n");
-			numOfProducts = i;
-			break;
-		}
+			if (quantity <= 0 || product->quantity < quantity)
+				printf("quantity must be between 0 - %d, try again.\n", product->quantity);
+		} while (quantity <= 0 || product->quantity < quantity);
 		product->quantity -= quantity;
 		products[i].buyPrice = product->buyPrice;
 		products[i].sellPrice = product->sellPrice;
@@ -222,6 +209,7 @@ void makeSale(Store* store) {
 		strcpy(products[i].code, product->code);
 		products[i].name = (char*)malloc(strlen(product->name) + 1);
 		if (!products[i].name) {
+			printf("error in allocating memory for product name.\n");
 			free(products);
 			return;
 		}
@@ -362,6 +350,7 @@ void printAllDepartments(const Store* store) {
 	for (int i = 0; i < noOfDepartmentTypes; i++) {
 		printDepartmentFull(&store->departments[i]);
 	}
+	printf("\n");
 }
 
 void printAllProductsInStore(const Store* store) {
