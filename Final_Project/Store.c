@@ -61,7 +61,7 @@ void addEmployee(Store* store) {
 	}
 	store->employees = tmp;
 	store->employees[store->noOfEmployees].id = emp->id;
-	store->employees[store->noOfEmployees].name = (Employee*)malloc(strlen(emp->name) + 1);
+	store->employees[store->noOfEmployees].name = (char*)malloc(strlen(emp->name) + 1);
 	if (!store->employees[store->noOfEmployees].name) {
 		free(emp);
 		return;
