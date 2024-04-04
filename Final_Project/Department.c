@@ -93,6 +93,10 @@ void printDepartmentFull(const Department* department) {
 		return;
 	}
 	printf("\nDepartment Name: %s \t Department ID: %d\n", departmentTypeStr[department->type], department->type);
+	if (department->noOfProducts == 0){
+		printf("there are no products in this department.\n");
+		return;
+	}
 	printAllProducts(department);
 }
 

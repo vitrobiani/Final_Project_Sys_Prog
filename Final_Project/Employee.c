@@ -1,32 +1,17 @@
 #include "Employee.h"
 
-void initEmployee(Employee* employee) {
-	employee->id = getEmployeeID();
-	employee->name = getStrExactName("Enter Employee name: ");
-	employee->salary = getSalary();
-	employee->position = getPosition();
-}
-
-int getEmployeeID() {
-	int id;
-	printf("Enter the employee ID: ");
-	do {
-		scanf("%d", &id);
-		if (id < 0) {
-			printf("Invalid ID, please enter a positive number: ");
-		}
-	} while (id < 0);
-	return id;
-}
-
 void printEmployee(const Employee* employee) {
-	printf("Employee ID: %d\t Employee Name: %s\t Position: %s\n", employee->id, employee->name, ePositionStr[employee->position]);
+	printf("Employee ID: %d\t Employee Name: %s\t Position: %s\t salary: %d\n", employee->id, employee->name, ePositionStr[employee->position], employee->salary);
 }
 
 int getSalary() {
 	printf("Enter the yearly salary: ");
 	int salary;
-	scanf("%d", &salary);
+	do {
+		scanf("%d", &salary);
+		if(salary <= 0)
+			printf("Salary must be a positive number\n");
+	} while (salary <= 0);
 	return salary;
 }
 
@@ -43,6 +28,8 @@ ePosition getPosition() {
 	int position;
 	do {
 		scanf("%d", &position);
+		if (position < 1 || position > eNumOfPositions)
+			printf("Invalid position, please enter a number between 1 - %d: ", eNumOfPositions);
 	} while (position < 1 || position > eNumOfPositions);
 	return position - 1;
 }

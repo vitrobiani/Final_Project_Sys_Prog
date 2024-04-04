@@ -29,6 +29,12 @@ int initStore(Store* store, int id);
 
 void initDepartmentArray(Store* store);
 
+void initEmployee(Store* store, Employee* employee);
+
+int getEmployeeID(Store* store);
+
+int isEmployeeIDUnique(Store* store, int id);
+
 void addEmployee(Store* store);
 
 Employee* getEmployee(Store* store, int employeeID);
@@ -38,6 +44,16 @@ Employee* getEmployeeTUI(Store* store);
 int checkIfThereAreProductsInStore(Store* store);
 
 int countAvailableProductsInStore(Store* store);
+
+int getNumOfProducts(int availableProducts);
+
+int insertNewInvoiceToList(LIST* pList, Invoice* pInvoice);
+
+Department* chooseDepartment(Store* store);
+
+Product* chooseProduct(Department* department);
+
+int chooseQuantity(Product* product);
 
 void makeSale(Store* store);
 

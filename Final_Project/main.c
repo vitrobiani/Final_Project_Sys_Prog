@@ -92,10 +92,6 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 			addEmployee(store);
 			break;
 		}
-		case ePRINT_DEPARTMENTS: {
-			printAllDepartments(store);
-			break;
-		}
 		case eADD_PRODUCT: {
 			addProductToDepartment(store);
 			break;
@@ -104,16 +100,24 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 			makeSale(store);
 			break;
 		}
-		case ePRINT_INVOICES: {
-			printAllInvoices(store);
-			break;
-		}
 		case eCALCULATE_PROFIT: {
 			printStoreProfit(store);
 			break;
 		}
 		case eCALCULATE_SPENDINGS: {
 			printStoreSpendings(store);
+			break;
+		}
+		case ePRINT_EMPLOYEES: {
+			printAllEmployees(store);
+			break;
+		}
+		case ePRINT_DEPARTMENTS: {
+			printAllDepartments(store);
+			break;
+		}
+		case ePRINT_INVOICES: {
+			printAllInvoices(store);
 			break;
 		}
 		default:

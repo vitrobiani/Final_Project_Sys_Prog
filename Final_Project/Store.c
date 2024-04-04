@@ -45,6 +45,40 @@ void initDepartmentArray(Store* store) {
 	}
 }
 
+void initEmployee(Store* store, Employee* employee) {
+	if (store->noOfEmployees > 0){
+		printf("All the employees who work in the store are:\n");
+		printAllEmployees(store);
+	}
+	employee->id = getEmployeeID(store);
+	employee->name = getStrExactName("Enter the employee name: ");
+	employee->position = getPosition();
+	employee->salary = getSalary();
+}
+
+int getEmployeeID(Store* store) {
+	int id;
+	printf("Enter the employee ID:(the ID must be unique)\n");
+	do {
+		scanf("%d", &id);
+		if (id <= 0) {
+			printf("Invalid ID, please enter a positive number:\n");
+		}
+	} while (id <= 0 || !isEmployeeIDUnique(store, id));
+	return id;
+}
+
+int isEmployeeIDUnique(Store* store, int id)
+{
+	for (int i = 0; i < store->noOfEmployees; i++) {
+		if (store->employees[i].id == id) {
+			printf("There is already an employee in the store with the ID you entered, try again.\n");
+			return 0;
+		}
+	}
+	return 1;
+}
+
 void addEmployee(Store* store) {
 	if (store == NULL) {
 		return;
@@ -53,7 +87,7 @@ void addEmployee(Store* store) {
 	if (emp == NULL) {
 		return;
 	}
-	initEmployee(emp);
+	initEmployee(store, emp);
 	Employee* tmp = (Employee*)realloc(store->employees, (store->noOfEmployees + 1) * sizeof(Employee));
 	if (!tmp) {
 		free(emp);
@@ -163,69 +197,121 @@ int countAvailableProductsInStore(Store* store)
 	return sum;
 }
 
+int getNumOfProducts(int availableProducts)
+{
+	int numOfProducts;
+	printf("There are %d available products in the store how many do you want to buy? ", availableProducts);
+	do {
+		scanf("%d", &numOfProducts);
+		if (numOfProducts <= 0 || numOfProducts > availableProducts) {
+			printf("number of products must be between 1 - %d, try again.\n", availableProducts);
+		}
+	} while (numOfProducts <= 0 || numOfProducts > availableProducts);
+
+	return numOfProducts;
+}
+
+int insertNewInvoiceToList(LIST* pList, Invoice* pInvoice)
+{
+	NODE* pN = pList->head.next;
+	NODE* pPrev = &pList->head;
+	while (pN)
+	{
+		if(((Invoice*)pN->key)->invoiceID == pInvoice->invoiceID)
+		{
+			printf("Invoice with the same ID already exists\n");
+			return 0;
+		}
+		if (((Invoice*)pN->key)->invoiceID > pInvoice->invoiceID)
+		{
+			if (!L_insert(pPrev, pInvoice)) {
+				printf("error in inserting the invoice to the list\n");
+				return 0;
+			}
+			return 1;
+		}
+		pPrev = pN;
+		pN = pN->next;
+	}
+	if (!L_insert(pPrev, pInvoice)) {
+		printf("error in inserting the invoice to the list\n");
+		return 0;
+	}
+	return 1;
+}
+
+Department* chooseDepartment(Store* store)
+{
+	Department* department;
+	do {
+		department = getDepartmentTUI(store);
+		if (!checkDepartmentStock(department)) {
+			printf("no products in this department\n");
+		}
+	} while (!checkDepartmentStock(department));
+	return department;
+}
+
+Product* chooseProduct(Department* department)
+{
+	printAllProducts(department);
+	Product* product;
+	char code[MAX_STR_LEN];
+	printf("Enter the product code: ");
+	do {
+		myGets(code, MAX_STR_LEN);
+		product = getProduct(department, code);
+		if (!product || product->quantity == 0)
+			printf("no such product or quantity is 0, try again.\n");
+	} while (!product || product->quantity == 0);
+	return product;
+}
+
+int chooseQuantity(Product* product)
+{
+	int quantity;
+	printf("Enter the quantity: ");
+	do {
+		scanf("%d", &quantity);
+		if (quantity <= 0 || product->quantity < quantity)
+			printf("quantity must be between 1 - %d, try again.\n", product->quantity);
+	} while (quantity <= 0 || product->quantity < quantity);
+	return quantity;
+}
+
+
+
 void makeSale(Store* store) {
 	PRINT_RETURN(store->noOfEmployees, "no employees in the store");
 	PRINT_RETURN(checkIfThereAreProductsInStore(store), "no products in the store");
 	int availableProducts = countAvailableProductsInStore(store);
-	printf("There are %d available products in the store how many do you want to buy? ", availableProducts);
-	int numOfProducts;
-	do {
-		scanf("%d", &numOfProducts);
-		if (numOfProducts <= 0 || numOfProducts > availableProducts) {
-			printf("number of products must be between 0 - %d, try again.\n", availableProducts);
-		}
-	} while (numOfProducts <= 0 || numOfProducts > availableProducts);
+	int numOfProducts = getNumOfProducts(availableProducts);
 	Product* products = (Product*)malloc(numOfProducts * sizeof(Product));
 	PRINT_RETURN(products, "error in allocating memory for products");
 	for (int i = 0; i < numOfProducts; i++) {
 		Department* department;
-		do{
-			department = getDepartmentTUI(store);
-			if (!checkDepartmentStock(department)) {
-				printf("no products in this department\n");
-			}
-		} while (!checkDepartmentStock(department));
-		printAllProducts(department);
-		char code[MAX_STR_LEN];
-		printf("Enter the product code: ");
+		department = chooseDepartment(store);
 		Product* product;
-		do {
-			myGets(code, MAX_STR_LEN);
-			product = getProduct(department, code);
-			if (!product || product->quantity == 0)
-				printf("no such product or quantity is 0, try again.\n");
-		} while (!product || product->quantity == 0);
+		product = chooseProduct(department);
 		int quantity;
-		printf("Enter the quantity: ");
-		do {
-			scanf("%d", &quantity);
-			if (quantity <= 0 || product->quantity < quantity)
-				printf("quantity must be between 0 - %d, try again.\n", product->quantity);
-		} while (quantity <= 0 || product->quantity < quantity);
+		quantity = chooseQuantity(product);
 		product->quantity -= quantity;
 		products[i].buyPrice = product->buyPrice;
 		products[i].sellPrice = product->sellPrice;
 		products[i].quantity = quantity;
 		strcpy(products[i].code, product->code);
 		products[i].name = (char*)malloc(strlen(product->name) + 1);
-		if (!products[i].name) {
-			printf("error in allocating memory for product name.\n");
-			free(products);
-			return;
-		}
+		PRINT_FREE_RETURN(products[i].name, products, "error in allocating memory for product name.");
 		strcpy(products[i].name, product->name);
 	}
 	Employee* employee = getEmployeeTUI(store);
-
 	Invoice* invoice = (Invoice*)malloc(sizeof(Invoice));
-	if(!invoice) {
-		free(products);
-		return;
-	}
+	PRINT_FREE_RETURN(invoice, products, "error in allocating memory for invoice");
 	initCustomer(&invoice->customer);
 	store->noOfInvoices++;
 	initInvoice(invoice, store->storeID, employee, products, numOfProducts, generateInvoiceID(store));
-	L_insert(&store->invoiceList.head, invoice);
+	if(!insertNewInvoiceToList(&store->invoiceList, invoice))
+		freeInvoice(invoice);
 	calculateStoreProfit(store);
 }
 
@@ -281,6 +367,10 @@ int calculateStoreSpendings(Store* store) {
 }
 
 void printAllInvoices(const Store* store) {
+	if (store->noOfInvoices == 0){
+		printf("There are no invoices.\n");
+		return;
+	}
 	L_print(&store->invoiceList, printInvoice);
 }
 
@@ -335,12 +425,14 @@ void printStoreSpendings(const Store* store) {
 }
 
 void printAllEmployees(const Store* store) {
-	if (store == NULL) {
+	if (store->noOfEmployees == 0) {
+		printf("There are no employees in the store.\n");
 		return;
 	}
 	for (int i = 0; i < store->noOfEmployees; i++) {
 		printEmployee(&store->employees[i]);
 	}
+	printf("\n");
 }
 
 void printAllDepartments(const Store* store) {
@@ -456,7 +548,7 @@ void loadStoreFromTextFile(Store* store, FILE* file) {
 		Employee* employee = getEmployee(store, invoice->employee->id);
 		free(invoice->employee);
 		invoice->employee = employee;
-		L_insert(&store->invoiceList.head, invoice);
+		insertNewInvoiceToList(&store->invoiceList, invoice);
 	}
 }
 
@@ -541,7 +633,7 @@ int loadStoreFromBinaryFile(Store* store, FILE* file) {
 		Employee* employee = getEmployee(store, invoice->employee->id);
 		free(invoice->employee);
 		invoice->employee = employee;
-		L_insert(&store->invoiceList.head, invoice);
+		insertNewInvoiceToList(&store->invoiceList, invoice);
 	}
 	return 1;
 }

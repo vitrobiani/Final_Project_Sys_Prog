@@ -19,15 +19,11 @@ typedef struct Employee {
 	int salary;
 } Employee;
 
-void initEmployee(Employee* employee);
-
 void printEmployee(const Employee* employee);
 
 int getSalary();
 
 void printPositions();
-
-int getEmployeeID();
 
 ePosition getPosition();
 
