@@ -122,11 +122,13 @@ void addProductToDepartmentType(StoreManager* storeManager) {
 	if (product == NULL) {
 		return;
 	}
+	int check;
 	do {
 		getProductCode(product->code);
-		if(checkIfProductCodeExists(storeManager, product->code))
-			printf("Product code already exists, please try again: ");
-	}while(checkIfProductCodeExists(storeManager, product->code));
+		check = checkIfProductCodeExists(storeManager, product->code);
+		if(check)
+			printf("Product code already exists, please try again.\n");
+	}while(check);
 	initProduct(product);
 	printProduct(product);
 	addProductToMainStore(storeManager, departmentTypeID, product);
@@ -222,7 +224,7 @@ void calculateTotalProfit(const StoreManager* storeManager) {
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		totalProfit += calculateStoreProfit(storeManager->stores[i]);
 	}
-	printf("Total profit for the year %d: %d\n", YEAR, totalProfit);
+	printf("Total profit for the year %d: %d\n", MIN_YEAR, totalProfit);
 }
 
 void sortAllStoresBy(StoreManager* storeManager) {
@@ -332,6 +334,34 @@ void freeStoreManager(StoreManager* storeManager) {
 		free(storeManager->stores);
 	}
 }
+
+void findChainBestSalesMan(const StoreManager* storeManager){
+	PRINT_RETURN(storeManager->stores, "system not initialized");
+	int year = getYear();
+	int saleAmount = 0;
+	int maxSales = 0;
+	int storeIndex;
+	Employee* bestSeller = NULL;
+	for (int i = 0; i < storeManager->noOfStores; i++) {
+		if (storeManager->stores[i]->noOfInvoices > 0) {
+			Employee* tmp = getBestSalesMan(storeManager->stores[i], &saleAmount, year);
+			if (saleAmount > maxSales) {
+				maxSales = saleAmount;
+				bestSeller = tmp;
+				storeIndex = i;
+			}
+		}
+	}
+	if (!bestSeller) {
+		printf("The chain had no sales in %d\n", year);
+		return;
+	}
+		printf("The best salesman in the chain for the year %d is: %s.\n", year, bestSeller->name);
+		printf("The store he works in is in: %s.\n", storeManager->stores[storeIndex]->location);
+		printf("His total sales amount is: %d\n", saleAmount);
+}
+
+
 
 void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fileName) {
 	if (storeManager == NULL) {

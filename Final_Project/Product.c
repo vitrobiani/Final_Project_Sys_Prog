@@ -44,7 +44,7 @@ void getPrice(Product* product) {
 	do {
 		scanf("%d", &buyPrice);
 		if (buyPrice <= 0) {
-			printf("Price must be a positive number\n");
+			printf("Price must be greater than 0, try again.\n");
 		}
 	} while (buyPrice <= 0);
 	product->buyPrice = buyPrice;
@@ -52,10 +52,10 @@ void getPrice(Product* product) {
 	int sellPrice;
 	do {
 		scanf("%d", &sellPrice);
-		if (sellPrice <= 0) {
-			printf("Price must be a positive number\n");
+		if (sellPrice <= buyPrice) {
+			printf("Sell price must be greater than buy price, try again.\n");
 		}
-	} while (sellPrice <= 0);
+	} while (sellPrice <= buyPrice);
 	product->sellPrice = sellPrice;
 }
 
@@ -64,10 +64,10 @@ void updateQuantity(Product* product) {
 	int quantity;
 	do {
 		scanf("%d", &quantity);
-		if (quantity < 0) {
-			printf("Quantity must be a positive number\n");
+		if (quantity <= product->quantity) {
+			printf("The quantity must be greater than the current quantity, try again.\n");
 		}
-	} while (quantity < 0);
+	} while (quantity <= product->quantity);
 	product->quantity = quantity;
 }
 

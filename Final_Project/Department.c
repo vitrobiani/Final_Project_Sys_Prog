@@ -28,7 +28,7 @@ void addToProduct(Department* dep) {
 		myGets(code, MAX_STR_LEN);
 		product = getProduct(dep, code);
 		if (!product)
-			printf("no such product\n");
+			printf("no such product, try again.\n");
 	} while (product == NULL);
 	updateQuantity(product);
 }

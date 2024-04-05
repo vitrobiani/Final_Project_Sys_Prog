@@ -6,14 +6,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define YEAR 2024
+#define MIN_YEAR 2024
+#define MAX_YEAR 9999
+
 typedef unsigned char BYTE;
 
 typedef struct
 {
 	int	day;  // 1-31
 	int	month;// 1-12
-	int	year; // 0-9999
+	int	year; // 2024-9999
 }Date;
 
 void getCorrectDate(Date* pDate);

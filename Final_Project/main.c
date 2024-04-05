@@ -11,6 +11,7 @@ typedef enum {
 	eSORT_BY,
 	eFIND_STORE,
 	eCALCULATE_TOTAL_PROFIT,
+	eCHAIN_BEST_SALESMAN,
 	eEXIT,
 	eNumOfOptions
 } Options;
@@ -24,6 +25,7 @@ const char* optionsStrings[] = {
 	"Sort by",
 	"Find a store",
 	"Calculate total profit",
+	"Find the best salesman in the chain",
 	"Exit"
 };
 
@@ -36,6 +38,7 @@ typedef enum {
 	ePRINT_EMPLOYEES,
 	ePRINT_DEPARTMENTS,
 	ePRINT_INVOICES,
+	eBEST_SALESMAN,
 	eGO_BACK,
 	eNumOfStoreMenuOptions
 }storeMenu;
@@ -49,6 +52,7 @@ const char* storeMenuStrings[] = {
 	"Print all employees",
 	"Print all departments and their products",
 	"Print all invoices",
+	"Find the best salesman in the store",
 	"Go back to the main menu"
 };
 
@@ -120,6 +124,10 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 			printAllInvoices(store);
 			break;
 		}
+		case eBEST_SALESMAN: {
+			findBestSalesMan(store);
+			break;
+		}
 		default:
 			break;
 		}
@@ -167,16 +175,20 @@ int main() {
 			storeLobby(enterStore(&storeManager), &storeManager);
 			break;
 		}
-		case eCALCULATE_TOTAL_PROFIT: {
-			calculateTotalProfit(&storeManager);
-			break;
-		}
 		case eSORT_BY: {
 			sortAllStoresBy(&storeManager);
 			break;
 		}
 		case eFIND_STORE: {
 			findStore(&storeManager);
+			break;
+		}
+		case eCALCULATE_TOTAL_PROFIT: {
+			calculateTotalProfit(&storeManager);
+			break;
+		}
+		case eCHAIN_BEST_SALESMAN: {
+			findChainBestSalesMan(&storeManager);
 			break;
 		}
 		default:

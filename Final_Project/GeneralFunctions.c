@@ -101,3 +101,9 @@ void generalArrayFunction(const void* arr, int size, int typeSize, void(*func)(v
 		func((char*)arr + i * typeSize);
 	}
 }
+
+void capitalizeFirstLetter(char* str) {
+	if (str != NULL && *str != '\0' && islower(*str)) { // Check if the string is not empty and the first character is lowercase
+		*str = toupper(*str); // Convert the first character to uppercase
+	}
+}

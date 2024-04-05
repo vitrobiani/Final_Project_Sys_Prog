@@ -2,6 +2,7 @@
 
 int createStore(Store* store, int id) {
 	store->location = getStrExactName("Enter the location of the store: ");
+	capitalizeFirstLetter(store->location);
 
 	if(initStore(store, id)){
 		return 0;
@@ -414,14 +415,14 @@ void printStoreProfit(const Store* store) {
 	if (store == NULL) {
 		return;
 	}
-	printf("Store profit for the year %d: %d\n", YEAR, store->profit);
+	printf("Store profit for the year %d: %d\n", MIN_YEAR, store->profit);
 }
 
 void printStoreSpendings(const Store* store) {
 	if (store == NULL) {
 		return;
 	}
-	printf("Store spendings for the year %d: %d\n", YEAR, store->profit);
+	printf("Store spendings for the year %d: %d\n", MIN_YEAR, store->profit);
 }
 
 void printAllEmployees(const Store* store) {
@@ -478,6 +479,58 @@ void freeStore(Store* store) {
 	generalArrayFunction(store->departments, store->noOfDepartments, sizeof(Department), freeDepartment);
 	L_free(&store->invoiceList, freeInvoice);
 	free(store->location);
+}
+
+Employee* getBestSalesMan(const Store* store, int* saleAmount, int year)
+{
+	int max = 0;
+	Employee* bestSeller = NULL;
+	for (int i = 0; i < store->noOfEmployees; i++)
+	{
+		NODE* tmp = store->invoiceList.head.next;
+		int sum = 0;
+		while (tmp)
+		{
+			Invoice* invoice = (Invoice*)tmp->key;
+			if (invoice->employee->id == store->employees[i].id && invoice->timeOfSale.year == year)
+			{
+				sum += invoice->saleAmount;
+			}
+			tmp = tmp->next;
+		}
+		if(sum > max)
+		{
+			max = sum;
+			bestSeller = &store->employees[i];
+		}
+	}
+	*saleAmount = max;
+	return bestSeller;
+}
+
+void findBestSalesMan(const Store* store)
+{
+	int year = getYear();
+	int saleAmount;
+	Employee* bestSeller = getBestSalesMan(store, &saleAmount, year);
+	if (!bestSeller){
+		printf("The store had no sales in %d\n", year);
+		return;
+	}
+	printf("The best salesman in the store for the year %d is: %s\n", year, bestSeller->name);
+	printf("His total sales amount is: %d\n", saleAmount);
+}
+
+int getYear()
+{
+	int year;
+	printf("Enter the year: ");
+	do {
+		scanf("%d", &year);
+		if (year < MIN_YEAR || year > MAX_YEAR)
+			printf("\nYear must be between %d - %d, try again.\n", MIN_YEAR, MAX_YEAR);
+	} while (year < MIN_YEAR || year > MAX_YEAR);
+	return year;
 }
 
 void saveStoreToTextFile(const Store* store, FILE* file) {
