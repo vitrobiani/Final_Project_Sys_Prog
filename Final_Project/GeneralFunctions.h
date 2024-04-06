@@ -13,5 +13,6 @@ char* myGetsFile(char* buffer, int size, FILE* source);
 char* getDynStr(char* str);
 char** splitCharsToWords(char* str, int* pCount, int* pTotalLength);
 void generalArrayFunction(void* arr, int size, int typeSize, void(*func)(void* element));
+void capitalizeFirstLetter(char* str);
 
 #endif // !GENERALFUNCTIONS
