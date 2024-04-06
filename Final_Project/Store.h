@@ -95,11 +95,17 @@ void printStore(const Store* store);
 
 void freeStore(Store* store);
 
-Employee* getBestSalesMan(const Store* store, int* saleAmount, int year);
+Employee* getBestSalesMan(const Store* store, int* saleAmount, int* bestProfit, int year, int month);
 
 void findBestSalesMan(const Store* store);
 
+Product* getBestSellerProduct(const Store* store, int* quantity, int year, int mouth);
+
+void findBestSellerProduct(const Store* store);
+
 int getYear();
+
+int getMonth();
 
 void saveStoreToTextFile(const Store* store, FILE* file);
 

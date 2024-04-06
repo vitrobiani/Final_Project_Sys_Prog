@@ -336,17 +336,25 @@ void freeStoreManager(StoreManager* storeManager) {
 }
 
 void findChainBestSalesMan(const StoreManager* storeManager){
+//If there are multiple salesmen with the same sales amount, the salesman with the highest profit will be chosen.
+//If there are multiple salesmen with the same sales amount and profit(really unlikely), the first one will be chosen.
 	PRINT_RETURN(storeManager->stores, "system not initialized");
 	int year = getYear();
+	int month = getMonth();
 	int saleAmount = 0;
 	int maxSales = 0;
+	int bestProfit = 0;
+	int maxProfit = 0;
 	int storeIndex;
 	Employee* bestSeller = NULL;
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		if (storeManager->stores[i]->noOfInvoices > 0) {
-			Employee* tmp = getBestSalesMan(storeManager->stores[i], &saleAmount, year);
-			if (saleAmount > maxSales) {
+			Employee* tmp = getBestSalesMan(storeManager->stores[i], &saleAmount, &bestProfit, year, month);
+			if (saleAmount >= maxSales && saleAmount > 0) {
+				if(bestSeller && saleAmount == maxSales && bestProfit <= maxProfit)
+					continue;
 				maxSales = saleAmount;
+				maxProfit = bestProfit;
 				bestSeller = tmp;
 				storeIndex = i;
 			}
@@ -356,9 +364,42 @@ void findChainBestSalesMan(const StoreManager* storeManager){
 		printf("The chain had no sales in %d\n", year);
 		return;
 	}
-		printf("The best salesman in the chain for the year %d is: %s.\n", year, bestSeller->name);
+		printf("The best salesman in the chain for the year %d/%d is: %s.\n", month, year, bestSeller->name);
 		printf("The store he works in is in: %s.\n", storeManager->stores[storeIndex]->location);
-		printf("His total sales amount is: %d\n", saleAmount);
+		printf("His total sales amount is: %d\n", maxSales);
+		printf("His total profit is: %d\n", maxProfit);
+}
+
+void findChainBestSellerProduct(const StoreManager* storeManager) {
+	PRINT_RETURN(storeManager->stores, "system not initialized");
+	int year = getYear();
+	int month = getMonth();
+	int quantity = 0;
+	int maxQuantity = 0;
+	int maxProfit = 0;
+	int storeIndex;
+	Product* bestSeller = NULL;
+	for (int i = 0; i < storeManager->noOfStores; i++) {
+		if (storeManager->stores[i]->noOfInvoices > 0) {
+			Product* tmp = getBestSellerProduct(storeManager->stores[i], &quantity, year, month);
+			int profit = (tmp->sellPrice - tmp->buyPrice) * quantity;
+			if (quantity >= maxQuantity && quantity > 0) {
+				if(bestSeller && quantity == maxQuantity && profit <= maxProfit)
+					continue;
+				maxQuantity = quantity;
+				maxProfit = profit;
+				bestSeller = tmp;
+				storeIndex = i;
+			}
+		}
+	}
+	if (!bestSeller) {
+		printf("The chain had no sales in %d/%d\n", month, year);
+		return;
+	}
+	printf("The best-selling product in the chain for %d/%d is: %s\n", month, year, bestSeller->name);
+	printf("The total quantity sold is %d units, generating a total revenue of %d and %d profit\n", quantity, bestSeller->sellPrice * maxQuantity, maxProfit);
+	printf("The store it is in is in: %s.\n", storeManager->stores[storeIndex]->location);
 }
 
 

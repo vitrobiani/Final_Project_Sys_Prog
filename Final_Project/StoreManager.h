@@ -55,6 +55,8 @@ void freeStoreManager(StoreManager* storeManager);
 
 void findChainBestSalesMan(const StoreManager* storeManager);
 
+void findChainBestSellerProduct(const StoreManager* storeManager);
+
 void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fileName);
 
 void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName);

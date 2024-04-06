@@ -76,3 +76,10 @@ int	  readIntFromFile(int* pVal, FILE* fp, const char* msg)
 	return 1;
 
 }
+
+void readIntFromTextFile(int* val, FILE* fp, const char* msg)
+{
+	if (fscanf(fp, "%d", val) != 1)
+		puts(msg);
+	fgetc(fp);
+}
