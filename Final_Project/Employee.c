@@ -5,11 +5,11 @@ void printEmployee(const Employee* employee) {
 }
 
 int getSalary() {
-	printf("Enter the yearly salary: ");
+	printf("Enter the salary: ");
 	int salary;
 	do {
 		scanf("%d", &salary);
-		if(salary <= 0)
+		if (salary <= 0)
 			printf("Salary must be a positive number\n");
 	} while (salary <= 0);
 	return salary;
@@ -48,11 +48,11 @@ void saveEmployeeToTextFile(const Employee* employee, FILE* file) {
 void loadEmployeeFromTextFile(Employee* employee, FILE* file) {
 	fscanf(file, "%d", &employee->id);
 	fgetc(file);
-		
+
 	char tmp[MAX_STR_LEN];
 	myGetsFile(tmp, MAX_STR_LEN, file);
 	employee->name = getDynStr(tmp);
-	
+
 	fscanf(file, "%d", &employee->position);
 	fgetc(file);
 	fscanf(file, "%d", &employee->salary);
@@ -63,13 +63,13 @@ int saveEmployeeToBinaryFile(const Employee* employee, FILE* file)
 {
 	if (!writeIntToFile(employee->id, file, "Error writing employee ID to file\n"))
 		return 0;
-	if(!writeStringToFile(employee->name, file, "Error writing employee name to file\n"))
+	if (!writeStringToFile(employee->name, file, "Error writing employee name to file\n"))
 		return 0;
 	if (fwrite(&employee->position, sizeof(ePosition), 1, file) != 1)
-		{
-			puts("Error writing employee position to file");
-			return 0;
-		}
+	{
+		puts("Error writing employee position to file");
+		return 0;
+	}
 	if (!writeIntToFile(employee->salary, file, "Error writing employee salary to file\n"))
 		return 0;
 	return 1;

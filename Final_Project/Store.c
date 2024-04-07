@@ -4,22 +4,16 @@ int createStore(Store* store, int id) {
 	store->location = getStrExactName("Enter the location of the store: ");
 	capitalizeFirstLetter(store->location);
 
-	if(initStore(store, id)){
+	if (!initStore(store, id))
 		return 0;
-	}
-	
-	printf("Enter the store yearly rent: ");
+	printf("Enter the store rent: ");
 	int rent;
-	do{
+	do {
 		scanf("%d", &rent);
 		if (rent <= 0)
-		{
-			printf("rent must be a positive number");
-		}
+			printf("rent must be a positive number, try again.\n");
 	} while (rent <= 0);
 	store->rent = rent;
-	calculateStoreProfit(store);
-
 	return 1;
 }
 
@@ -33,7 +27,7 @@ int initStore(Store* store, int id) {
 
 	initDepartmentArray(store);
 
-	if(L_init(&store->invoiceList)) {
+	if (!L_init(&store->invoiceList)) {
 		return 0;
 	}
 	return 1;
@@ -47,8 +41,8 @@ void initDepartmentArray(Store* store) {
 }
 
 void initEmployee(Store* store, Employee* employee) {
-	if (store->noOfEmployees > 0){
-		printf("All the employees who work in the store are:\n");
+	if (store->noOfEmployees > 0) {
+		printf("All the employees that work in the store are:\n");
 		printAllEmployees(store);
 	}
 	employee->id = getEmployeeID(store);
@@ -85,9 +79,8 @@ void addEmployee(Store* store) {
 		return;
 	}
 	Employee* emp = (Employee*)malloc(sizeof(Employee));
-	if (emp == NULL) {
-		return;
-	}
+	PRINT_RETURN(emp, "error in allocating memory for employee");
+
 	initEmployee(store, emp);
 	Employee* tmp = (Employee*)realloc(store->employees, (store->noOfEmployees + 1) * sizeof(Employee));
 	if (!tmp) {
@@ -107,13 +100,9 @@ void addEmployee(Store* store) {
 	store->noOfEmployees++;
 	free(emp->name);
 	free(emp);
-	calculateStoreProfit(store);
 }
 
 Department* getDepartment(Store* store, int departmentID) {
-	if (store == NULL) {
-		return NULL;
-	}
 	for (int i = 0; i < store->noOfDepartments; i++) {
 		if (store->departments[i].type == departmentID) {
 			return &store->departments[i];
@@ -123,28 +112,18 @@ Department* getDepartment(Store* store, int departmentID) {
 }
 
 Department* getDepartmentTUI(Store* store) {
-	if (store == NULL) {
-		return NULL;
-	}
 	printAllDepartments(store);
 	int departmentID;
 	printf("Enter the department ID: ");
 	Department* department;
-	do {
-		scanf("%d", &departmentID);
-		if (departmentID < 0 || departmentID >= noOfDepartmentTypes)
-			printf("no such department, try again.\n");
-	} while (departmentID < 0 || departmentID >= noOfDepartmentTypes);
+	INT_FROM_USER(departmentID, -1, noOfDepartmentTypes, "no such department, try again.");
 	department = getDepartment(store, departmentID);
 	return department;
 }
 
 void addProductToDepartment(Store* store) {
-	if (store == NULL) {
-		return;
-	}
 	Department* department = getDepartmentTUI(store);
-	if(department->noOfProducts == 0) {
+	if (department->noOfProducts == 0) {
 		printf("No products in this department\n");
 		return;
 	}
@@ -191,7 +170,7 @@ int countAvailableProductsInStore(Store* store)
 	int sum = 0;
 	for (int i = 0; i < store->noOfDepartments; i++) {
 		for (int j = 0; j < store->departments[i].noOfProducts; j++) {
-			if(store->departments[i].products[j].quantity > 0)
+			if (store->departments[i].products[j].quantity > 0)
 				sum++;
 		}
 	}
@@ -218,7 +197,7 @@ int insertNewInvoiceToList(LIST* pList, Invoice* pInvoice)
 	NODE* pPrev = &pList->head;
 	while (pN)
 	{
-		if(((Invoice*)pN->key)->invoiceID == pInvoice->invoiceID)
+		if (((Invoice*)pN->key)->invoiceID == pInvoice->invoiceID)
 		{
 			printf("Invoice with the same ID already exists\n");
 			return 0;
@@ -311,15 +290,11 @@ void makeSale(Store* store) {
 	initCustomer(&invoice->customer);
 	store->noOfInvoices++;
 	initInvoice(invoice, store->storeID, employee, products, numOfProducts, generateInvoiceID(store));
-	if(!insertNewInvoiceToList(&store->invoiceList, invoice))
+	if (!insertNewInvoiceToList(&store->invoiceList, invoice))
 		freeInvoice(invoice);
-	calculateStoreProfit(store);
 }
 
 int generateInvoiceID(Store* store) {
-	if (store == NULL) {
-		return 0;
-	}
 	int maxID = 0;
 	NODE* tmp = store->invoiceList.head.next;
 	while (tmp) {
@@ -331,44 +306,8 @@ int generateInvoiceID(Store* store) {
 	return maxID + 1;
 }
 
-int calculateStoreProfit(Store* store) {
-	if (store == NULL) {
-		return 0;
-	}
-	int sum = 0;
-	NODE* tmp = store->invoiceList.head.next;
-	while (tmp) {
-		sum += calculateProfit((Invoice*)tmp->key);
-		tmp = tmp->next;
-	}
-	for (int i = 0; i < store->noOfEmployees; i++)
-	{
-		sum -= store->employees[i].salary;
-	}
-	sum = sum - store->rent;
-	store->profit = sum;
-	return sum;
-}
-
-int calculateStoreSpendings(Store* store) {
-	if (store == NULL) {
-		return 0;
-	}
-	int sum = 0;
-	for (int i = 0; i < store->noOfDepartments; i++){
-		sum += calculateDepartmentSpendings(&store->departments[i]);
-	}
-
-	for (int i = 0; i < store->noOfEmployees; i++)
-	{
-		sum += store->employees[i].salary;
-	}
-	sum += store->rent;
-	return sum;
-}
-
 void printAllInvoices(const Store* store) {
-	if (store->noOfInvoices == 0){
+	if (store->noOfInvoices == 0) {
 		printf("There are no invoices.\n");
 		return;
 	}
@@ -376,53 +315,31 @@ void printAllInvoices(const Store* store) {
 }
 
 int compareStoreByID(const void* store1, const void* store2) {
-	if (store1 == NULL || store2 == NULL) {
-		return 0;
-	}
+	
 	const Store* store1_ = *(const Store**)store1;
 	const Store* store2_ = *(const Store**)store2;
 	return (store1_)->storeID - (store2_)->storeID;
 }
 
 int compareStoreByProfit(const void* store1, const void* store2) {
-	if (store1 == NULL || store2 == NULL) {
-		return 0;
-	}
+
 	const Store* store1_ = *(const Store**)store1;
 	const Store* store2_ = *(const Store**)store2;
 	return store2_->profit - store1_->profit;
 }
 
 int compareStoreByRent(const void* store1, const void* store2) {
-	if (store1 == NULL || store2 == NULL) {
-		return 0;
-	}
+	
 	const Store* store1_ = *(const Store**)store1;
 	const Store* store2_ = *(const Store**)store2;
 	return (store1_)->rent - (store2_)->rent;
 }
 
 int compareStoreByLocation(const void* store1, const void* store2) {
-	if (store1 == NULL || store2 == NULL) {
-		return 0;
-	}
+	
 	const Store* store1_ = *(const Store**)store1;
 	const Store* store2_ = *(const Store**)store2;
-	return strcmp(store1_->location,store2_->location);
-}
-
-void printStoreProfit(const Store* store) {
-	if (store == NULL) {
-		return;
-	}
-	printf("Store profit for the year %d: %d\n", MIN_YEAR, store->profit);
-}
-
-void printStoreSpendings(const Store* store) {
-	if (store == NULL) {
-		return;
-	}
-	printf("Store spendings for the year %d: %d\n", MIN_YEAR, store->profit);
+	return strcmp(store1_->location, store2_->location);
 }
 
 void printAllEmployees(const Store* store) {
@@ -437,9 +354,6 @@ void printAllEmployees(const Store* store) {
 }
 
 void printAllDepartments(const Store* store) {
-	if (store == NULL) {
-		return;
-	}
 	for (int i = 0; i < noOfDepartmentTypes; i++) {
 		printDepartmentFull(&store->departments[i]);
 	}
@@ -447,26 +361,17 @@ void printAllDepartments(const Store* store) {
 }
 
 void printAllProductsInStore(const Store* store) {
-	if (store == NULL) {
-		return;
-	}
 	for (int i = 0; i < store->noOfDepartments; i++) {
 		printAllProducts(&store->departments[i]);
 	}
 }
 
 void printStoreReduced(const Store* store) {
-	if (store == NULL) {
-		return;
-	}
 	printf("\n# Store ID: %d\t", store->storeID);
 	printf("Location: %s\n", store->location);
 }
 
 void printStore(const Store* store) {
-	if (store == NULL) {
-		return;
-	}
 	printf("\n# Store ID: %d\t", store->storeID);
 	printf("Location: %s\n", store->location);
 	printf("\tRent: %d\t Profit: %d\n", store->rent, store->profit);
@@ -481,25 +386,24 @@ void freeStore(Store* store) {
 	free(store->location);
 }
 
-Employee* getBestSalesMan(const Store* store, int* saleAmount, int* bestProfit, int year, int month)
-{
+Employee* getBestSalesMan(const Store* store, int* saleAmount, int* bestProfit, int year, int month) {
 	int max = 0;
 	int maxProfit = 0;
 	Employee* bestSalesMan = NULL;
-	for (int i = 0; i < store->noOfEmployees; i++){
+	for (int i = 0; i < store->noOfEmployees; i++) {
 		NODE* tmp = store->invoiceList.head.next;
 		int sum = 0;
 		int profit = 0;
-		while (tmp){
+		while (tmp) {
 			Invoice* invoice = (Invoice*)tmp->key;
-			if (invoice->employee->id == store->employees[i].id && invoice->timeOfSale.year == year && invoice->timeOfSale.month == month){
+			if (invoice->employee->id == store->employees[i].id && invoice->timeOfSale.year == year && invoice->timeOfSale.month == month) {
 				sum += invoice->saleAmount;
 				profit += calculateProfit(invoice);
 			}
 			tmp = tmp->next;
 		}
-		if(sum >= max){
-			if(bestSalesMan && sum == max && profit <= maxProfit)
+		if (sum >= max && sum > 0) {
+			if (bestSalesMan && sum == max && profit <= maxProfit)
 				continue;
 			max = sum;
 			maxProfit = profit;
@@ -511,15 +415,15 @@ Employee* getBestSalesMan(const Store* store, int* saleAmount, int* bestProfit, 
 	return bestSalesMan;
 }
 
-void findBestSalesMan(const Store* store)
-{//If there are multiple salesmen with the same sales amount, the salesman with the highest profit will be chosen.
+//If there are multiple salesmen with the same sales amount, the salesman with the highest profit will be chosen.
 //If there are multiple salesmen with the same sales amount and profit(really unlikely), the first one will be chosen.
+void findBestSalesMan(const Store* store) {
 	int year = getYear();
 	int month = getMonth();
 	int saleAmount;
 	int profit;
 	Employee* bestSalesMan = getBestSalesMan(store, &saleAmount, &profit, year, month);
-	if (!bestSalesMan){
+	if (!bestSalesMan) {
 		printf("The store had no sales in %d/%d\n", month, year);
 		return;
 	}
@@ -528,19 +432,18 @@ void findBestSalesMan(const Store* store)
 	printf("His total profit is: %d\n", profit);
 }
 
-Product* getBestSellerProduct(const Store* store, int* quantity, int year, int mouth)
-{
+Product* getBestSellerProduct(const Store* store, int* quantity, int year, int mouth) {
 	int max = 0;
 	Product* bestSeller = NULL;
-	for (int i = 0; i < store->noOfDepartments; i++){
-		for (int j = 0; j < store->departments[i].noOfProducts; j++){
+	for (int i = 0; i < store->noOfDepartments; i++) {
+		for (int j = 0; j < store->departments[i].noOfProducts; j++) {
 			NODE* tmp = store->invoiceList.head.next;
 			int sum = 0;
-			while (tmp){
+			while (tmp) {
 				Invoice* invoice = (Invoice*)tmp->key;
-				if (invoice->timeOfSale.year == year && invoice->timeOfSale.month == mouth){
-					for (int k = 0; k < invoice->numOfProducts; k++){
-						if (strcmp(invoice->products[k].code, store->departments[i].products[j].code) == 0){
+				if (invoice->timeOfSale.year == year && invoice->timeOfSale.month == mouth) {
+					for (int k = 0; k < invoice->numOfProducts; k++) {
+						if (strcmp(invoice->products[k].code, store->departments[i].products[j].code) == 0) {
 							sum += invoice->products[k].quantity;
 						}
 					}
@@ -548,8 +451,8 @@ Product* getBestSellerProduct(const Store* store, int* quantity, int year, int m
 				tmp = tmp->next;
 			}
 			int profit = store->departments[i].products[j].sellPrice - store->departments[i].products[j].buyPrice;
-			if(sum >= max){
-				if(bestSeller && sum == max && profit <= bestSeller->sellPrice - bestSeller->buyPrice)
+			if (sum >= max && sum > 0) {
+				if (bestSeller && sum == max && profit <= bestSeller->sellPrice - bestSeller->buyPrice)
 					continue;
 				max = sum;
 				bestSeller = &store->departments[i].products[j];
@@ -560,14 +463,14 @@ Product* getBestSellerProduct(const Store* store, int* quantity, int year, int m
 	return bestSeller;
 }
 
-void findBestSellerProduct(const Store* store)
-{//If there are multiple products with the same quantity sold, the product with the highest profit will be chosen.
+//If there are multiple products with the same quantity sold, the product with the highest profit will be chosen.
 //If there are multiple products with the same quantity sold and profit(really unlikely), the first one will be chosen.
+void findBestSellerProduct(const Store* store) {
 	int year = getYear();
 	int month = getMonth();
 	int quantity;
 	Product* bestSeller = getBestSellerProduct(store, &quantity, year, month);
-	if (!bestSeller){
+	if (!bestSeller) {
 		printf("The store had no sales in %d/%d.\n", month, year);
 		return;
 	}
@@ -580,11 +483,7 @@ int getYear()
 {
 	int year;
 	printf("Enter the year: ");
-	do {
-		scanf("%d", &year);
-		if (year < MIN_YEAR || year > MAX_YEAR)
-			printf("\nYear must be between %d - %d, try again.\n", MIN_YEAR, MAX_YEAR);
-	} while (year < MIN_YEAR || year > MAX_YEAR);
+	INT_FROM_USER(year, MIN_YEAR -1, MAX_YEAR +1, "\nYear must be between 2024 - 9999, try again.");
 	return year;
 }
 
@@ -592,11 +491,7 @@ int getMonth()
 {
 	int month;
 	printf("Enter the month: ");
-	do {
-		scanf("%d", &month);
-		if (month < 1 || month > 12)
-			printf("\nMonth must be between 1 - 12, try again.\n");
-	} while (month < 1 || month > 12);
+	INT_FROM_USER(month, 0, 13, "\nMonth must be between 1 - 12, try again.");
 	return month;
 }
 
@@ -664,7 +559,7 @@ int saveStoreToBinaryFile(const Store* store, FILE* file) {
 		return 0;
 	if (!writeIntToFile(store->rent, file, "Error writing store rent to file\n"))
 		return 0;
-	if(!writeIntToFile(store->profit, file, "Error writing store profit to file\n"))
+	if (!writeIntToFile(store->profit, file, "Error writing store profit to file\n"))
 		return 0;
 	if (!writeIntToFile(store->noOfEmployees, file, "Error writing number of employees to file\n"))
 		return 0;
@@ -699,16 +594,8 @@ int createEmployeeArr(Store* store) {
 	return 1;
 }
 
-int loadStoreFromBinaryFile(Store* store, FILE* file) {
-	if (!readIntFromFile(&store->storeID, file, "Error reading store ID from file\n"))
-		return 0;
-	store->location = readStringFromFile(file, "Error reading store location from file\n");
-	if (!store->location)
-		return 0;
-	if (!readIntFromFile(&store->rent, file, "Error reading store rent from file\n"))
-		return 0;
-	if (!readIntFromFile(&store->profit, file, "Error reading store profit from file\n"))
-		return 0;
+int loadEmployeeArrFromBinaryFile(Store* store, FILE* file)
+{
 	if (!readIntFromFile(&store->noOfEmployees, file, "Error reading number of employees from file\n"))
 		return 0;
 	if (!createEmployeeArr(store))
@@ -717,18 +604,28 @@ int loadStoreFromBinaryFile(Store* store, FILE* file) {
 		if (!loadEmployeeFromBinaryFile(&store->employees[i], file))
 			return 0;
 	}
+	return 1;
+}
+
+int loadDepartmentArrFromBinaryFile(Store* store, FILE* file)
+{
 	if (!readIntFromFile(&store->noOfDepartments, file, "Error reading number of departments from file\n"))
 		return 0;
 	for (int i = 0; i < store->noOfDepartments; i++) {
 		if (!loadDepartmentFromBinaryFile(&store->departments[i], file))
 			return 0;
 	}
+	return 1;
+}
+
+int loadInvoiceListFromBinaryFile(Store* store, FILE* file)
+{
 	if (!readIntFromFile(&store->noOfInvoices, file, "Error reading number of invoices from file\n"))
 		return 0;
 	for (int i = 0; i < store->noOfInvoices; i++) {
 		Invoice* invoice = (Invoice*)malloc(sizeof(Invoice));
 		if (!invoice) {
-			puts("Error allocating memory for invoice");
+			printf("Error allocating memory for invoice\n");
 			return 0;
 		}
 		if (!loadInvoiceFromBinaryFile(invoice, file)) {
@@ -740,5 +637,24 @@ int loadStoreFromBinaryFile(Store* store, FILE* file) {
 		invoice->employee = employee;
 		insertNewInvoiceToList(&store->invoiceList, invoice);
 	}
+	return 1;
+}
+
+int loadStoreFromBinaryFile(Store* store, FILE* file) {
+	if (!readIntFromFile(&store->storeID, file, "Error reading store ID from file\n"))
+		return 0;
+	store->location = readStringFromFile(file, "Error reading store location from file\n");
+	if (!store->location)
+		return 0;
+	if (!readIntFromFile(&store->rent, file, "Error reading store rent from file\n"))
+		return 0;
+	if (!readIntFromFile(&store->profit, file, "Error reading store profit from file\n"))
+		return 0;
+	if(!loadEmployeeArrFromBinaryFile(store, file))
+		return 0;
+	if(!loadDepartmentArrFromBinaryFile(store, file))
+		return 0;
+	if(!loadInvoiceListFromBinaryFile(store, file))
+		return 0;
 	return 1;
 }

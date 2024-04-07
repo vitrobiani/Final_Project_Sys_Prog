@@ -11,7 +11,7 @@
 #define SIZE 3
 
 typedef struct Product {
-	char code[SIZE+1];
+	char code[SIZE + 1];
 	char* name;
 	int sellPrice;
 	int buyPrice;

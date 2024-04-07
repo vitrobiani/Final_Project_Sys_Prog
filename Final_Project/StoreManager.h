@@ -41,8 +41,6 @@ int checkIfProductCodeExists(const StoreManager* storeManager, const char* produ
 
 Store* enterStore(StoreManager* storeManager);
 
-void calculateTotalProfit(const StoreManager* storeManager);
-
 void sortAllStoresBy(StoreManager* storeManager);
 
 eSortOption showSortMenu();
@@ -55,6 +53,8 @@ void freeStoreManager(StoreManager* storeManager);
 
 void findChainBestSalesMan(const StoreManager* storeManager);
 
+Product* getChainBestSellerProduct(const StoreManager* storeManager, int* quantity, int year, int mouth);
+
 void findChainBestSellerProduct(const StoreManager* storeManager);
 
 void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fileName);
@@ -66,5 +66,7 @@ int saveStoreManagerToBinaryFile(const StoreManager* storeManager, const char* f
 int createStoreArr(StoreManager* storeManager);
 
 int loadStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileName);
+
+void initStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileName);
 
 #endif // !1

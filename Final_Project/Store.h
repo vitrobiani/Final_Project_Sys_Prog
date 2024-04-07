@@ -65,10 +65,6 @@ void addProductToDepartment(Store* store);
 
 int generateInvoiceID(Store* store);
 
-int calculateStoreProfit(Store* store);
-
-int calculateStoreSpendings(Store* store);
-
 int compareStoreByID(const void* store1, const void* store2);
 
 int compareStoreByProfit(const void* store1, const void* store2);
@@ -76,10 +72,6 @@ int compareStoreByProfit(const void* store1, const void* store2);
 int compareStoreByRent(const void* store1, const void* store2);
 
 int compareStoreByLocation(const void* store1, const void* store2);
-
-void printStoreProfit(const Store* store);
-
-void printStoreSpendings(const Store* store);
 
 void printAllInvoices(const Store* store);
 
@@ -114,6 +106,12 @@ void loadStoreFromTextFile(Store* store, FILE* file);
 int saveStoreToBinaryFile(const Store* store, FILE* file);
 
 int createEmployeeArr(Store* store);
+
+int loadEmployeeArrFromBinaryFile(Store* store, FILE* file);
+
+int loadDepartmentArrFromBinaryFile(Store* store, FILE* file);
+
+int loadInvoiceListFromBinaryFile(Store* store, FILE* file);
 
 int loadStoreFromBinaryFile(Store* store, FILE* file);
 

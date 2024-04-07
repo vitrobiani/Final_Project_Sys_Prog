@@ -6,16 +6,13 @@ void initStoreManager(StoreManager* storeManager) {
 }
 
 void loadSystem(StoreManager* storeManager) {
-	printf("Load options:\n");
-	for (int i = 0; i < eNoOfLoadOptions; i++){
+	printf("Welcome to the system for managing the all-in-one store chain.\n");
+	printf("From which file you wish to upload the system?\n");
+	for (int i = 0; i < eNoOfLoadOptions; i++) {
 		printf("%d. %s\n", i + 1, loadOptionsStr[i]);
 	}
 	int opt;
-	do {
-		scanf("%d", &opt);
-		if (opt < 1 || opt > eNoOfLoadOptions)
-			printf("Invalid option, please try again\n");
-	} while (opt < 1 || opt > eNoOfLoadOptions);
+	INT_FROM_USER(opt, 0, eNoOfLoadOptions + 1, "Invalid option, please try again.");
 	opt--;
 	switch (opt)
 	{
@@ -24,8 +21,9 @@ void loadSystem(StoreManager* storeManager) {
 		break;
 	}
 	case eLoadFromBinaryFile: {
-		int check = loadStoreManagerFromBinaryFile(storeManager, "storeManager.bin");
-		printf("check: %d\n", check);
+		/*int check = loadStoreManagerFromBinaryFile(storeManager, "storeManager.bin");
+		printf("check: %d\n", check);*/
+		initStoreManagerFromBinaryFile(storeManager, "storeManager.bin");
 		break;
 	}
 	case eLoadNewSystem: {
@@ -38,6 +36,7 @@ void loadSystem(StoreManager* storeManager) {
 void generateHQ(StoreManager* storeManager) {
 	printf("We will now generate the HQ store\n");
 	storeManager->stores = (Store**)malloc(sizeof(Store*));
+	PRINT_RETURN(storeManager->stores, "error in allocating memory");
 	addStore(storeManager);
 }
 
@@ -55,16 +54,10 @@ int generateStoreID(const StoreManager* storeManager) {
 }
 
 void addStore(StoreManager* storeManager) {
-	if(storeManager->stores == NULL) {
-		printf("system not initialized\n");
-		return;
-	}
 	int id = generateStoreID(storeManager);
 	Store* store = (Store*)malloc(sizeof(Store));
-	if (storeManager == NULL || store == NULL) {
-		return;
-	}
-	if(!createStore(store, id)){
+	PRINT_RETURN(store, "error in allocating memory");
+	if (!createStore(store, id)) {
 		free(store);
 		return;
 	}
@@ -76,28 +69,19 @@ void addStore(StoreManager* storeManager) {
 	storeManager->stores = tmp;
 	storeManager->stores[storeManager->noOfStores] = store;
 	storeManager->noOfStores++;
+	storeManager->storeSortOpt = eNone;
 	updateAllStoreDepartments(storeManager);
 }
 
-void addProductToMainStore(StoreManager* storeManager, int departmentID ,Product* product) {
-	if (storeManager->stores == NULL) {
-		printf("system not initialized\n");
-		return;
-	}
+void addProductToMainStore(StoreManager* storeManager, int departmentID, Product* product) {
 	Department* department = &storeManager->stores[0]->departments[departmentID];
 	Product* tmp = (Product*)realloc(department->products, sizeof(Product) * (department->noOfProducts + 1));
-	if (!tmp) {
-		printf("error in reallocating memory\n");
-		return;
-	}
+	PRINT_RETURN(tmp, "error in reallocating memory");
 	department->products = tmp;
 	department->products[department->noOfProducts].buyPrice = product->buyPrice;
 	department->products[department->noOfProducts].sellPrice = product->sellPrice;
 	department->products[department->noOfProducts].name = (char*)malloc(strlen(product->name) + 1);
-	if (!department->products[department->noOfProducts].name) {
-		printf("error in allocating memory\n");
-		return;
-	}
+	PRINT_RETURN(department->products[department->noOfProducts].name, "error in allocating memory");
 	strcpy(department->products[department->noOfProducts].name, product->name);
 	strcpy(department->products[department->noOfProducts].code, product->code);
 	department->products[department->noOfProducts].quantity = 0;
@@ -105,30 +89,19 @@ void addProductToMainStore(StoreManager* storeManager, int departmentID ,Product
 }
 
 void addProductToDepartmentType(StoreManager* storeManager) {
-	if (storeManager->stores == NULL) {
-		printf("system not initialized\n");
-		return;
-	}
 	printDepartmentTypes();
 	int departmentTypeID;
 	printf("Enter the department type ID: ");
-	do {
-		scanf("%d", &departmentTypeID);
-		if(departmentTypeID < 0 || departmentTypeID >= noOfDepartmentTypes)
-			printf("Invalid ID, please try again\n");
-	} while (departmentTypeID < 0 || departmentTypeID >= noOfDepartmentTypes);
-
-	Product* product = (Product*) malloc(sizeof(Product));
-	if (product == NULL) {
-		return;
-	}
+	INT_FROM_USER(departmentTypeID, -1, noOfDepartmentTypes, "Invalid ID, please try again.");
+	Product* product = (Product*)malloc(sizeof(Product));
+	PRINT_RETURN(product, "error in allocating memory");
 	int check;
 	do {
 		getProductCode(product->code);
 		check = checkIfProductCodeExists(storeManager, product->code);
-		if(check)
+		if (check)
 			printf("Product code already exists, please try again.\n");
-	}while(check);
+	} while (check);
 	initProduct(product);
 	printProduct(product);
 	addProductToMainStore(storeManager, departmentTypeID, product);
@@ -154,27 +127,22 @@ int checkIfProductCodeExists(const StoreManager* storeManager, const char* produ
 }
 
 void updateAllStoreDepartments(StoreManager* storeManager) {
-	if (storeManager->noOfStores <= 1) {
+	if (storeManager->noOfStores <= 1)
 		return;
-	}
 	for (int i = 1; i < storeManager->noOfStores; i++) {
 		for (int j = 0; j < storeManager->stores[i]->noOfDepartments; j++) {
 			Department* department = &storeManager->stores[i]->departments[j];
 			Department* MainDepartment = &storeManager->stores[0]->departments[j];
 			if (department->noOfProducts != MainDepartment->noOfProducts) {
-				
 				Product* tmp = (Product*)realloc(department->products, sizeof(Product) * (MainDepartment->noOfProducts));
 				PRINT_RETURN(tmp, "error in reallocating memory");
 				department->products = tmp;
 				for (int k = 0; k < MainDepartment->noOfProducts; k++) {
-					if (strcmp(department->products[k].code, MainDepartment->products[k].code) != 0){
+					if (strcmp(department->products[k].code, MainDepartment->products[k].code) != 0) {
 						department->products[k].buyPrice = MainDepartment->products[k].buyPrice;
 						department->products[k].sellPrice = MainDepartment->products[k].sellPrice;
 						department->products[k].name = (char*)malloc(strlen(MainDepartment->products[k].name) + 1);
-						if (!department->products[k].name) {
-							printf("error in allocating memory\n");
-							return;
-						}
+						PRINT_RETURN(department->products[k].name, "error in allocating memory");
 						strcpy(department->products[k].name, MainDepartment->products[k].name);
 						strcpy(department->products[k].code, MainDepartment->products[k].code);
 						department->products[k].quantity = 0;
@@ -182,7 +150,7 @@ void updateAllStoreDepartments(StoreManager* storeManager) {
 				}
 				department->noOfProducts = MainDepartment->noOfProducts;
 			}
-		
+
 		}
 	}
 }
@@ -200,10 +168,6 @@ Store* getStore(StoreManager* storeManager, int storeID) {
 }
 
 Store* enterStore(StoreManager* storeManager) {
-	if (storeManager == NULL || storeManager->noOfStores == 0) {
-		printf("No stores!\n");
-		return NULL;
-	}
 	for (int i = 0; i < storeManager->noOfStores; i++)
 	{
 		printStoreReduced(storeManager->stores[i]);
@@ -216,15 +180,6 @@ Store* enterStore(StoreManager* storeManager) {
 		printf("Store not found!\n");
 	}
 	return store;
-}
-
-void calculateTotalProfit(const StoreManager* storeManager) {
-	PRINT_RETURN(storeManager->stores, "system not initialized");
-	int totalProfit = 0;
-	for (int i = 0; i < storeManager->noOfStores; i++) {
-		totalProfit += calculateStoreProfit(storeManager->stores[i]);
-	}
-	printf("Total profit for the year %d: %d\n", MIN_YEAR, totalProfit);
 }
 
 void sortAllStoresBy(StoreManager* storeManager) {
@@ -250,7 +205,7 @@ void sortAllStoresBy(StoreManager* storeManager) {
 		break;
 	}
 	}
-	if(compare != NULL)
+	if (compare != NULL)
 		qsort(storeManager->stores, storeManager->noOfStores, sizeof(Store*), compare);
 }
 
@@ -258,23 +213,19 @@ eSortOption showSortMenu()
 {
 	int opt;
 	printf("Base on what field do you want to sort?\n");
-	do {
-		for (int i = 1; i < eNofSortOpt; i++)
-			printf("Enter %d for %s\n", i, sortOptStr[i]);
-		scanf("%d", &opt);
-	} while (opt < 0 || opt >= eNofSortOpt);
+	for (int i = 1; i < eNofSortOpt; i++)
+		printf("Enter %d for %s\n", i, sortOptStr[i]);
+	INT_FROM_USER(opt, 0, eNofSortOpt, "Invalid option, please try again.");
 
 	return (eSortOption)opt;
 }
 
-void findStore(const StoreManager* storeManager)
-{
+void findStore(const StoreManager* storeManager) {
 	PRINT_RETURN(storeManager->stores, "system not initialized");
 	int(*compare)(const void* store1, const void* store2) = NULL;
 	Store store = { 0 };
 	Store* pStore = &store;
-	switch (storeManager->storeSortOpt)
-	{
+	switch (storeManager->storeSortOpt) {
 	case eID: {
 		printf("Enter store's ID number:\n");
 		scanf("%d", &store.storeID);
@@ -299,15 +250,14 @@ void findStore(const StoreManager* storeManager)
 		break;
 	}
 	}
-	if (compare != NULL)
-	{
+	if (compare) {
 		Store** foundStore = bsearch(&pStore, storeManager->stores, storeManager->noOfStores, sizeof(Store*), compare);
 		if (foundStore == NULL)
 			printf("Store was not found\n");
 		else
 			printStore(*foundStore);
 		if (storeManager->storeSortOpt == eLocation)
-				free(pStore->location);
+			free(pStore->location);
 	}
 	else
 		printf("The search cannot be performed, array not sorted\n");
@@ -335,9 +285,9 @@ void freeStoreManager(StoreManager* storeManager) {
 	}
 }
 
-void findChainBestSalesMan(const StoreManager* storeManager){
 //If there are multiple salesmen with the same sales amount, the salesman with the highest profit will be chosen.
 //If there are multiple salesmen with the same sales amount and profit(really unlikely), the first one will be chosen.
+void findChainBestSalesMan(const StoreManager* storeManager) {
 	PRINT_RETURN(storeManager->stores, "system not initialized");
 	int year = getYear();
 	int month = getMonth();
@@ -351,7 +301,7 @@ void findChainBestSalesMan(const StoreManager* storeManager){
 		if (storeManager->stores[i]->noOfInvoices > 0) {
 			Employee* tmp = getBestSalesMan(storeManager->stores[i], &saleAmount, &bestProfit, year, month);
 			if (saleAmount >= maxSales && saleAmount > 0) {
-				if(bestSeller && saleAmount == maxSales && bestProfit <= maxProfit)
+				if (bestSeller && saleAmount == maxSales && bestProfit <= maxProfit)
 					continue;
 				maxSales = saleAmount;
 				maxProfit = bestProfit;
@@ -361,45 +311,63 @@ void findChainBestSalesMan(const StoreManager* storeManager){
 		}
 	}
 	if (!bestSeller) {
-		printf("The chain had no sales in %d\n", year);
+		printf("The chain had no sales in %d/%d\n", month, year);
 		return;
 	}
-		printf("The best salesman in the chain for the year %d/%d is: %s.\n", month, year, bestSeller->name);
-		printf("The store he works in is in: %s.\n", storeManager->stores[storeIndex]->location);
-		printf("His total sales amount is: %d\n", maxSales);
-		printf("His total profit is: %d\n", maxProfit);
+	printf("The best salesman in the chain for the year %d/%d is: %s.\n", month, year, bestSeller->name);
+	printf("The store he works in is in: %s.\n", storeManager->stores[storeIndex]->location);
+	printf("His total sales amount is: %d\n", maxSales);
+	printf("His total profit is: %d\n", maxProfit);
 }
 
+Product* getChainBestSellerProduct(const StoreManager* storeManager, int* quantity, int year, int mouth) {
+	Product* bestSeller = NULL;
+	int maxQuantity = 0;
+	for (int i = 0; i < noOfDepartmentTypes; i++) {
+		for (int j = 0; j < storeManager->stores[0]->departments[i].noOfProducts; j++) {
+			int totalQuantity = 0;
+			for (int k = 0; k < storeManager->noOfStores; k++) {
+				NODE* tmp = storeManager->stores[k]->invoiceList.head.next;
+				while (tmp) {
+					Invoice* invoice = (Invoice*)tmp->key;
+					if (invoice->timeOfSale.year == year && invoice->timeOfSale.month == mouth) {
+						for (int l = 0; l < invoice->numOfProducts; l++) {
+							if (strcmp(invoice->products[l].code, storeManager->stores[0]->departments[i].products[j].code) == 0) {
+								totalQuantity += invoice->products[l].quantity;
+							}
+						}
+					}
+					tmp = tmp->next;
+				}
+			}
+			int profit = (storeManager->stores[0]->departments[i].products[j].sellPrice - storeManager->stores[0]->departments[i].products[j].buyPrice) * totalQuantity;
+			if (totalQuantity >= maxQuantity && totalQuantity > 0) {
+				if (bestSeller && totalQuantity == maxQuantity && profit <= (bestSeller->sellPrice - bestSeller->buyPrice) * maxQuantity)
+					continue;
+				maxQuantity = totalQuantity;
+				bestSeller = &storeManager->stores[0]->departments[i].products[j];
+			}
+		}
+	}
+	*quantity = maxQuantity;
+	return bestSeller;
+}
+
+//If there are multiple products with the same quantity sold, the product with the highest profit will be chosen.
+//If there are multiple products with the same quantity sold and profit(really unlikely), the first one will be chosen.
 void findChainBestSellerProduct(const StoreManager* storeManager) {
 	PRINT_RETURN(storeManager->stores, "system not initialized");
 	int year = getYear();
 	int month = getMonth();
 	int quantity = 0;
-	int maxQuantity = 0;
-	int maxProfit = 0;
-	int storeIndex;
-	Product* bestSeller = NULL;
-	for (int i = 0; i < storeManager->noOfStores; i++) {
-		if (storeManager->stores[i]->noOfInvoices > 0) {
-			Product* tmp = getBestSellerProduct(storeManager->stores[i], &quantity, year, month);
-			int profit = (tmp->sellPrice - tmp->buyPrice) * quantity;
-			if (quantity >= maxQuantity && quantity > 0) {
-				if(bestSeller && quantity == maxQuantity && profit <= maxProfit)
-					continue;
-				maxQuantity = quantity;
-				maxProfit = profit;
-				bestSeller = tmp;
-				storeIndex = i;
-			}
-		}
-	}
+	Product* bestSeller = getChainBestSellerProduct(storeManager, &quantity, year, month);
 	if (!bestSeller) {
 		printf("The chain had no sales in %d/%d\n", month, year);
 		return;
 	}
+	int profit = (bestSeller->sellPrice - bestSeller->buyPrice) * quantity;
 	printf("The best-selling product in the chain for %d/%d is: %s\n", month, year, bestSeller->name);
-	printf("The total quantity sold is %d units, generating a total revenue of %d and %d profit\n", quantity, bestSeller->sellPrice * maxQuantity, maxProfit);
-	printf("The store it is in is in: %s.\n", storeManager->stores[storeIndex]->location);
+	printf("The total quantity sold is %d units, generating a total revenue of %d and %d profit\n", quantity, bestSeller->sellPrice * quantity, profit);
 }
 
 
@@ -457,7 +425,7 @@ int saveStoreManagerToBinaryFile(const StoreManager* storeManager, const char* f
 
 int createStoreArr(StoreManager* storeManager) {
 	if (storeManager->noOfStores > 0) {
-		storeManager->stores = (Store**)malloc(storeManager->noOfStores*sizeof(Store*));
+		storeManager->stores = (Store**)malloc(storeManager->noOfStores * sizeof(Store*));
 		if (!storeManager->stores) {
 			printf("error in allocating memory\n");
 			return 0;
@@ -498,5 +466,13 @@ int loadStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileN
 		}
 	}
 	CLOSE_RETURN_INT(file, 1);
+}
+
+void initStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileName)
+{
+	if (!loadStoreManagerFromBinaryFile(storeManager, fileName)) {
+		initStoreManager(storeManager);
+		generateHQ(storeManager);
+	}
 }
 

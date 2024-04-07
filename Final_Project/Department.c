@@ -93,7 +93,7 @@ void printDepartmentFull(const Department* department) {
 		return;
 	}
 	printf("\nDepartment Name: %s \t Department ID: %d\n", departmentTypeStr[department->type], department->type);
-	if (department->noOfProducts == 0){
+	if (department->noOfProducts == 0) {
 		printf("there are no products in this department.\n");
 		return;
 	}
@@ -126,7 +126,7 @@ void loadDepartmentFromTextFile(Department* department, FILE* file) {
 	fscanf(file, "%d", &department->noOfProducts);
 	fgetc(file);
 	Product* products = (Product*)malloc(sizeof(Product) * department->noOfProducts);
-	if(!products) {
+	if (!products) {
 		return;
 	}
 	for (int i = 0; i < department->noOfProducts; i++) {
@@ -166,7 +166,7 @@ int saveDepartmentToBinaryFile(const Department* department, FILE* file)
 int loadDepartmentFromBinaryFile(Department* department, FILE* file)
 {
 	int tmp;
-	if(!readIntFromFile(&tmp, file, "Error reading department type from file\n"))
+	if (!readIntFromFile(&tmp, file, "Error reading department type from file\n"))
 		return 0;
 	else
 		department->type = (eDepartmentType)tmp;

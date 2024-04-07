@@ -1,10 +1,6 @@
 #include "Invoice.h"
 
 void initInvoice(Invoice* invoice, int storeID, Employee* employee, Product* product, int numOfProducts, int id) {
-	if (invoice == NULL) {
-		return;
-	}
-
 	invoice->invoiceID = id;
 	invoice->storeID = storeID;
 	invoice->employee = employee;
@@ -15,44 +11,35 @@ void initInvoice(Invoice* invoice, int storeID, Employee* employee, Product* pro
 }
 
 int calculateSaleAmount(const Invoice* invoice) {
-	if (invoice == NULL) {
-		return 0;
-	}
 	int sum = 0;
-	
+
 	for (int i = 0; i < invoice->numOfProducts; i++)
 	{
-		sum = sum + ((invoice->products[i].sellPrice)*(invoice->products[i].quantity));
+		sum = sum + ((invoice->products[i].sellPrice) * (invoice->products[i].quantity));
 	}
 
 	return sum;
 }
 
 int calculateProfit(const Invoice* invoice) {
-	if (invoice == NULL) {
-		return 0;
-	}
 	int sum = 0;
-	
+
 	for (int i = 0; i < invoice->numOfProducts; i++)
 	{
-		sum = sum + ((invoice->products[i].sellPrice - invoice->products[i].buyPrice)*(invoice->products[i].quantity));
+		sum = sum + ((invoice->products[i].sellPrice - invoice->products[i].buyPrice) * (invoice->products[i].quantity));
 	}
 
 	return sum;
 }
 
 void printInvoice(const Invoice* invoice) {
-	if (invoice == NULL) {
-		return;
-	}
 	printf("\nInvoice ID: %d\t", invoice->invoiceID);
 	printf("Store ID: %d\n", invoice->storeID);
 	printf("Employee that made the sale: %s\n", invoice->employee->name);
 	printf("The Products:\n");
 	generalArrayFunction(invoice->products, invoice->numOfProducts, sizeof(Product), printForInvoice);
 	printf("Sale amount: %d\n", invoice->saleAmount);
-	
+
 	printf("Time of sale: ");
 	printDate(&invoice->timeOfSale);
 	printf("\n");
@@ -75,8 +62,8 @@ void saveInvoiceToTextFile(const Invoice* invoice, FILE* file) {
 	fprintf(file, "%d\n", invoice->invoiceID);
 	fprintf(file, "%d\n", invoice->storeID);
 
-	fprintf(file,"%d\n", invoice->employee->id);
-	
+	fprintf(file, "%d\n", invoice->employee->id);
+
 	fprintf(file, "%d\n", invoice->numOfProducts);
 	for (int i = 0; i < invoice->numOfProducts; i++)
 	{
@@ -94,66 +81,45 @@ void saveInvoiceToTextFile(const Invoice* invoice, FILE* file) {
 }
 
 void loadInvoiceFromTextFile(Invoice* invoice, FILE* file) {
-	fscanf(file, "%d", &invoice->invoiceID);
-	fgetc(file);
-	fscanf(file, "%d", &invoice->storeID);
-	fgetc(file);
-
+	readIntFromTextFile(&invoice->invoiceID, file, "Error reading invoice ID from file\n");
+	readIntFromTextFile(&invoice->storeID, file, "Error reading store ID from file\n");
 	Employee* emp = (Employee*)malloc(sizeof(Employee));
-	if (!emp) {
-		printf("Memory allocation failed\n");
-		return;
-	}
-	fscanf(file, "%d", &emp->id);
-	fgetc(file);
-
-	fscanf(file, "%d", &invoice->numOfProducts);
-	fgetc(file);
+	PRINT_RETURN(emp, "Memory allocation failed");
+	readIntFromTextFile(&emp->id, file, "Error reading employee ID from file\n");
+	readIntFromTextFile(&invoice->numOfProducts, file, "Error reading number of products from file\n");
 	Product* products = (Product*)malloc(sizeof(Product) * invoice->numOfProducts);
 	if (!products) {
 		free(emp);
 		return;
 	}
-	for (int i = 0; i < invoice->numOfProducts; i++)
-	{
+	for (int i = 0; i < invoice->numOfProducts; i++) {
 		loadProductFromTextFile(&products[i], file);
 	}
 	invoice->products = products;
-	fscanf(file, "%d", &invoice->saleAmount);
-	fgetc(file);
-	fscanf(file, "%d", &invoice->customer.id);
-	fgetc(file);
-
+	readIntFromTextFile(&invoice->saleAmount, file, "Error reading sale amount from file\n");
+	readIntFromTextFile(&invoice->customer.id, file, "Error reading customer ID from file\n");
 	char tmp[MAX_STR_LEN];
 	myGetsFile(tmp, MAX_STR_LEN, file);
 	invoice->customer.name = getDynStr(tmp);
-	
-	fscanf(file, "%d", &invoice->customer.contactNumber);
-	fgetc(file);
+	readIntFromTextFile(&invoice->customer.contactNumber, file, "Error reading customer contact number from file\n");
 	invoice->employee = emp;
-
-	fscanf(file, "%d", &invoice->timeOfSale.day);
-	fgetc(file);
-	fscanf(file, "%d", &invoice->timeOfSale.month);
-	fgetc(file);
-	fscanf(file, "%d", &invoice->timeOfSale.year);
-	fgetc(file);
+	readIntFromTextFile(&invoice->timeOfSale.day, file, "Error reading day from file\n");
+	readIntFromTextFile(&invoice->timeOfSale.month, file, "Error reading month from file\n");
+	readIntFromTextFile(&invoice->timeOfSale.year, file, "Error reading year from file\n");
 }
 
-int saveInvoiceToBinaryFile(const Invoice* invoice, FILE* file)
-{
+int saveInvoiceToBinaryFile(const Invoice* invoice, FILE* file) {
 	if (!writeIntToFile(invoice->invoiceID, file, "Error writing invoice ID to file\n"))
 		return 0;
 	if (!writeIntToFile(invoice->storeID, file, "Error writing store ID to file\n"))
 		return 0;
-	if(!saveCustomerToBinaryFile(&invoice->customer, file))
+	if (!saveCustomerToBinaryFile(&invoice->customer, file))
 		return 0;
 	if (!writeIntToFile(invoice->employee->id, file, "Error writing employee ID to file\n"))
 		return 0;
 	if (!writeIntToFile(invoice->numOfProducts, file, "Error writing number of products to file\n"))
 		return 0;
-	for (int i = 0; i < invoice->numOfProducts; i++)
-	{
+	for (int i = 0; i < invoice->numOfProducts; i++) {
 		if (!saveProductToBinaryFile(&invoice->products[i], file))
 			return 0;
 	}
@@ -175,8 +141,7 @@ int createProductArr(Invoice* invoice)
 	return 1;
 }
 
-int loadInvoiceFromBinaryFile(Invoice* invoice, FILE* file)
-{
+int loadInvoiceFromBinaryFile(Invoice* invoice, FILE* file) {
 	if (!readIntFromFile(&invoice->invoiceID, file, "Error reading invoice ID from file\n"))
 		return 0;
 	if (!readIntFromFile(&invoice->storeID, file, "Error reading store ID from file\n"))
@@ -197,8 +162,7 @@ int loadInvoiceFromBinaryFile(Invoice* invoice, FILE* file)
 		return 0;
 	if (!createProductArr(invoice))
 		return 0;
-	for (int i = 0; i < invoice->numOfProducts; i++)
-	{
+	for (int i = 0; i < invoice->numOfProducts; i++) {
 		if (!loadProductFromBinaryFile(&invoice->products[i], file))
 			return 0;
 	}

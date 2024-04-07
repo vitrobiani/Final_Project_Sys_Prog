@@ -13,16 +13,13 @@ void getProductCode(char* code) {
 		ok = 1;
 		printf("Enter Product code  - %d UPPER CASE letters\t", SIZE);
 		myGets(temp, MAX_STR_LEN);
-		if (strlen(temp) != SIZE)
-		{
+		if (strlen(temp) != SIZE) {
 			printf("code should be %d letters\n", SIZE);
 			ok = 0;
 		}
 		else {
-			for (int i = 0; i < SIZE; i++)
-			{
-				if (isupper(temp[i]) == 0)
-				{
+			for (int i = 0; i < SIZE; i++) {
+				if (isupper(temp[i]) == 0) {
 					printf("Need to be upper case letter\n");
 					ok = 0;
 					break;
@@ -30,7 +27,6 @@ void getProductCode(char* code) {
 			}
 		}
 	} while (!ok);
-
 	strcpy(code, temp);
 }
 
@@ -118,11 +114,11 @@ void saveProductToTextFile(const Product* product, FILE* file) {
 void loadProductFromTextFile(Product* product, FILE* file) {
 	fscanf(file, "%s", product->code);
 	fgetc(file);
-	
+
 	char tmp[MAX_STR_LEN];
 	myGetsFile(tmp, MAX_STR_LEN, file);
 	product->name = getDynStr(tmp);
-	
+
 	fscanf(file, "%d", &product->buyPrice);
 	fgetc(file);
 	fscanf(file, "%d", &product->sellPrice);
@@ -133,9 +129,9 @@ void loadProductFromTextFile(Product* product, FILE* file) {
 
 int saveProductToBinaryFile(const Product* product, FILE* file)
 {
-	if(!writeCharsToFile(product->code, 4, file, "Error writing product code to file\n"))
+	if (!writeCharsToFile(product->code, 4, file, "Error writing product code to file\n"))
 		return 0;
-	if(!writeStringToFile(product->name, file, "Error writing product name to file\n"))
+	if (!writeStringToFile(product->name, file, "Error writing product name to file\n"))
 		return 0;
 	if (!writeIntToFile(product->sellPrice, file, "Error writing product buy price to file\n"))
 		return 0;
