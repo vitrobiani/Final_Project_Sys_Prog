@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include "Macros.h"
 
-typedef enum { eNone, eID, eProfit, eRent, eLocation, eNofSortOpt } eSortOption;
-static const char* sortOptStr[eNofSortOpt] = { "NotSorted", "ID", "Profit", "Rent", "Location" };
+typedef enum { eNone, eID, eRent, eLocation, eNofSortOpt } eSortOption;
+static const char* sortOptStr[eNofSortOpt] = { "NotSorted", "ID", "Rent", "Location" };
 
 typedef enum { eLoadFromTextFile, eLoadFromBinaryFile, eLoadNewSystem, eNoOfLoadOptions} eLoadOptions;
 static const char* loadOptionsStr[eNoOfLoadOptions] = { "Load From Text File", "Load From Binary File", "Load New System" };
@@ -38,6 +38,16 @@ void addProductToMainStore(StoreManager* storeManager, int departmentID ,Product
 void updateAllStoreDepartments(StoreManager* storeManager);
 
 int checkIfProductCodeExists(const StoreManager* storeManager, const char* productCode);
+
+void printAllChainEmployees(const StoreManager* storeManager);
+
+void addEmployeeToStore(StoreManager* storeManager);
+
+void initEmployee(StoreManager* storeManager, Employee* employee);
+
+int getEmployeeID(StoreManager* storeManager);
+
+int isEmployeeIDUnique(StoreManager* storeManager, int id);
 
 Store* enterStore(StoreManager* storeManager);
 

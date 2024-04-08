@@ -29,13 +29,7 @@ int initStore(Store* store, int id);
 
 void initDepartmentArray(Store* store);
 
-void initEmployee(Store* store, Employee* employee);
-
-int getEmployeeID(Store* store);
-
-int isEmployeeIDUnique(Store* store, int id);
-
-void addEmployee(Store* store);
+void addEmployee(Store* store, Employee* employee);
 
 Employee* getEmployee(Store* store, int employeeID);
 
@@ -66,8 +60,6 @@ void addProductToDepartment(Store* store);
 int generateInvoiceID(Store* store);
 
 int compareStoreByID(const void* store1, const void* store2);
-
-int compareStoreByProfit(const void* store1, const void* store2);
 
 int compareStoreByRent(const void* store1, const void* store2);
 

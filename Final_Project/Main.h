@@ -8,6 +8,7 @@
 typedef enum {
 	eADD_STORE,
 	eADD_PRODUCT_TO_DEPARTMENT,
+	eADD_EMPLOYEE,
 	eENTER_STORE,
 	eVIEW_STORES,
 	eSORT_BY,
@@ -21,6 +22,7 @@ typedef enum {
 const char* optionsStrings[] = {
 	"Add a store",
 	"Add a product to a department type",
+	"Add an employee to a store",
 	"Enter a store",
 	"View all stores",
 	"Sort by",
@@ -31,7 +33,6 @@ const char* optionsStrings[] = {
 };
 
 typedef enum {
-	eADD_EMPLOYEE,
 	eADD_PRODUCT,
 	eMAKE_SALE,
 	ePRINT_EMPLOYEES,
@@ -44,7 +45,6 @@ typedef enum {
 }storeMenu;
 
 const char* storeMenuStrings[] = {
-	"Add an employee",
 	"Add a product",
 	"Make a sale",
 	"Print all employees",

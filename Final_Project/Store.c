@@ -40,66 +40,27 @@ void initDepartmentArray(Store* store) {
 	}
 }
 
-void initEmployee(Store* store, Employee* employee) {
-	if (store->noOfEmployees > 0) {
-		printf("All the employees that work in the store are:\n");
-		printAllEmployees(store);
-	}
-	employee->id = getEmployeeID(store);
-	employee->name = getStrExactName("Enter the employee name: ");
-	employee->position = getPosition();
-	employee->salary = getSalary();
-}
-
-int getEmployeeID(Store* store) {
-	int id;
-	printf("Enter the employee ID:(the ID must be unique)\n");
-	do {
-		scanf("%d", &id);
-		if (id <= 0) {
-			printf("Invalid ID, please enter a positive number:\n");
-		}
-	} while (id <= 0 || !isEmployeeIDUnique(store, id));
-	return id;
-}
-
-int isEmployeeIDUnique(Store* store, int id)
-{
-	for (int i = 0; i < store->noOfEmployees; i++) {
-		if (store->employees[i].id == id) {
-			printf("There is already an employee in the store with the ID you entered, try again.\n");
-			return 0;
-		}
-	}
-	return 1;
-}
-
-void addEmployee(Store* store) {
-	if (store == NULL) {
-		return;
-	}
-	Employee* emp = (Employee*)malloc(sizeof(Employee));
-	PRINT_RETURN(emp, "error in allocating memory for employee");
-
-	initEmployee(store, emp);
+void addEmployee(Store* store, Employee* employee) {
 	Employee* tmp = (Employee*)realloc(store->employees, (store->noOfEmployees + 1) * sizeof(Employee));
 	if (!tmp) {
-		free(emp);
+		printf("error in reallocating memory for employees\n");
+		free(employee);
 		return;
 	}
 	store->employees = tmp;
-	store->employees[store->noOfEmployees].id = emp->id;
-	store->employees[store->noOfEmployees].name = (char*)malloc(strlen(emp->name) + 1);
+	store->employees[store->noOfEmployees].id = employee->id;
+	store->employees[store->noOfEmployees].name = (char*)malloc(strlen(employee->name) + 1);
 	if (!store->employees[store->noOfEmployees].name) {
-		free(emp);
+		printf("error in allocating memory for employee name\n");
+		free(employee);
 		return;
 	}
-	strcpy(store->employees[store->noOfEmployees].name, emp->name);
-	store->employees[store->noOfEmployees].salary = emp->salary;
-	store->employees[store->noOfEmployees].position = emp->position;
+	strcpy(store->employees[store->noOfEmployees].name, employee->name);
+	store->employees[store->noOfEmployees].salary = employee->salary;
+	store->employees[store->noOfEmployees].position = employee->position;
 	store->noOfEmployees++;
-	free(emp->name);
-	free(emp);
+	free(employee->name);
+	free(employee);
 }
 
 Department* getDepartment(Store* store, int departmentID) {
@@ -319,13 +280,6 @@ int compareStoreByID(const void* store1, const void* store2) {
 	const Store* store1_ = *(const Store**)store1;
 	const Store* store2_ = *(const Store**)store2;
 	return (store1_)->storeID - (store2_)->storeID;
-}
-
-int compareStoreByProfit(const void* store1, const void* store2) {
-
-	const Store* store1_ = *(const Store**)store1;
-	const Store* store2_ = *(const Store**)store2;
-	return store2_->profit - store1_->profit;
 }
 
 int compareStoreByRent(const void* store1, const void* store2) {

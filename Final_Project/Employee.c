@@ -10,7 +10,7 @@ int getSalary() {
 	do {
 		scanf("%d", &salary);
 		if (salary <= 0)
-			printf("Salary must be a positive number\n");
+			printf("Salary must be a positive number, try again.\n");
 	} while (salary <= 0);
 	return salary;
 }
@@ -29,7 +29,7 @@ ePosition getPosition() {
 	do {
 		scanf("%d", &position);
 		if (position < 1 || position > eNumOfPositions)
-			printf("Invalid position, please enter a number between 1 - %d: ", eNumOfPositions);
+			printf("\nInvalid position, please enter a number between 1 - %d: ", eNumOfPositions);
 	} while (position < 1 || position > eNumOfPositions);
 	return position - 1;
 }

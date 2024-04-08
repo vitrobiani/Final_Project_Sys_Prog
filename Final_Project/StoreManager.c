@@ -6,7 +6,7 @@ void initStoreManager(StoreManager* storeManager) {
 }
 
 void loadSystem(StoreManager* storeManager) {
-	printf("Welcome to the system for managing the all-in-one store chain.\n");
+	printf("Welcome to the system for managing the all-in-one store chain!\n");
 	printf("From which file you wish to upload the system?\n");
 	for (int i = 0; i < eNoOfLoadOptions; i++) {
 		printf("%d. %s\n", i + 1, loadOptionsStr[i]);
@@ -21,8 +21,6 @@ void loadSystem(StoreManager* storeManager) {
 		break;
 	}
 	case eLoadFromBinaryFile: {
-		/*int check = loadStoreManagerFromBinaryFile(storeManager, "storeManager.bin");
-		printf("check: %d\n", check);*/
 		initStoreManagerFromBinaryFile(storeManager, "storeManager.bin");
 		break;
 	}
@@ -126,6 +124,62 @@ int checkIfProductCodeExists(const StoreManager* storeManager, const char* produ
 	return 0;
 }
 
+void printAllChainEmployees(const StoreManager* storeManager) {
+	printf("All the employees that work in the chain are:\n");
+	for (int i = 0; i < storeManager->noOfStores; i++) {
+		printStoreReduced(storeManager->stores[i]);
+		printAllEmployees(storeManager->stores[i]);
+	}
+}
+
+void addEmployeeToStore(StoreManager* storeManager)
+{
+	Employee* emp = (Employee*)malloc(sizeof(Employee));
+	PRINT_RETURN(emp, "error in allocating memory for employee");
+	printAllChainEmployees(storeManager);
+	initEmployee(storeManager, emp);
+	printf("In which store do you want to add the employee?\n");
+	Store* store;
+	do {
+		store = enterStore(storeManager);
+	} while (!store);
+	addEmployee(store, emp);
+
+}
+
+void initEmployee(StoreManager* storeManager, Employee* employee) {
+	
+	employee->id = getEmployeeID(storeManager);
+	employee->name = getStrExactName("Enter the employee name: ");
+	employee->position = getPosition();
+	employee->salary = getSalary();
+}
+
+int getEmployeeID(StoreManager* storeManager) {
+	int id;
+	printf("Enter the employee ID:(the ID must be unique)\n");
+	do {
+		scanf("%d", &id);
+		if (id <= 0) {
+			printf("Invalid ID, please enter a positive number:\n");
+		}
+	} while (id <= 0 || !isEmployeeIDUnique(storeManager, id));
+	return id;
+}
+
+int isEmployeeIDUnique(StoreManager* storeManager, int id)
+{
+	for (int i = 0; i < storeManager->noOfStores; i++) {
+		for (int j = 0; j < storeManager->stores[i]->noOfEmployees; j++) {
+			if (storeManager->stores[i]->employees[j].id == id) {
+				printf("There is already an employee in the store with the ID you entered, try again.\n");
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
 void updateAllStoreDepartments(StoreManager* storeManager) {
 	if (storeManager->noOfStores <= 1)
 		return;
@@ -177,7 +231,7 @@ Store* enterStore(StoreManager* storeManager) {
 	scanf("%d", &storeID);
 	Store* store = getStore(storeManager, storeID);
 	if (!store) {
-		printf("Store not found!\n");
+		printf("Store not found, try again.\n");
 	}
 	return store;
 }
@@ -190,10 +244,6 @@ void sortAllStoresBy(StoreManager* storeManager) {
 	{
 	case eID: {
 		compare = compareStoreByID;
-		break;
-	}
-	case eProfit: {
-		compare = compareStoreByProfit;
 		break;
 	}
 	case eRent: {
@@ -230,12 +280,6 @@ void findStore(const StoreManager* storeManager) {
 		printf("Enter store's ID number:\n");
 		scanf("%d", &store.storeID);
 		compare = compareStoreByID;
-		break;
-	}
-	case eProfit: {
-		printf("Enter store's profit:\n");
-		scanf("%d", &store.profit);
-		compare = compareStoreByProfit;
 		break;
 	}
 	case eRent: {

@@ -35,7 +35,7 @@ void setContactNumber(Customer* customer) {
 }
 
 void printCustomer(const Customer* customer) {
-	printf("Customer ID: %d\nCustomer Name: %s\nContact Number: %d\n", customer->id, customer->name, customer->contactNumber);
+	printf("ID: %d\tName: %s\tContact Number: %d\n", customer->id, customer->name, customer->contactNumber);
 }
 
 int saveCustomerToBinaryFile(const Customer* customer, FILE* file)

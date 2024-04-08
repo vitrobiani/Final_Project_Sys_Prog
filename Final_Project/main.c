@@ -26,17 +26,12 @@ int storeMenuOptions() {
 
 void storeLobby(Store* store, StoreManager* storeManager) {
 	if (store == NULL) return;
-
 	int choice = 0;
 	do {
 		printf("\nWelcome to the store lobby! - location: %s\n", store->location);
 		choice = storeMenuOptions();
 		switch (choice)
 		{
-		case eADD_EMPLOYEE: {
-			addEmployee(store);
-			break;
-		}
 		case eADD_PRODUCT: {
 			addProductToDepartment(store);
 			break;
@@ -99,6 +94,10 @@ int main() {
 		}
 		case eADD_PRODUCT_TO_DEPARTMENT: {
 			addProductToDepartmentType(&storeManager);
+			break;
+		}
+		case eADD_EMPLOYEE: {
+			addEmployeeToStore(&storeManager);
 			break;
 		}
 		case eENTER_STORE: {

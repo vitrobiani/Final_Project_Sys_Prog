@@ -35,6 +35,8 @@ int calculateProfit(const Invoice* invoice) {
 void printInvoice(const Invoice* invoice) {
 	printf("\nInvoice ID: %d\t", invoice->invoiceID);
 	printf("Store ID: %d\n", invoice->storeID);
+	printf("Customer details:\t");
+	printCustomer(&invoice->customer);
 	printf("Employee that made the sale: %s\n", invoice->employee->name);
 	printf("The Products:\n");
 	generalArrayFunction(invoice->products, invoice->numOfProducts, sizeof(Product), printForInvoice);
