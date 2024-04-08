@@ -41,7 +41,7 @@ int checkIfProductCodeExists(const StoreManager* storeManager, const char* produ
 
 void printAllChainEmployees(const StoreManager* storeManager);
 
-void addEmployeeToStore(StoreManager* storeManager);
+void addEmployeeToStore(StoreManager* storeManager, Store* store);
 
 void initEmployee(StoreManager* storeManager, Employee* employee);
 

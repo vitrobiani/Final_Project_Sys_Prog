@@ -132,17 +132,12 @@ void printAllChainEmployees(const StoreManager* storeManager) {
 	}
 }
 
-void addEmployeeToStore(StoreManager* storeManager)
+void addEmployeeToStore(StoreManager* storeManager, Store* store)
 {
 	Employee* emp = (Employee*)malloc(sizeof(Employee));
 	PRINT_RETURN(emp, "error in allocating memory for employee");
 	printAllChainEmployees(storeManager);
 	initEmployee(storeManager, emp);
-	printf("In which store do you want to add the employee?\n");
-	Store* store;
-	do {
-		store = enterStore(storeManager);
-	} while (!store);
 	addEmployee(store, emp);
 
 }
@@ -172,7 +167,7 @@ int isEmployeeIDUnique(StoreManager* storeManager, int id)
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		for (int j = 0; j < storeManager->stores[i]->noOfEmployees; j++) {
 			if (storeManager->stores[i]->employees[j].id == id) {
-				printf("There is already an employee in the store with the ID you entered, try again.\n");
+				printf("There is already an employee in the chain with the ID you entered, try again.\n");
 				return 0;
 			}
 		}

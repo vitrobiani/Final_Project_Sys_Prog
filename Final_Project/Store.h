@@ -67,6 +67,8 @@ int compareStoreByLocation(const void* store1, const void* store2);
 
 void printAllInvoices(const Store* store);
 
+void printAllCustomers(const Store* store);
+
 void printAllEmployees(const Store* store);
 
 void printAllDepartments(const Store* store);

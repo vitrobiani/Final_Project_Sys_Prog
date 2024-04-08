@@ -32,6 +32,10 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 		choice = storeMenuOptions();
 		switch (choice)
 		{
+		case eADD_EMPLOYEE: {
+			addEmployeeToStore(storeManager, store);
+			break;
+		}
 		case eADD_PRODUCT: {
 			addProductToDepartment(store);
 			break;
@@ -50,6 +54,10 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 		}
 		case ePRINT_INVOICES: {
 			printAllInvoices(store);
+			break;
+		}
+		case ePRINT_CUSTUMERS: {
+			printAllCustomers(store);
 			break;
 		}
 		case eBEST_SALESMAN: {
@@ -94,10 +102,6 @@ int main() {
 		}
 		case eADD_PRODUCT_TO_DEPARTMENT: {
 			addProductToDepartmentType(&storeManager);
-			break;
-		}
-		case eADD_EMPLOYEE: {
-			addEmployeeToStore(&storeManager);
 			break;
 		}
 		case eENTER_STORE: {
