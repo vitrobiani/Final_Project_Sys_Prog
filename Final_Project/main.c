@@ -56,10 +56,6 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 			printAllInvoices(store);
 			break;
 		}
-		case ePRINT_CUSTUMERS: {
-			printAllCustomers(store);
-			break;
-		}
 		case eBEST_SALESMAN: {
 			findBestSalesMan(store);
 			break;

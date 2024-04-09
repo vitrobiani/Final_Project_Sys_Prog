@@ -37,7 +37,6 @@ typedef enum {
 	ePRINT_EMPLOYEES,
 	ePRINT_DEPARTMENTS,
 	ePRINT_INVOICES,
-	ePRINT_CUSTUMERS,
 	eBEST_SALESMAN,
 	eBEST_SELLER,
 	eGO_BACK,
@@ -51,7 +50,6 @@ const char* storeMenuStrings[] = {
 	"Print all employees",
 	"Print all departments and their products",
 	"Print all invoices",
-	"Print all customers",
 	"Find the best salesman in the store",
 	"Find the best seller product in the store",
 	"Go back to the main menu"

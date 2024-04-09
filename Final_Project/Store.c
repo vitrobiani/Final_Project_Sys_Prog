@@ -241,19 +241,6 @@ void printAllInvoices(const Store* store) {
 	L_print(&store->invoiceList, printInvoice);
 }
 
-void printAllCustomers(const Store* store)
-{
-	PRINT_RETURN(store->noOfInvoices, "There are no customers.\n");
-	printf("All store's customers :\n");
-	NODE* tmp = store->invoiceList.head.next;
-	while (tmp)
-	{
-		Invoice* invoice = (Invoice*)tmp->key;
-		printCustomer(&invoice->customer);
-		tmp = tmp->next;
-	}
-}
-
 int compareStoreByID(const void* store1, const void* store2) {
 	
 	const Store* store1_ = *(const Store**)store1;
