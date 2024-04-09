@@ -49,6 +49,14 @@ int getEmployeeID(StoreManager* storeManager);
 
 int isEmployeeIDUnique(StoreManager* storeManager, int id);
 
+void makeSale(StoreManager* storeManager, Store* store);
+
+void initCustomer(StoreManager* storeManager, Customer* customer);
+
+Customer* isCustomerIDUnique(StoreManager* storeManager, int id);
+
+int getUserChoice();
+
 Store* enterStore(StoreManager* storeManager);
 
 void sortAllStoresBy(StoreManager* storeManager);

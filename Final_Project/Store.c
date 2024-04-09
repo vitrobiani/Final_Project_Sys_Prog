@@ -221,40 +221,6 @@ int chooseQuantity(Product* product)
 }
 
 
-
-void makeSale(Store* store) {
-	PRINT_RETURN(store->noOfEmployees, "no employees in the store");
-	PRINT_RETURN(checkIfThereAreProductsInStore(store), "no products in the store");
-	int availableProducts = countAvailableProductsInStore(store);
-	int numOfProducts = getNumOfProducts(availableProducts);
-	Product* products = (Product*)malloc(numOfProducts * sizeof(Product));
-	PRINT_RETURN(products, "error in allocating memory for products");
-	for (int i = 0; i < numOfProducts; i++) {
-		Department* department;
-		department = chooseDepartment(store);
-		Product* product;
-		product = chooseProduct(department);
-		int quantity;
-		quantity = chooseQuantity(product);
-		product->quantity -= quantity;
-		products[i].buyPrice = product->buyPrice;
-		products[i].sellPrice = product->sellPrice;
-		products[i].quantity = quantity;
-		strcpy(products[i].code, product->code);
-		products[i].name = (char*)malloc(strlen(product->name) + 1);
-		PRINT_FREE_RETURN(products[i].name, products, "error in allocating memory for product name.");
-		strcpy(products[i].name, product->name);
-	}
-	Employee* employee = getEmployeeTUI(store);
-	Invoice* invoice = (Invoice*)malloc(sizeof(Invoice));
-	PRINT_FREE_RETURN(invoice, products, "error in allocating memory for invoice");
-	initCustomer(&invoice->customer);
-	store->noOfInvoices++;
-	initInvoice(invoice, store->storeID, employee, products, numOfProducts, generateInvoiceID(store));
-	if (!insertNewInvoiceToList(&store->invoiceList, invoice))
-		freeInvoice(invoice);
-}
-
 int generateInvoiceID(Store* store) {
 	int maxID = 0;
 	NODE* tmp = store->invoiceList.head.next;

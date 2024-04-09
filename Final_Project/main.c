@@ -41,7 +41,7 @@ void storeLobby(Store* store, StoreManager* storeManager) {
 			break;
 		}
 		case eMAKE_SALE: {
-			makeSale(store);
+			makeSale(storeManager, store);
 			break;
 		}
 		case ePRINT_EMPLOYEES: {

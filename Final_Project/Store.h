@@ -49,8 +49,6 @@ Product* chooseProduct(Department* department);
 
 int chooseQuantity(Product* product);
 
-void makeSale(Store* store);
-
 Department* getDepartmentTUI(Store* store);
 
 Department* getDepartment(Store* store, int id);

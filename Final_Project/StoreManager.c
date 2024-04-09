@@ -175,6 +175,88 @@ int isEmployeeIDUnique(StoreManager* storeManager, int id)
 	return 1;
 }
 
+void makeSale(StoreManager* storeManager, Store* store) {
+	PRINT_RETURN(store->noOfEmployees, "no employees in the store");
+	PRINT_RETURN(checkIfThereAreProductsInStore(store), "no products in the store");
+	int availableProducts = countAvailableProductsInStore(store);
+	int numOfProducts = getNumOfProducts(availableProducts);
+	Product* products = (Product*)malloc(numOfProducts * sizeof(Product));
+	PRINT_RETURN(products, "error in allocating memory for products");
+	for (int i = 0; i < numOfProducts; i++) {
+		Department* department;
+		department = chooseDepartment(store);
+		Product* product;
+		product = chooseProduct(department);
+		int quantity;
+		quantity = chooseQuantity(product);
+		product->quantity -= quantity;
+		products[i].buyPrice = product->buyPrice;
+		products[i].sellPrice = product->sellPrice;
+		products[i].quantity = quantity;
+		strcpy(products[i].code, product->code);
+		products[i].name = (char*)malloc(strlen(product->name) + 1);
+		PRINT_FREE_RETURN(products[i].name, products, "error in allocating memory for product name.");
+		strcpy(products[i].name, product->name);
+	}
+	Employee* employee = getEmployeeTUI(store);
+	Invoice* invoice = (Invoice*)malloc(sizeof(Invoice));
+	PRINT_FREE_RETURN(invoice, products, "error in allocating memory for invoice");
+	initCustomer(storeManager, &invoice->customer);
+	store->noOfInvoices++;
+	initInvoice(invoice, store->storeID, employee, products, numOfProducts, generateInvoiceID(store));
+	if (!insertNewInvoiceToList(&store->invoiceList, invoice))
+		freeInvoice(invoice);
+}
+
+void initCustomer(StoreManager* storeManager, Customer* customer) {
+	int check;
+	do
+	{
+		check = 0;
+		setCustomerID(customer);
+		Customer* tmp = isCustomerIDUnique(storeManager, customer->id);
+		if (tmp && getUserChoice()) {
+			customer->name = (char*)malloc(strlen(tmp->name) + 1);
+			PRINT_RETURN(customer->name, "error in allocating memory");
+			strcpy(customer->name, tmp->name);
+			customer->contactNumber = tmp->contactNumber;
+			return;
+		}
+		else if (!tmp) {
+			check = 1;
+		}
+	} while (!check);
+	setCustomerName(customer);
+	setContactNumber(customer);
+}
+
+Customer* isCustomerIDUnique(StoreManager* storeManager, int id)
+{
+	for (int i = 0; i < storeManager->noOfStores; i++) {
+		NODE* tmp = storeManager->stores[i]->invoiceList.head.next;
+		while (tmp) {
+			Invoice* invoice = (Invoice*)tmp->key;
+			if (invoice->customer.id == id) {
+				printf("There is already a customer in the chain with the ID you entered.\n");
+				return &invoice->customer;
+			}
+			tmp = tmp->next;
+		}
+	}
+	return NULL;
+}
+
+int getUserChoice()
+{
+	int opt;
+	printf("what would you like to do?\n");
+	printf("Enter 1 to create a new customer.\n");
+	printf("Enter 2 to associate the sale with the existing customer.\n");
+	INT_FROM_USER(opt, 0, 3, "Invalid option, please try again.");
+	return opt -1;
+}
+
+
 void updateAllStoreDepartments(StoreManager* storeManager) {
 	if (storeManager->noOfStores <= 1)
 		return;

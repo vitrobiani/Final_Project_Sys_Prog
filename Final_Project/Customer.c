@@ -1,11 +1,5 @@
 #include "Customer.h"
 
-void initCustomer(Customer* customer) {
-	setCustomerID(customer);
-	setCustomerName(customer);
-	setContactNumber(customer);
-}
-
 void setCustomerID(Customer* customer) {
 	printf("Enter the ID of the customer: ");
 	int id;
