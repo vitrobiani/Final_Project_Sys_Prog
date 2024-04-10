@@ -10,8 +10,8 @@
 typedef enum { eNone, eID, eRent, eLocation, eNofSortOpt } eSortOption;
 static const char* sortOptStr[eNofSortOpt] = { "NotSorted", "ID", "Rent", "Location" };
 
-typedef enum { eLoadFromTextFile, eLoadFromBinaryFile, eLoadNewSystem, eNoOfLoadOptions} eLoadOptions;
-static const char* loadOptionsStr[eNoOfLoadOptions] = { "Load From Text File", "Load From Binary File", "Load New System" };
+typedef enum { eLoadFromTextFile, eLoadFromBinaryFile, eNoOfLoadOptions} eLoadOptions;
+static const char* loadOptionsStr[eNoOfLoadOptions] = { "Load From Text File", "Load From Binary File" };
 
 typedef struct StoreManager {
 	Store** stores;
@@ -67,6 +67,8 @@ void findStore(const StoreManager* storeManager);
 
 void printAllStores(const StoreManager* storeManager);
 
+void printSystemDetails(const StoreManager* storeManager);
+
 void freeStoreManager(StoreManager* storeManager);
 
 void findChainBestSalesMan(const StoreManager* storeManager);
@@ -75,15 +77,17 @@ Product* getChainBestSellerProduct(const StoreManager* storeManager, int* quanti
 
 void findChainBestSellerProduct(const StoreManager* storeManager);
 
-void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fileName);
+int saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fileName);
 
-void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName);
+int loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName);
 
 int saveStoreManagerToBinaryFile(const StoreManager* storeManager, const char* fileName);
 
 int createStoreArr(StoreManager* storeManager);
 
 int loadStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileName);
+
+void initStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName);
 
 void initStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileName);
 

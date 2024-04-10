@@ -8,10 +8,10 @@
 #include <stdlib.h>
 
 typedef enum {
-	eELECTRONICS, eHOME_DESIGN, eTOYS, noOfDepartmentTypes
+	eELECTRONICS, eHOME_DESIGN, eCLOTHING, eTOYS, eBAD_BATH, noOfDepartmentTypes
 }eDepartmentType;
 
-static char* departmentTypeStr[noOfDepartmentTypes] = { "Electronics", "Home Design", "Toys" };
+static char* departmentTypeStr[noOfDepartmentTypes] = { "Electronics", "Home Design", "Clothing", "Toys", "Bad and Bath"};
 
 typedef struct Department {
 	eDepartmentType type;

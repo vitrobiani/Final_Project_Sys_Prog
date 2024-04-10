@@ -84,7 +84,6 @@ int main() {
 
 	StoreManager storeManager;
 	loadSystem(&storeManager);
-	//initStoreManager(&storeManager);
 
 	int choice = 0;
 	do
@@ -106,6 +105,10 @@ int main() {
 		}
 		case eVIEW_STORES: {
 			printAllStores(&storeManager);
+			break;
+		}
+		case ePrint_SYSTEM: {
+			printSystemDetails(&storeManager);
 			break;
 		}
 		case eSORT_BY: {

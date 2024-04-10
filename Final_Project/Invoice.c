@@ -51,10 +51,7 @@ void freeInvoice(Invoice* invoice) {
 	if (invoice == NULL) {
 		return;
 	}
-	for (int i = 0; i < invoice->numOfProducts; i++)
-	{
-		freeProduct(&invoice->products[i]);
-	}
+	generalArrayFunction(invoice->products, invoice->numOfProducts, sizeof(Product), freeProduct);
 	free(invoice->products);
 	free(invoice->customer.name);
 	free(invoice);

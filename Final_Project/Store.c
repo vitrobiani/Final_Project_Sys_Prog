@@ -267,23 +267,17 @@ void printAllEmployees(const Store* store) {
 		printf("There are no employees in the store.\n");
 		return;
 	}
-	for (int i = 0; i < store->noOfEmployees; i++) {
-		printEmployee(&store->employees[i]);
-	}
+	generalArrayFunction(store->employees, store->noOfEmployees, sizeof(Employee), printEmployee);
 	printf("\n");
 }
 
 void printAllDepartments(const Store* store) {
-	for (int i = 0; i < noOfDepartmentTypes; i++) {
-		printDepartmentFull(&store->departments[i]);
-	}
+	generalArrayFunction(store->departments, store->noOfDepartments, sizeof(Department), printDepartment);
 	printf("\n");
 }
 
 void printAllProductsInStore(const Store* store) {
-	for (int i = 0; i < store->noOfDepartments; i++) {
-		printAllProducts(&store->departments[i]);
-	}
+	generalArrayFunction(store->departments, store->noOfDepartments, sizeof(Department), printAllProducts);
 }
 
 void printStoreReduced(const Store* store) {
@@ -296,6 +290,13 @@ void printStore(const Store* store) {
 	printf("Location: %s\n", store->location);
 	printf("\tRent: %d\t Profit: %d\n", store->rent, store->profit);
 	printf("\tNumber of employees: %d\n", store->noOfEmployees);
+}
+
+void printStoreFull(const Store* store) {
+	printStore(store);
+	printAllEmployees(store);
+	printAllDepartments(store);
+	printAllInvoices(store);
 }
 
 void freeStore(Store* store) {

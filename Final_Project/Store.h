@@ -75,6 +75,8 @@ void printStoreReduced(const Store* store);
 
 void printStore(const Store* store);
 
+void printStoreFull(const Store* store);
+
 void freeStore(Store* store);
 
 Employee* getBestSalesMan(const Store* store, int* saleAmount, int* bestProfit, int year, int month);

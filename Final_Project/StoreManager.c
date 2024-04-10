@@ -17,15 +17,11 @@ void loadSystem(StoreManager* storeManager) {
 	switch (opt)
 	{
 	case eLoadFromTextFile: {
-		loadStoreManagerFromTextFile(storeManager, "storeManager.txt");
+		initStoreManagerFromTextFile(storeManager, "storeManager.txt");
 		break;
 	}
 	case eLoadFromBinaryFile: {
 		initStoreManagerFromBinaryFile(storeManager, "storeManager.bin");
-		break;
-	}
-	case eLoadNewSystem: {
-		generateHQ(storeManager);
 		break;
 	}
 	}
@@ -393,6 +389,14 @@ void printAllStores(const StoreManager* storeManager) {
 	}
 }
 
+void printSystemDetails(const StoreManager* storeManager) {
+	PRINT_RETURN(storeManager->stores, "system not initialized");
+	printf("The system has %d stores.\n", storeManager->noOfStores);
+	for (int i = 0; i < storeManager->noOfStores; i++) {
+		printStoreFull(storeManager->stores[i]);
+	}
+}
+
 void freeStoreManager(StoreManager* storeManager) {
 	if (storeManager == NULL) {
 		return;
@@ -493,12 +497,12 @@ void findChainBestSellerProduct(const StoreManager* storeManager) {
 
 
 
-void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fileName) {
+int saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fileName) {
 	if (storeManager == NULL) {
 		return;
 	}
 	FILE* file = fopen(fileName, "w");
-	PRINT_RETURN(file, "error in opening file");
+	PRINT_RETURN_INT(file, 0 ,"error in opening file");
 
 	fprintf(file, "%d\n", storeManager->noOfStores);
 	for (int i = 0; i < storeManager->noOfStores; i++) {
@@ -507,26 +511,27 @@ void saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fi
 	fclose(file);
 }
 
-void loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName) {
+int loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName) {
 	FILE* file = fopen(fileName, "r");
-	PRINT_RETURN(file, "error in opening file");
+	PRINT_RETURN_INT(file, 0,"error in opening file");
 
 	int noOfStores;
 	fscanf(file, "%d", &noOfStores);
 	fgetc(file);
 	storeManager->noOfStores = noOfStores;
 	Store** stores = (Store**)malloc(noOfStores * sizeof(Store*));
-	PRINT_RETURN(stores, "error in allocating memory");
+	PRINT_RETURN_INT(stores, 0,"error in allocating memory");
 
 	for (int i = 0; i < noOfStores; i++) {
 		Store* store = (Store*)malloc(sizeof(Store));
 		initStore(store, 0);
-		PRINT_RETURN(store, "error in allocating memory");
+		PRINT_RETURN_INT(store, 0, "error in allocating memory");
 		loadStoreFromTextFile(store, file);
 		stores[i] = store;
 	}
 	storeManager->stores = stores;
 	fclose(file);
+	return 1;
 }
 
 int saveStoreManagerToBinaryFile(const StoreManager* storeManager, const char* fileName) {
@@ -587,6 +592,13 @@ int loadStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileN
 		}
 	}
 	CLOSE_RETURN_INT(file, 1);
+}
+
+void initStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName) {
+	if (!loadStoreManagerFromTextFile(storeManager, fileName)) {
+		initStoreManager(storeManager);
+		generateHQ(storeManager);
+	}
 }
 
 void initStoreManagerFromBinaryFile(StoreManager* storeManager, const char* fileName)

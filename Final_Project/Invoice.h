@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#define SUM(x, y) ((x) = (x) + (y))
-
 typedef struct Invoice {
 	int invoiceID;
 	int storeID;
