@@ -32,9 +32,9 @@ void printInvoice(const Invoice* invoice);
 
 void freeInvoice(Invoice* invoice);
 
-void saveInvoiceToTextFile(const Invoice* invoice, FILE* file);
+int saveInvoiceToTextFile(const Invoice* invoice, FILE* file);
 
-void loadInvoiceFromTextFile(Invoice* invoice, FILE* file);
+int loadInvoiceFromTextFile(Invoice* invoice, FILE* file);
 
 int saveInvoiceToBinaryFile(const Invoice* invoice, FILE* file);
 

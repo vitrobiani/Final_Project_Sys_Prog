@@ -79,9 +79,6 @@ void printDepartmentTypes() {
 }
 
 void printDepartment(const Department* department) {
-	if (department == NULL) {
-		return;
-	}
 	printf("\nDepartment Name: %s \t Department ID: %d\n", departmentTypeStr[department->type], department->type);
 	for (int i = 0; i < department->noOfProducts; i++) {
 		printProduct(&department->products[i]);
@@ -89,9 +86,6 @@ void printDepartment(const Department* department) {
 }
 
 void printDepartmentFull(const Department* department) {
-	if (department == NULL) {
-		return;
-	}
 	printf("\nDepartment Name: %s \t Department ID: %d\n", departmentTypeStr[department->type], department->type);
 	if (department->noOfProducts == 0) {
 		printf("there are no products in this department.\n");
@@ -101,38 +95,35 @@ void printDepartmentFull(const Department* department) {
 }
 
 void freeDepartment(Department* department) {
-	if (department == NULL || department->products == NULL) {
-		return;
-	}
 	for (int i = 0; i < department->noOfProducts; i++) {
 		freeProduct(&department->products[i]);
 	}
 	free(department->products);
 }
 
-void saveDepartmentToTextFile(const Department* department, FILE* file) {
-	fprintf(file, "%d\n", department->type);
-	fprintf(file, "%d\n", department->noOfProducts);
+int saveDepartmentToTextFile(const Department* department, FILE* file) {
+	if(!writeIntToTextFile(department->type, file, "Error writing department type")) return 0;
+	if(!writeIntToTextFile(department->noOfProducts, file, "Error writing number of products to file")) return 0;
 	for (int i = 0; i < department->noOfProducts; i++) {
-		saveProductToTextFile(&department->products[i], file);
+		if (!saveProductToTextFile(&department->products[i], file)) return 0;
 	}
+	return 1;
 }
 
-void loadDepartmentFromTextFile(Department* department, FILE* file) {
+int loadDepartmentFromTextFile(Department* department, FILE* file) {
 	int type = 0;
-	fscanf(file, "%d", &type);
+	if(!readIntFromTextFile(&type, file, "Error reading number of products from file")) return 0;
 	department->type = type;
-	fgetc(file);
-	fscanf(file, "%d", &department->noOfProducts);
-	fgetc(file);
+
+	if(!readIntFromTextFile(&department->noOfProducts, file, "Error reading number of products from file")) return 0;
 	Product* products = (Product*)malloc(sizeof(Product) * department->noOfProducts);
-	if (!products) {
-		return;
-	}
+	PRINT_RETURN_INT(products, 0, "Memory allocation failed");
+
 	for (int i = 0; i < department->noOfProducts; i++) {
-		loadProductFromTextFile(&products[i], file);
+		if(!loadProductFromTextFile(&products[i], file)) return 0;
 	}
 	department->products = products;
+	return 1;
 }
 
 int createProductArray(Department* department)

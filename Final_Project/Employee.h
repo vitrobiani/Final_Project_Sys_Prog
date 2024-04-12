@@ -29,9 +29,9 @@ ePosition getPosition();
 
 void freeEmployee(Employee* employee);
 
-void saveEmployeeToTextFile(const Employee* employee, FILE* file);
+int saveEmployeeToTextFile(const Employee* employee, FILE* file);
 
-void loadEmployeeFromTextFile(Employee* employee, FILE* file);
+int loadEmployeeFromTextFile(Employee* employee, FILE* file);
 
 int saveEmployeeToBinaryFile(const Employee* employee, FILE* file);
 

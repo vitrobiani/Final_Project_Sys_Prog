@@ -77,9 +77,42 @@ int	  readIntFromFile(int* pVal, FILE* fp, const char* msg)
 
 }
 
-void readIntFromTextFile(int* val, FILE* fp, const char* msg)
+int writeIntToTextFile(int val, FILE* fp, const char* msg)
 {
-	if (fscanf(fp, "%d", val) != 1)
+	if (fprintf(fp, "%d\n", val) < 0) {
 		puts(msg);
+		return 0;
+	}
+	return 1;
+}
+
+int writeStringToTextFile(const char* str, FILE* fp, const char* msg)
+{
+	if (fprintf(fp, "%s\n", str) < 0) {
+		puts(msg);
+		return 0;
+	}
+	return 1;
+}
+
+int readIntFromTextFile(int* pVal, FILE* fp, const char* msg)
+{
+	if (fscanf(fp, "%ld", pVal) != 1) {
+		puts(msg);
+		return 0;
+	}
 	fgetc(fp);
+	return 1;
+}
+
+int readStringFromTextFile(char* str, FILE* fp, const char* msg)
+{
+	char tmp[MAX_STR_LEN];
+	myGetsFile(tmp, MAX_STR_LEN, fp);
+	str = getDynStr(tmp);
+	if (!str) {
+		puts(msg);
+		return 0;
+	}
+	return 1;
 }

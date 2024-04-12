@@ -36,9 +36,9 @@ void printProductFull(const Product* product);
 
 void freeProduct(Product* product);
 
-void saveProductToTextFile(const Product* product, FILE* file);
+int saveProductToTextFile(const Product* product, FILE* file);
 
-void loadProductFromTextFile(Product* product, FILE* file);
+int loadProductFromTextFile(Product* product, FILE* file);
 
 int saveProductToBinaryFile(const Product* product, FILE* file);
 

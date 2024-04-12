@@ -4,6 +4,7 @@
 #include "Product.h"
 #include "GeneralFunctions.h"
 #include "FileHelper.h"
+#include "Macros.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -41,9 +42,9 @@ void printDepartmentFull(const Department* department);
 
 void freeDepartment(Department* department);
 
-void saveDepartmentToTextFile(const Department* department, FILE* file);
+int saveDepartmentToTextFile(const Department* department, FILE* file);
 
-void loadDepartmentFromTextFile(Department* department, FILE* file);
+int loadDepartmentFromTextFile(Department* department, FILE* file);
 
 int createProductArray(Department* department);
 

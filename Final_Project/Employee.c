@@ -38,25 +38,26 @@ void freeEmployee(Employee* employee) {
 	free(employee->name);
 }
 
-void saveEmployeeToTextFile(const Employee* employee, FILE* file) {
-	fprintf(file, "%d\n", employee->id);
-	fprintf(file, "%s\n", employee->name);
-	fprintf(file, "%d\n", employee->position);
-	fprintf(file, "%d\n", employee->salary);
+int saveEmployeeToTextFile(const Employee* employee, FILE* file) {
+	if (!writeIntToTextFile(employee->id, file, "Error saving ID")) return 0;
+	if (!writeStringToTextFile(employee->name, file, "Error saving Name")) return 0;
+	if (!writeIntToTextFile(employee->position, file, "Error saving Position")) return 0;
+	if (!writeIntToTextFile(employee->salary, file, "Error saving Salary")) return 0;
+	return 1;
 }
 
-void loadEmployeeFromTextFile(Employee* employee, FILE* file) {
-	fscanf(file, "%d", &employee->id);
-	fgetc(file);
+int loadEmployeeFromTextFile(Employee* employee, FILE* file) {
+	if (!readIntFromTextFile(&employee->id, file, "Error loading ID")) return 0;
 
 	char tmp[MAX_STR_LEN];
 	myGetsFile(tmp, MAX_STR_LEN, file);
 	employee->name = getDynStr(tmp);
-
-	fscanf(file, "%d", &employee->position);
-	fgetc(file);
-	fscanf(file, "%d", &employee->salary);
-	fgetc(file);
+	
+	int position;
+	if (!readIntFromTextFile(&position, file, "Error loading Position")) return 0;
+	employee->position = position;
+	if (!readIntFromTextFile(&employee->salary, file, "Error loading Salary")) return 0;
+	return 1;
 }
 
 int saveEmployeeToBinaryFile(const Employee* employee, FILE* file)

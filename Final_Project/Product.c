@@ -103,15 +103,16 @@ void freeProduct(Product* product) {
 	product->name = NULL;
 }
 
-void saveProductToTextFile(const Product* product, FILE* file) {
-	fprintf(file, "%s\n", product->code);
-	fprintf(file, "%s\n", product->name);
-	fprintf(file, "%d\n", product->buyPrice);
-	fprintf(file, "%d\n", product->sellPrice);
-	fprintf(file, "%d\n", product->quantity);
+int saveProductToTextFile(const Product* product, FILE* file) {
+	if (!writeStringToTextFile(product->code, file, "Error saving Product code")) return 0;
+	if (!writeStringToTextFile(product->name, file, "Error saving Product name")) return 0;
+	if (!writeIntToTextFile(product->buyPrice, file, "Error saving Product buy price")) return 0;
+	if (!writeIntToTextFile(product->sellPrice, file, "Error saving Product sell price")) return 0;
+	if (!writeIntToTextFile(product->quantity, file, "Error saving Product quantity")) return 0;
+	return 1;
 }
 
-void loadProductFromTextFile(Product* product, FILE* file) {
+int loadProductFromTextFile(Product* product, FILE* file) {
 	fscanf(file, "%s", product->code);
 	fgetc(file);
 
@@ -119,12 +120,10 @@ void loadProductFromTextFile(Product* product, FILE* file) {
 	myGetsFile(tmp, MAX_STR_LEN, file);
 	product->name = getDynStr(tmp);
 
-	fscanf(file, "%d", &product->buyPrice);
-	fgetc(file);
-	fscanf(file, "%d", &product->sellPrice);
-	fgetc(file);
-	fscanf(file, "%d", &product->quantity);
-	fgetc(file);
+	if(!readIntFromTextFile(&product->buyPrice, file, "Error loading Product buy price")) return 0;
+	if(!readIntFromTextFile(&product->sellPrice, file, "Error loading Product sell price")) return 0;
+	if(!readIntFromTextFile(&product->quantity, file, "Error loading Product quantity")) return 0;
+	return 1;
 }
 
 int saveProductToBinaryFile(const Product* product, FILE* file)

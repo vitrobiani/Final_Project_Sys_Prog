@@ -57,54 +57,53 @@ void freeInvoice(Invoice* invoice) {
 	free(invoice);
 }
 
-void saveInvoiceToTextFile(const Invoice* invoice, FILE* file) {
-	fprintf(file, "%d\n", invoice->invoiceID);
-	fprintf(file, "%d\n", invoice->storeID);
-
-	fprintf(file, "%d\n", invoice->employee->id);
-
-	fprintf(file, "%d\n", invoice->numOfProducts);
-	for (int i = 0; i < invoice->numOfProducts; i++)
-	{
-		saveProductToTextFile(&invoice->products[i], file);
+int saveInvoiceToTextFile(const Invoice* invoice, FILE* file) {
+	if (!writeIntToTextFile(invoice->invoiceID, file, "Error writing invoice ID to file\n")) return 0;
+	if (!writeIntToTextFile(invoice->storeID, file, "Error writing store ID to file\n")) return 0;
+	if (!writeIntToTextFile(invoice->employee->id, file, "Error writing employee ID to file\n")) return 0;
+	if (!writeIntToTextFile(invoice->numOfProducts, file, "Error writing number of products to file\n")) return 0;
+	for (int i = 0; i < invoice->numOfProducts; i++){
+		if (!saveProductToTextFile(&invoice->products[i], file)) return 0;
 	}
-	fprintf(file, "%d\n", invoice->saleAmount);
-
-	fprintf(file, "%d\n", invoice->customer.id);
-	fprintf(file, "%s\n", invoice->customer.name);
-	fprintf(file, "%d\n", invoice->customer.contactNumber);
-
-	fprintf(file, "%d\n", invoice->timeOfSale.day);
-	fprintf(file, "%d\n", invoice->timeOfSale.month);
-	fprintf(file, "%d\n", invoice->timeOfSale.year);
+	if (!writeIntToTextFile(invoice->saleAmount, file, "Error writing sale amount to file\n")) return 0;
+	if (!writeIntToTextFile(invoice->customer.id, file, "Error writing customer ID to file\n")) return 0;
+	if (!writeStringToTextFile(invoice->customer.name, file, "Error writing customer name to file\n")) return 0;
+	if (!writeIntToTextFile(invoice->customer.contactNumber, file, "Error writing customer contact number to file\n")) return 0;
+	if (!writeIntToTextFile(invoice->timeOfSale.day, file, "Error writing day to file\n")) return 0;
+	if (!writeIntToTextFile(invoice->timeOfSale.month, file, "Error writing month to file\n")) return 0;
+	if (!writeIntToTextFile(invoice->timeOfSale.year, file, "Error writing year to file\n")) return 0;
+	return 1;
 }
 
-void loadInvoiceFromTextFile(Invoice* invoice, FILE* file) {
-	readIntFromTextFile(&invoice->invoiceID, file, "Error reading invoice ID from file\n");
-	readIntFromTextFile(&invoice->storeID, file, "Error reading store ID from file\n");
+int loadInvoiceFromTextFile(Invoice* invoice, FILE* file) {
+	if (!readIntFromTextFile(&invoice->invoiceID, file, "Error reading invoice ID from file\n")) return 0;
+	if (!readIntFromTextFile(&invoice->storeID, file, "Error reading store ID from file\n")) return 0;
 	Employee* emp = (Employee*)malloc(sizeof(Employee));
-	PRINT_RETURN(emp, "Memory allocation failed");
-	readIntFromTextFile(&emp->id, file, "Error reading employee ID from file\n");
-	readIntFromTextFile(&invoice->numOfProducts, file, "Error reading number of products from file\n");
+	PRINT_RETURN_INT(emp, 0, "Memory allocation failed");
+	if (!readIntFromTextFile(&emp->id, file, "Error reading employee ID from file\n")) return 0;
+	if (!readIntFromTextFile(&invoice->numOfProducts, file, "Error reading number of products from file\n")) return 0;
 	Product* products = (Product*)malloc(sizeof(Product) * invoice->numOfProducts);
 	if (!products) {
 		free(emp);
-		return;
+		return 0;
 	}
 	for (int i = 0; i < invoice->numOfProducts; i++) {
-		loadProductFromTextFile(&products[i], file);
+		if(!loadProductFromTextFile(&products[i], file)) return 0;
 	}
-	invoice->products = products;
-	readIntFromTextFile(&invoice->saleAmount, file, "Error reading sale amount from file\n");
-	readIntFromTextFile(&invoice->customer.id, file, "Error reading customer ID from file\n");
+
+	if (!readIntFromTextFile(&invoice->saleAmount, file, "Error reading sale amount from file\n")) return 0;
+	if (!readIntFromTextFile(&invoice->customer.id, file, "Error reading customer ID from file\n")) return 0;
 	char tmp[MAX_STR_LEN];
 	myGetsFile(tmp, MAX_STR_LEN, file);
 	invoice->customer.name = getDynStr(tmp);
-	readIntFromTextFile(&invoice->customer.contactNumber, file, "Error reading customer contact number from file\n");
+	
+	if (!readIntFromTextFile(&invoice->customer.contactNumber, file, "Error reading customer contact number from file\n")) return 0;
+	if (!readIntFromTextFile(&invoice->timeOfSale.day, file, "Error reading day from file\n")) return 0;
+	if (!readIntFromTextFile(&invoice->timeOfSale.month, file, "Error reading month from file\n")) return 0;
+	if (!readIntFromTextFile(&invoice->timeOfSale.year, file, "Error reading year from file\n")) return 0;
+	invoice->products = products;
 	invoice->employee = emp;
-	readIntFromTextFile(&invoice->timeOfSale.day, file, "Error reading day from file\n");
-	readIntFromTextFile(&invoice->timeOfSale.month, file, "Error reading month from file\n");
-	readIntFromTextFile(&invoice->timeOfSale.year, file, "Error reading year from file\n");
+	return 1;
 }
 
 int saveInvoiceToBinaryFile(const Invoice* invoice, FILE* file) {

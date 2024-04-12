@@ -22,7 +22,6 @@ int initStore(Store* store, int id) {
 	store->employees = NULL;
 	store->noOfEmployees = 0;
 	store->noOfInvoices = 0;
-	store->profit = 0;
 	store->noOfDepartments = noOfDepartmentTypes;
 
 	initDepartmentArray(store);
@@ -272,12 +271,16 @@ void printAllEmployees(const Store* store) {
 }
 
 void printAllDepartments(const Store* store) {
-	generalArrayFunction(store->departments, store->noOfDepartments, sizeof(Department), printDepartment);
+	for (int i = 0; i < store->noOfDepartments; i++) {
+		printDepartment(&store->departments[i]);
+	}
 	printf("\n");
 }
 
 void printAllProductsInStore(const Store* store) {
-	generalArrayFunction(store->departments, store->noOfDepartments, sizeof(Department), printAllProducts);
+	for (int i = 0; i < store->noOfDepartments; i++) {
+		printAllProducts(&store->departments[i]);
+	}
 }
 
 void printStoreReduced(const Store* store) {
@@ -288,7 +291,7 @@ void printStoreReduced(const Store* store) {
 void printStore(const Store* store) {
 	printf("\n# Store ID: %d\t", store->storeID);
 	printf("Location: %s\n", store->location);
-	printf("\tRent: %d\t Profit: %d\n", store->rent, store->profit);
+	printf("\tRent: %d\t", store->rent);
 	printf("\tNumber of employees: %d\n", store->noOfEmployees);
 }
 
@@ -416,61 +419,59 @@ int getMonth()
 	return month;
 }
 
-void saveStoreToTextFile(const Store* store, FILE* file) {
-	fprintf(file, "%d\n", store->storeID);
-	fprintf(file, "%s\n", store->location);
-	fprintf(file, "%d\n", store->rent);
-	fprintf(file, "%d\n", store->profit);
+int saveStoreToTextFile(const Store* store, FILE* file) {
+	if (!writeIntToTextFile(store->storeID, file, "Error writing store ID to text file\n")) return 0;
+	if (!writeStringToTextFile(store->location, file, "Error writing store location to text file\n")) return 0;
+	if (!writeIntToTextFile(store->rent, file, "Error writing store rent to text file\n")) return 0;
 
-	fprintf(file, "%d\n", store->noOfEmployees);
+	if (!writeIntToTextFile(store->noOfEmployees, file, "Error writing number of employees to text file\n")) return 0;
 	for (int i = 0; i < store->noOfEmployees; i++) {
-		saveEmployeeToTextFile(&store->employees[i], file);
+		if(!saveEmployeeToTextFile(&store->employees[i], file)) return 0;
 	}
 
-	fprintf(file, "%d\n", store->noOfDepartments);
+	if(!writeIntToTextFile(store->noOfDepartments, file, "Error writing number of departments to text file\n")) return 0;
 	for (int i = 0; i < store->noOfDepartments; i++) {
-		saveDepartmentToTextFile(&store->departments[i], file);
+		if(!saveDepartmentToTextFile(&store->departments[i], file)) return 0;
 	}
-	fprintf(file, "%d\n", store->noOfInvoices);
+	if(!writeIntToTextFile(store->noOfInvoices, file, "Error writing number of invoices to text file\n")) return 0;
 	NODE* tmp = store->invoiceList.head.next;
 	while (tmp)
 	{
-		saveInvoiceToTextFile((Invoice*)tmp->key, file);
+		if (!saveInvoiceToTextFile((Invoice*)tmp->key, file)) return 0;
 		tmp = tmp->next;
 	}
+	return 1;
 }
 
-void loadStoreFromTextFile(Store* store, FILE* file) {
-	readIntFromTextFile(&store->storeID, file, "Error reading store ID from text file.");
+int loadStoreFromTextFile(Store* store, FILE* file) {
 	char tmp[MAX_STR_LEN];
 	myGetsFile(tmp, MAX_STR_LEN, file);
 	store->location = getDynStr(tmp);
-	readIntFromTextFile(&store->rent, file, "Error reading store rent from text file.");
-	readIntFromTextFile(&store->profit, file, "Error reading store profit from text file.");
-	readIntFromTextFile(&store->noOfEmployees, file, "Error reading number of employees from text file.");
+	if (!readIntFromTextFile(&store->rent, file, "Error reading store rent from text file.")) return 0;
+	if (!readIntFromTextFile(&store->noOfEmployees, file, "Error reading number of employees from text file.")) return 0;
 	store->employees = (Employee*)malloc(store->noOfEmployees * sizeof(Employee));
-	PRINT_RETURN(store->employees, "error in allocating memory for employees");
+	PRINT_RETURN_INT(store->employees, 0, "error in allocating memory for employees");
 	for (int i = 0; i < store->noOfEmployees; i++) {
-		loadEmployeeFromTextFile(&store->employees[i], file);
+		if (!loadEmployeeFromTextFile(&store->employees[i], file)) {
+			free(store->employees);
+			return 0;
+		}
 	}
-	readIntFromTextFile(&store->noOfDepartments, file, "Error reading number of departments from text file.");
-	if (!store->departments)
-		return;
+	if (!readIntFromTextFile(&store->noOfDepartments, file, "Error reading number of departments from text file.")) return 0;
 	for (int i = 0; i < store->noOfDepartments; i++) {
-		loadDepartmentFromTextFile(&store->departments[i], file);
+		if(!loadDepartmentFromTextFile(&store->departments[i], file)) return 0;
 	}
-	int noOfInvoices;
-	readIntFromTextFile(&noOfInvoices, file, "Error reading number of invoices from text file.");
-	store->noOfInvoices = noOfInvoices;
-	for (int i = 0; i < noOfInvoices; i++) {
+	if (!readIntFromTextFile(&store->noOfInvoices, file, "Error reading number of invoices from text file.")) return 0;
+	for (int i = 0; i < store->noOfInvoices; i++) {
 		Invoice* invoice = (Invoice*)malloc(sizeof(Invoice));
-		PRINT_RETURN(invoice, "error in allocating memory for invoice");
-		loadInvoiceFromTextFile(invoice, file);
+		PRINT_RETURN_INT(invoice, 0, "error in allocating memory for invoice");
+		if(!loadInvoiceFromTextFile(invoice, file)) return 0;
 		Employee* employee = getEmployee(store, invoice->employee->id);
 		free(invoice->employee);
 		invoice->employee = employee;
 		insertNewInvoiceToList(&store->invoiceList, invoice);
 	}
+	return 1;
 }
 
 int saveStoreToBinaryFile(const Store* store, FILE* file) {
@@ -479,8 +480,6 @@ int saveStoreToBinaryFile(const Store* store, FILE* file) {
 	if (!writeStringToFile(store->location, file, "Error writing store location to file\n"))
 		return 0;
 	if (!writeIntToFile(store->rent, file, "Error writing store rent to file\n"))
-		return 0;
-	if (!writeIntToFile(store->profit, file, "Error writing store profit to file\n"))
 		return 0;
 	if (!writeIntToFile(store->noOfEmployees, file, "Error writing number of employees to file\n"))
 		return 0;
@@ -568,8 +567,6 @@ int loadStoreFromBinaryFile(Store* store, FILE* file) {
 	if (!store->location)
 		return 0;
 	if (!readIntFromFile(&store->rent, file, "Error reading store rent from file\n"))
-		return 0;
-	if (!readIntFromFile(&store->profit, file, "Error reading store profit from file\n"))
 		return 0;
 	if(!loadEmployeeArrFromBinaryFile(store, file))
 		return 0;

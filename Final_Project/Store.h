@@ -14,7 +14,6 @@ typedef struct Store {
 	int storeID;
 	char* location;
 	int rent;
-	int profit;
 	Employee* employees;
 	int noOfEmployees;
 	Department departments[noOfDepartmentTypes];
@@ -91,9 +90,9 @@ int getYear();
 
 int getMonth();
 
-void saveStoreToTextFile(const Store* store, FILE* file);
+int saveStoreToTextFile(const Store* store, FILE* file);
 
-void loadStoreFromTextFile(Store* store, FILE* file);
+int loadStoreFromTextFile(Store* store, FILE* file);
 
 int saveStoreToBinaryFile(const Store* store, FILE* file);
 

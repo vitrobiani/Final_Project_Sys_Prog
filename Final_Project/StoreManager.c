@@ -310,7 +310,6 @@ Store* enterStore(StoreManager* storeManager) {
 }
 
 void sortAllStoresBy(StoreManager* storeManager) {
-	PRINT_RETURN(storeManager->stores, "system not initialized");
 	storeManager->storeSortOpt = showSortMenu();
 	int(*compare)(const void* store1, const void* store2) = NULL;
 	switch (storeManager->storeSortOpt)
@@ -381,7 +380,6 @@ void findStore(const StoreManager* storeManager) {
 }
 
 void printAllStores(const StoreManager* storeManager) {
-	PRINT_RETURN(storeManager->stores, "no stores!");
 
 	for (int i = 0; i < storeManager->noOfStores; i++)
 	{
@@ -390,7 +388,6 @@ void printAllStores(const StoreManager* storeManager) {
 }
 
 void printSystemDetails(const StoreManager* storeManager) {
-	PRINT_RETURN(storeManager->stores, "system not initialized");
 	printf("The system has %d stores.\n", storeManager->noOfStores);
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		printStoreFull(storeManager->stores[i]);
@@ -413,7 +410,6 @@ void freeStoreManager(StoreManager* storeManager) {
 //If there are multiple salesmen with the same sales amount, the salesman with the highest profit will be chosen.
 //If there are multiple salesmen with the same sales amount and profit(really unlikely), the first one will be chosen.
 void findChainBestSalesMan(const StoreManager* storeManager) {
-	PRINT_RETURN(storeManager->stores, "system not initialized");
 	int year = getYear();
 	int month = getMonth();
 	int saleAmount = 0;
@@ -481,7 +477,6 @@ Product* getChainBestSellerProduct(const StoreManager* storeManager, int* quanti
 //If there are multiple products with the same quantity sold, the product with the highest profit will be chosen.
 //If there are multiple products with the same quantity sold and profit(really unlikely), the first one will be chosen.
 void findChainBestSellerProduct(const StoreManager* storeManager) {
-	PRINT_RETURN(storeManager->stores, "system not initialized");
 	int year = getYear();
 	int month = getMonth();
 	int quantity = 0;
@@ -498,35 +493,32 @@ void findChainBestSellerProduct(const StoreManager* storeManager) {
 
 
 int saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fileName) {
-	if (storeManager == NULL) {
-		return;
-	}
 	FILE* file = fopen(fileName, "w");
 	PRINT_RETURN_INT(file, 0 ,"error in opening file");
 
-	fprintf(file, "%d\n", storeManager->noOfStores);
+	if (!writeIntToTextFile(storeManager->noOfStores, file, "error in writing number of stores to file\n")) return 0;
 	for (int i = 0; i < storeManager->noOfStores; i++) {
-		saveStoreToTextFile(storeManager->stores[i], file);
+		if(!saveStoreToTextFile(storeManager->stores[i], file)) return 0;
 	}
 	fclose(file);
+	return 1;
 }
 
 int loadStoreManagerFromTextFile(StoreManager* storeManager, const char* fileName) {
 	FILE* file = fopen(fileName, "r");
 	PRINT_RETURN_INT(file, 0,"error in opening file");
 
-	int noOfStores;
-	fscanf(file, "%d", &noOfStores);
-	fgetc(file);
-	storeManager->noOfStores = noOfStores;
-	Store** stores = (Store**)malloc(noOfStores * sizeof(Store*));
-	PRINT_RETURN_INT(stores, 0,"error in allocating memory");
+	if (!readIntFromTextFile(&storeManager->noOfStores, file, "error in reading number of stores from file\n")) return 0;
+	Store** stores = (Store**)malloc(storeManager->noOfStores * sizeof(Store*));
+	PRINT_RETURN_INT(stores, 0,"error in allocating memory1");
 
-	for (int i = 0; i < noOfStores; i++) {
+	for (int i = 0; i < storeManager->noOfStores; i++) {
 		Store* store = (Store*)malloc(sizeof(Store));
-		initStore(store, 0);
 		PRINT_RETURN_INT(store, 0, "error in allocating memory");
-		loadStoreFromTextFile(store, file);
+		int id = 0;
+		if (!readIntFromTextFile(&id, file, "Error reading store ID from text file.")) return 0;
+		initStore(store, id);
+		if(!loadStoreFromTextFile(store, file)) return 0;
 		stores[i] = store;
 	}
 	storeManager->stores = stores;
