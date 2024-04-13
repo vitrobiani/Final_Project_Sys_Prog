@@ -26,11 +26,9 @@ eDepartmentType getDepartmentType();
 
 void addToProduct(Department* dep);
 
-Product* getProduct(const Department* department, char* productCode);
+Product* getProduct(const Department* department, const char* productCode);
 
-int checkDepartmentStock(Department* dep);
-
-int calculateDepartmentSpendings(Department* dep);
+int checkDepartmentStock(const Department* dep);
 
 void printDepartmentTypes();
 

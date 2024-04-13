@@ -17,5 +17,4 @@ int		readIntFromFile(int* val, FILE* fp, const char* msg);
 int		writeIntToTextFile(int val, FILE* fp, const char* msg);
 int		writeStringToTextFile(const char* str, FILE* fp, const char* msg);
 int		readIntFromTextFile(int* val, FILE* fp, const char* msg);
-int		readStringFromTextFile(char* str, FILE* fp, const char* msg);
 #endif // !FILE_HELPER

@@ -34,9 +34,9 @@ Employee* getEmployee(Store* store, int employeeID);
 
 Employee* getEmployeeTUI(Store* store);
 
-int checkIfThereAreProductsInStore(Store* store);
+int checkIfThereAreProductsInStore(const Store* store);
 
-int countAvailableProductsInStore(Store* store);
+int countAvailableProductsInStore(const Store* store);
 
 int getNumOfProducts(int availableProducts);
 
@@ -44,9 +44,9 @@ int insertNewInvoiceToList(LIST* pList, Invoice* pInvoice);
 
 Department* chooseDepartment(Store* store);
 
-Product* chooseProduct(Department* department);
+Product* chooseProduct(const Department* department);
 
-int chooseQuantity(Product* product);
+int chooseQuantity(const Product* product);
 
 Department* getDepartmentTUI(Store* store);
 
@@ -54,7 +54,7 @@ Department* getDepartment(Store* store, int id);
 
 void addProductToDepartment(Store* store);
 
-int generateInvoiceID(Store* store);
+int generateInvoiceID(const Store* store);
 
 int compareStoreByID(const void* store1, const void* store2);
 

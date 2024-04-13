@@ -33,7 +33,7 @@ void addToProduct(Department* dep) {
 	updateQuantity(product);
 }
 
-int checkDepartmentStock(Department* dep) {
+int checkDepartmentStock(const Department* dep) {
 	for (int i = 0; i < dep->noOfProducts; i++) {
 		if (dep->products[i].quantity > 0)
 			return 1;
@@ -41,7 +41,7 @@ int checkDepartmentStock(Department* dep) {
 	return 0;
 }
 
-Product* getProduct(const Department* department, char* productCode) {
+Product* getProduct(const Department* department, const char* productCode) {
 	if (department == NULL) {
 		return NULL;
 	}
@@ -51,14 +51,6 @@ Product* getProduct(const Department* department, char* productCode) {
 		}
 	}
 	return NULL;
-}
-
-int calculateDepartmentSpendings(Department* dep) {
-	int sum = 0;
-	for (int i = 0; i < dep->noOfProducts; i++) {
-		sum += dep->products[i].quantity * dep->products[i].buyPrice;
-	}
-	return sum;
 }
 
 void printAllProducts(const Department* department) {

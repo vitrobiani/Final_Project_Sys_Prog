@@ -113,7 +113,7 @@ Employee* getEmployeeTUI(Store* store) {
 	return employee;
 }
 
-int checkIfThereAreProductsInStore(Store* store) {
+int checkIfThereAreProductsInStore(const Store* store) {
 	if (store == NULL) {
 		return 0;
 	}
@@ -125,7 +125,7 @@ int checkIfThereAreProductsInStore(Store* store) {
 	return 0;
 }
 
-int countAvailableProductsInStore(Store* store)
+int countAvailableProductsInStore(const Store* store)
 {
 	int sum = 0;
 	for (int i = 0; i < store->noOfDepartments; i++) {
@@ -192,7 +192,7 @@ Department* chooseDepartment(Store* store)
 	return department;
 }
 
-Product* chooseProduct(Department* department)
+Product* chooseProduct(const Department* department)
 {
 	printAllProducts(department);
 	Product* product;
@@ -207,7 +207,7 @@ Product* chooseProduct(Department* department)
 	return product;
 }
 
-int chooseQuantity(Product* product)
+int chooseQuantity(const Product* product)
 {
 	int quantity;
 	printf("Enter the quantity: ");
@@ -220,7 +220,7 @@ int chooseQuantity(Product* product)
 }
 
 
-int generateInvoiceID(Store* store) {
+int generateInvoiceID(const Store* store) {
 	int maxID = 0;
 	NODE* tmp = store->invoiceList.head.next;
 	while (tmp) {

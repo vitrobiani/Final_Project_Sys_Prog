@@ -104,15 +104,3 @@ int readIntFromTextFile(int* pVal, FILE* fp, const char* msg)
 	fgetc(fp);
 	return 1;
 }
-
-int readStringFromTextFile(char* str, FILE* fp, const char* msg)
-{
-	char tmp[MAX_STR_LEN];
-	myGetsFile(tmp, MAX_STR_LEN, fp);
-	str = getDynStr(tmp);
-	if (!str) {
-		puts(msg);
-		return 0;
-	}
-	return 1;
-}
