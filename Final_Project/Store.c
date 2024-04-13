@@ -46,6 +46,7 @@ void addEmployee(Store* store, Employee* employee) {
 		free(employee);
 		return;
 	}
+	moveAllEmployeesInvoicesPtr(store, tmp);
 	store->employees = tmp;
 	store->employees[store->noOfEmployees].id = employee->id;
 	store->employees[store->noOfEmployees].name = (char*)malloc(strlen(employee->name) + 1);
@@ -60,6 +61,27 @@ void addEmployee(Store* store, Employee* employee) {
 	store->noOfEmployees++;
 	free(employee->name);
 	free(employee);
+}
+
+Employee* getEmployeeByID(Employee* allEmployees, int id, int length)
+{
+	for (int i = 0; i < length; i++) {
+		if (allEmployees[i].id == id) {
+			return &allEmployees[i];
+		}
+	}
+	return NULL;
+}
+
+void moveAllEmployeesInvoicesPtr(Store* store, Employee* allEmployees)
+{
+	NODE* tmp = store->invoiceList.head.next;
+	while (tmp)
+	{
+		Invoice* invoice = (Invoice*)tmp->key;
+		invoice->employee = getEmployeeByID(allEmployees, invoice->employee->id, store->noOfEmployees);
+		tmp = tmp->next;
+	}
 }
 
 Department* getDepartment(Store* store, int departmentID) {
@@ -220,7 +242,7 @@ int chooseQuantity(const Product* product)
 }
 
 
-int generateInvoiceID(Store* store) {
+int generateInvoiceID(const Store* store) {
 	int maxID = 0;
 	NODE* tmp = store->invoiceList.head.next;
 	while (tmp) {
@@ -272,7 +294,7 @@ void printAllEmployees(const Store* store) {
 
 void printAllDepartments(const Store* store) {
 	for (int i = 0; i < store->noOfDepartments; i++) {
-		printDepartment(&store->departments[i]);
+		printDepartmentFull(&store->departments[i]);
 	}
 	printf("\n");
 }

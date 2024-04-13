@@ -138,7 +138,7 @@ void addEmployeeToStore(StoreManager* storeManager, Store* store)
 
 }
 
-void initEmployee(StoreManager* storeManager, Employee* employee) {
+void initEmployee(const StoreManager* storeManager, Employee* employee) {
 	
 	employee->id = getEmployeeID(storeManager);
 	employee->name = getStrExactName("Enter the employee name: ");
@@ -146,7 +146,7 @@ void initEmployee(StoreManager* storeManager, Employee* employee) {
 	employee->salary = getSalary();
 }
 
-int getEmployeeID(StoreManager* storeManager) {
+int getEmployeeID(const StoreManager* storeManager) {
 	int id;
 	printf("Enter the employee ID:(the ID must be unique)\n");
 	do {
@@ -158,7 +158,7 @@ int getEmployeeID(StoreManager* storeManager) {
 	return id;
 }
 
-int isEmployeeIDUnique(StoreManager* storeManager, int id)
+int isEmployeeIDUnique(const StoreManager* storeManager, int id)
 {
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		for (int j = 0; j < storeManager->stores[i]->noOfEmployees; j++) {
@@ -204,7 +204,7 @@ void makeSale(StoreManager* storeManager, Store* store) {
 		freeInvoice(invoice);
 }
 
-void initCustomer(StoreManager* storeManager, Customer* customer) {
+void initCustomer(const StoreManager* storeManager, Customer* customer) {
 	int check;
 	do
 	{
@@ -226,7 +226,7 @@ void initCustomer(StoreManager* storeManager, Customer* customer) {
 	setContactNumber(customer);
 }
 
-Customer* isCustomerIDUnique(StoreManager* storeManager, int id)
+Customer* isCustomerIDUnique(const StoreManager* storeManager, int id)
 {
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		NODE* tmp = storeManager->stores[i]->invoiceList.head.next;

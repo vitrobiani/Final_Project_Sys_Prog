@@ -74,10 +74,6 @@ void ExitProgram(StoreManager* storeManager) {
 	saveStoreManagerToTextFile(storeManager, "storeManager.txt");
 	saveStoreManagerToBinaryFile(storeManager, "storeManager.bin");
 	freeStoreManager(storeManager);
-	printf("before dump\n");
-	int check = _CrtDumpMemoryLeaks();
-	printf("%s\n", (check) ? "there are memory leaks" : "no memory leaks");
-	printf("Goodbye!\n");
 }
 
 int main() {

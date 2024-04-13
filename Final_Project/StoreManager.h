@@ -43,17 +43,17 @@ void printAllChainEmployees(const StoreManager* storeManager);
 
 void addEmployeeToStore(StoreManager* storeManager, Store* store);
 
-void initEmployee(StoreManager* storeManager, Employee* employee);
+void initEmployee(const StoreManager* storeManager, Employee* employee);
 
-int getEmployeeID(StoreManager* storeManager);
+int getEmployeeID(const StoreManager* storeManager);
 
-int isEmployeeIDUnique(StoreManager* storeManager, int id);
+int isEmployeeIDUnique(const StoreManager* storeManager, int id);
 
 void makeSale(StoreManager* storeManager, Store* store);
 
-void initCustomer(StoreManager* storeManager, Customer* customer);
+void initCustomer(const StoreManager* storeManager, Customer* customer);
 
-Customer* isCustomerIDUnique(StoreManager* storeManager, int id);
+Customer* isCustomerIDUnique(const StoreManager* storeManager, int id);
 
 int getUserChoice();
 

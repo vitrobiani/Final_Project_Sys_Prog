@@ -30,6 +30,10 @@ void initDepartmentArray(Store* store);
 
 void addEmployee(Store* store, Employee* employee);
 
+Employee* getEmployeeByID(Employee* allEmployees, int id, int length);
+
+void moveAllEmployeesInvoicesPtr(Store* store, Employee* allEmployees);
+
 Employee* getEmployee(Store* store, int employeeID);
 
 Employee* getEmployeeTUI(Store* store);
@@ -54,7 +58,7 @@ Department* getDepartment(Store* store, int id);
 
 void addProductToDepartment(Store* store);
 
-int generateInvoiceID(Store* store);
+int generateInvoiceID(const Store* store);
 
 int compareStoreByID(const void* store1, const void* store2);
 
