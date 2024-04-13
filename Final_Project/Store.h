@@ -54,7 +54,7 @@ Department* getDepartment(Store* store, int id);
 
 void addProductToDepartment(Store* store);
 
-int generateInvoiceID(const Store* store);
+int generateInvoiceID(Store* store);
 
 int compareStoreByID(const void* store1, const void* store2);
 

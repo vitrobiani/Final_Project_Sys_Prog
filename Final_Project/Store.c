@@ -220,7 +220,7 @@ int chooseQuantity(const Product* product)
 }
 
 
-int generateInvoiceID(const Store* store) {
+int generateInvoiceID(Store* store) {
 	int maxID = 0;
 	NODE* tmp = store->invoiceList.head.next;
 	while (tmp) {

@@ -79,7 +79,7 @@ int	  readIntFromFile(int* pVal, FILE* fp, const char* msg)
 
 int writeIntToTextFile(int val, FILE* fp, const char* msg)
 {
-	if (fprintf(fp, "%d\n", val) < 0) {
+	if (fprintf(fp, "%d\n", val) != 0) {
 		puts(msg);
 		return 0;
 	}
@@ -88,7 +88,7 @@ int writeIntToTextFile(int val, FILE* fp, const char* msg)
 
 int writeStringToTextFile(const char* str, FILE* fp, const char* msg)
 {
-	if (fprintf(fp, "%s\n", str) < 0) {
+	if (fprintf(fp, "%s\n", str) != 1) {
 		puts(msg);
 		return 0;
 	}
@@ -97,7 +97,7 @@ int writeStringToTextFile(const char* str, FILE* fp, const char* msg)
 
 int readIntFromTextFile(int* pVal, FILE* fp, const char* msg)
 {
-	if (fscanf(fp, "%ld", pVal) != 1) {
+	if (fscanf(fp, "%d", pVal) != 1) {
 		puts(msg);
 		return 0;
 	}
