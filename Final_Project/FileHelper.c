@@ -79,7 +79,7 @@ int	  readIntFromFile(int* pVal, FILE* fp, const char* msg)
 
 int writeIntToTextFile(int val, FILE* fp, const char* msg)
 {
-	if (fprintf(fp, "%d\n", val) != 1) {
+	if (fprintf(fp, "%d\n", val) < 0) {
 		puts(msg);
 		return 0;
 	}

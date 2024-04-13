@@ -496,7 +496,7 @@ int saveStoreManagerToTextFile(const StoreManager* storeManager, const char* fil
 	FILE* file = fopen(fileName, "w");
 	PRINT_RETURN_INT(file, 0 ,"error in opening file");
 
-	if (!writeIntToTextFile(storeManager->noOfStores, file, "error in writing number of stores to file\n")) return 0;
+	if (!writeIntToTextFile(storeManager->noOfStores, file, "error in writing number of stores to file1\n")) return 0;
 	for (int i = 0; i < storeManager->noOfStores; i++) {
 		if(!saveStoreToTextFile(storeManager->stores[i], file)) return 0;
 	}
